@@ -10,6 +10,8 @@
       <entry name="!?*.groovy" />
     </wildcardResourcePatterns>
     <bytecodeTargetLevel>
+      <module name="Bachelors-of-Domination-Ass4_main" target="1.8" />
+      <module name="Bachelors-of-Domination-Ass4_test" target="1.8" />
       <module name="Bachelors-of-Domination_main" target="1.8" />
       <module name="Bachelors-of-Domination_test" target="1.8" />
       <module name="core_main" target="1.6" />
@@ -200,7 +202,9 @@
   </component>
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Bachelors-of-Domination.iml" filepath="$PROJECT_DIR$/Bachelors-of-Domination.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Bachelors-of-Domination-Ass4.iml" filepath="$PROJECT_DIR$/Bachelors-of-Domination-Ass4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Bachelors-of-Domination-Ass4_main.iml" filepath="$PROJECT_DIR$/Bachelors-of-Domination-Ass4_main.iml" group="Bachelors-of-Domination-Ass4" />
+      <module fileurl="file://$PROJECT_DIR$/Bachelors-of-Domination-Ass4_test.iml" filepath="$PROJECT_DIR$/Bachelors-of-Domination-Ass4_test.iml" group="Bachelors-of-Domination-Ass4" />
       <module fileurl="file://$PROJECT_DIR$/Bachelors-of-Domination_main.iml" filepath="$PROJECT_DIR$/Bachelors-of-Domination_main.iml" group="Bachelors-of-Domination" />
       <module fileurl="file://$PROJECT_DIR$/Bachelors-of-Domination_test.iml" filepath="$PROJECT_DIR$/Bachelors-of-Domination_test.iml" group="Bachelors-of-Domination" />
       <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" group="core" />

@@ -44,6 +44,7 @@ public class WidgetFactory {
     private static Texture startGameBtnTexture;
 
     private static Texture menusTopBarLeftTexture;
+    private static Texture menusTopBarCenterTexture;
     private static Texture menusTopBarRightTexture;
 
     private static Texture alcuinLogoTexture;
@@ -85,7 +86,9 @@ public class WidgetFactory {
         startGameBtnTexture = new Texture("uiComponents/Start-Game-Button-Full.png");
 
         menusTopBarLeftTexture = new Texture("uiComponents/MenusTopBarLeft.png");
+        menusTopBarCenterTexture = new Texture("uiComponents/MenusTopBarCenter.png");
         menusTopBarRightTexture = new Texture("uiComponents/MenusTopBarRight.png");
+
 
         gameHUDBottomBarRightPartTexture = new Texture("uiComponents/HUD-Bottom-Bar-Right-Part.png");
         gameHUDTopBarTexture = new Texture("uiComponents/HUD-Top-Bar.png");
@@ -120,8 +123,8 @@ public class WidgetFactory {
      */
     public static TextButton genBasicButton(String buttonText) {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle(); // create style for buttons to use
-        style.up = new TextureRegionDrawable(new TextureRegion(basicButtonTexture, 0, 0, 857, 123)); // image for button to use in default state
-        style.down = new TextureRegionDrawable(new TextureRegion(basicButtonTexture, 0, 123, 857, 123)); // image for button to use when pressed down
+        style.up = new TextureRegionDrawable(new TextureRegion(basicButtonTexture, 0, 0, 878, 145)); // image for button to use in default state
+        style.down = new TextureRegionDrawable(new TextureRegion(basicButtonTexture, 0, 145, 878, 145)); // image for button to use when pressed down
         style.font = fontSmall;
 
         return new TextButton(buttonText, style);
@@ -136,6 +139,7 @@ public class WidgetFactory {
      */
     public static Table genMenusTopBar(String text){
         Image menusTopBarLeft = new Image(new TextureRegionDrawable(new TextureRegion(menusTopBarLeftTexture)));
+        Image menusTopBarCenter = new Image(new TextureRegionDrawable(new TextureRegion(menusTopBarCenterTexture)));
         Image menusTopBarRight = new Image(new TextureRegionDrawable(new TextureRegion(menusTopBarRightTexture)));
 
         Label.LabelStyle style = new Label.LabelStyle();
@@ -145,9 +149,10 @@ public class WidgetFactory {
         Table topBar = new Table();
         topBar.setDebug(false);
         topBar.left();
-        topBar.add(menusTopBarLeft).height(60);
+        topBar.add(menusTopBarLeft).height(72).width(40);
         topBar.add(textLabel).padRight(20).padLeft(20);
-        topBar.add(menusTopBarRight).fillX().height(60);
+        topBar.add(menusTopBarCenter).fillX().height(72);
+        topBar.add(menusTopBarRight).height(72).width(78);
 
         return topBar;
     }
@@ -170,6 +175,7 @@ public class WidgetFactory {
         escButton.addListener(changeListener);
 
         Image centerPart = new Image(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/Center-Part-Bottom-Bar.png"))));
+        Image endCenterPart = new Image((new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/End-Center-Part-Bottom-Bar.png")))));
 
 
         Label.LabelStyle style = new Label.LabelStyle();
@@ -177,15 +183,18 @@ public class WidgetFactory {
         style.background = new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/Right-Part-Bottom-Bar.png")));
         String text = "BACHELORS OF" + "\n" + "DOMINATION";
         Label textLabel = new Label(text, style);
-        textLabel.setAlignment(0, 40);
+        textLabel.setAlignment(0,40);
+        //textLabel.setAlignment(Align.right);
+
 
         Table bottomBar = new Table();
         bottomBar.setDebug(false);
         bottomBar.left();
-        bottomBar.add(leftPart).height(60).width(45).bottom();
-        bottomBar.add(escButton).height((float) 51.5).width(190).bottom();
-        bottomBar.add(centerPart).height(60).fillX().bottom();
-        bottomBar.add(textLabel).height(120).width(280);
+        bottomBar.add(leftPart).height(72).width(54).bottom();
+        bottomBar.add(escButton).height((float) 64.5).width(210).bottom();
+        bottomBar.add(centerPart).height(72).expandX().fillX().bottom();
+        bottomBar.add(endCenterPart).height(89).width(73).bottom();
+        bottomBar.add(textLabel).height(144).width(260);
 
         return bottomBar;
     }

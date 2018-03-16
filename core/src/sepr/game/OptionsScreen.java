@@ -159,7 +159,7 @@ public class OptionsScreen implements Screen {
         table.row();
         table.left();
 
-        table.add(acceptButton).height(60).width(420).pad(20);
+        table.add(acceptButton).height(72).width(439).pad(20);
 
         return table;
     }
