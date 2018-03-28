@@ -40,26 +40,24 @@ public class PhaseAttack extends PhaseAttackMove{
     }
 
     /**
+     * rebalanced attack algorithm (Dom 17/03/2018)
+     *
      * carries out attack once number of attackers has been set using the dialog
      */
     private void executeAttack() {
         int attackers = numOfAttackers[0];
         int defenders = defendingSector.getUnitsInSector();
 
-        float propAttack = (float)attackers / (float)(attackers + defenders); // proportion of troops that are attackers
-        float propDefend = (float)defenders / (float)(attackers + defenders); // proportion of troops that are defenders
+        int attackersLost = 0;
+        int defendersLost = 0;
 
-        // calculate the proportion of attackers and defenders lost
-        float propAttackersLost = (float)Math.max(0, Math.min(1, 0.02 * Math.exp(5 * propDefend) + 0.1 + (-0.125 + random.nextFloat()/4)));
-        float propDefendersLost = (float)Math.max(0, Math.min(1, 0.02 * Math.exp(5 * propAttack) + 0.15 + (-0.125 + random.nextFloat()/4)));
-
-        if (propAttack == 1) { // if attacking an empty sector then no attackers will be lost
-            propAttackersLost = 0;
-            propDefendersLost = 1;
+        while (attackers != attackersLost && defenders != defendersLost) {
+            if (random.nextFloat() > 0.55f) {
+                attackersLost++;
+            } else {
+                defendersLost++;
+            }
         }
-
-        int attackersLost = (int)(attackers * propAttackersLost);
-        int defendersLost = (int)(defenders * propDefendersLost);
 
         if(attackersLost > defendersLost){
             // Poor Move
@@ -102,8 +100,6 @@ public class PhaseAttack extends PhaseAttackMove{
 
         // apply the attack to the map
         if (gameScreen.getMap().attackSector(attackingSector.getId(), defendingSector.getId(), attackersLost, defendersLost, gameScreen.getPlayerById(attackingSector.getOwnerId()), gameScreen.getPlayerById(defendingSector.getOwnerId()), gameScreen.getPlayerById(gameScreen.NEUTRAL_PLAYER_ID), this)) {
-
-
             updateTroopReinforcementLabel();
         }
     }

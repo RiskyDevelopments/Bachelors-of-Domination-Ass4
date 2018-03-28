@@ -55,6 +55,14 @@ public class WidgetFactory {
     private static Texture vanbrughLogoTexture;
     private static Texture wentworthLogoTexture;
 
+    private static Texture collusionCardTexture;
+    private static Texture fauxCollusionCardTexture;
+    private static Texture poopyPathCardTexture;
+    private static Texture fauxPoopyPathCardTexture;
+    private static Texture asbestosCardTexture;
+    private static Texture fauxAsbestosCardTexture;
+    private static Texture hiddenCardTexture;
+
     private static BitmapFont fontBig;
     private static BitmapFont fontSmall;
 
@@ -100,6 +108,15 @@ public class WidgetFactory {
         uniOfYorkLogoTexture = new Texture("logos/uni-of-york-logo.png");
         vanbrughLogoTexture = new Texture("logos/vanbrugh-logo.png");
         wentworthLogoTexture = new Texture("logos/wentworth-logo.png");
+
+        // load punishment card textures
+        collusionCardTexture = new Texture("cards/collusionCard.png");
+        fauxCollusionCardTexture = new Texture("cards/fauxCollusionCard.png");
+        poopyPathCardTexture = new Texture("cards/poopyPathCard.png");
+        fauxPoopyPathCardTexture = new Texture("cards/fauxPoopyPathCard.png");
+        asbestosCardTexture = new Texture("cards/asbestosCard.png");
+        fauxAsbestosCardTexture = new Texture("cards/fauxAsbestosCard.png");
+        hiddenCardTexture = new Texture("cards/hiddenCard.png");
     }
 
     /**
@@ -125,6 +142,35 @@ public class WidgetFactory {
         style.font = fontSmall;
 
         return new TextButton(buttonText, style);
+    }
+
+    public static ImageButton genPunishmentCardButton(PunishmentCardType punishmentCardType) {
+        ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
+        style.up = genPunishmentCardDrawable(punishmentCardType);
+        style.over = genPunishmentCardDrawable(punishmentCardType);
+        style.down = genPunishmentCardDrawable(punishmentCardType);
+
+        return new ImageButton(style);
+    }
+
+    public static TextureRegionDrawable genPunishmentCardDrawable(PunishmentCardType punishmentCardType) {
+        switch (punishmentCardType) {
+            case COLLUSION_CARD:
+                return new TextureRegionDrawable(new TextureRegion(collusionCardTexture));
+            case FAUX_COLLUSION_CARD:
+                return new TextureRegionDrawable(new TextureRegion(fauxCollusionCardTexture));
+            case POOPY_PATH_CARD:
+                return new TextureRegionDrawable(new TextureRegion(poopyPathCardTexture));
+            case FAUX_POOPY_PATH_CARD:
+                return new TextureRegionDrawable(new TextureRegion(fauxPoopyPathCardTexture));
+            case ASBESTOS_CARD:
+                return new TextureRegionDrawable(new TextureRegion(asbestosCardTexture));
+            case FAUX_ASBESTOS_CARD:
+                return new TextureRegionDrawable(new TextureRegion(fauxAsbestosCardTexture));
+            case HIDDEN_CARD:
+                return new TextureRegionDrawable(new TextureRegion((hiddenCardTexture)));
+        }
+        return null;
     }
 
     /**

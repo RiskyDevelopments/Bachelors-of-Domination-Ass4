@@ -164,7 +164,6 @@ public class Map {
             if (i != GameScreen.NEUTRAL_PLAYER_ID) playerReinforcements.put(i, 0);
         }
 
-
         int lowestReinforcementId = players.keySet().iterator().next(); // id of player currently receiving the least reinforcements, any player id is chosen to start as all have 0 reinforcements
         List<Integer> sectorIdsRandOrder = new ArrayList<Integer>(getSectorIds()); // list of sector ids
         Collections.shuffle(sectorIdsRandOrder); // randomise the order sectors ids are stored so allocation order is randomised
