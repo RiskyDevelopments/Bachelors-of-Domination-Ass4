@@ -37,7 +37,7 @@ public class OptionsScreen implements Screen {
 
     private Main main;
     private Stage stage;
-    private Table table;
+    private Table backgroundTable;
 
     // screen UI widgets
     private Slider musicSlider;
@@ -65,12 +65,13 @@ public class OptionsScreen implements Screen {
         };
 
         this.stage.setViewport(new ScreenViewport());
-        this.table = new Table();
+        this.backgroundTable = setupBackground();
 
-        this.stage.addActor(table);
-        this.table.setFillParent(true);
-        this.table.setDebug(false);
-        this.setupUi();
+
+        this.stage.addActor(backgroundTable);
+        this.backgroundTable.setFillParent(true);
+        this.backgroundTable.setDebug(false);
+
     }
 
 
@@ -119,33 +120,33 @@ public class OptionsScreen implements Screen {
         Table table = new Table();
         table.setDebug(false);
         table.left();
-        table.add(musicVolumeLabel).height(60).width(420).pad(20);
+        table.add(musicVolumeLabel).height(72).width(439).pad(20);
         table.right();
-        table.add(musicSlider).padLeft(150);
+        table.add(musicSlider).width(260).height(18).padLeft(80);
 
         table.row();
         table.left();
-        table.add(fxVolumeLabel).height(60).width(420).pad(20);
+        table.add(fxVolumeLabel).height(72).width(439).pad(20);
         table.right();
-        table.add(fxSlider).padLeft(150);
+        table.add(fxSlider).width(260).height(18).padLeft(80);
 
         table.row();
         table.left();
-        table.add(resolutionSelectorLabel).height(60).width(420).pad(20);
+        table.add(resolutionSelectorLabel).height(72).width(439).pad(20);
         table.right();
-        table.add(resolutionSelector).padLeft(150);
+        table.add(resolutionSelector).padLeft(80);
 
         table.row();
         table.left();
-        table.add(fullscreenSwitchLabel).height(60).width(420).pad(20);
+        table.add(fullscreenSwitchLabel).height(72).width(439).pad(20);
         table.right();
-        table.add(fullscreenSwitch).padLeft(150);
+        table.add(fullscreenSwitch).padLeft(80);
 
         table.row();
         table.left();
-        table.add(colourblindModeSwitchLabel).height(60).width(420).pad(20);
+        table.add(colourblindModeSwitchLabel).height(72).width(439).pad(20);
         table.right();
-        table.add(colourblindModeSwitch).padLeft(150);
+        table.add(colourblindModeSwitch).padLeft(80);
 
         TextButton acceptButton = WidgetFactory.genBasicButton("CONFIRM CHANGES");
         acceptButton.addListener(new ChangeListener() {
@@ -164,24 +165,39 @@ public class OptionsScreen implements Screen {
         return table;
     }
 
-    private void setupUi() {
-        table.background(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/menuBackground.png"))));
+    private Table setupUi() {
+        Table uiComponentsTable =  new Table();
+        uiComponentsTable.setDebug(false);
 
-        table.center();
-        table.add(WidgetFactory.genMenusTopBar("OPTIONS")).colspan(2);
+        uiComponentsTable.background(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/Scanline.png"))));
+        uiComponentsTable.pad(80).padLeft(85).padRight(95);
 
-        table.row();
-        table.add(setupOptionsTable()).expand();
+        uiComponentsTable.center();
+        uiComponentsTable.add(WidgetFactory.genMenusTopBar("OPTIONS")).colspan(2);
 
-        table.add(WidgetFactory.genOptionsGraphic()).height(700).width(540).pad(30);
+        uiComponentsTable.row();
+        uiComponentsTable.add(setupOptionsTable()).expand();
 
-        table.row();
-        table.add(WidgetFactory.genBottomBar("MAIN MENU", new ChangeListener() {
+        uiComponentsTable.add(WidgetFactory.genOptionsGraphic()).height(700).width(540).pad(30);
+
+        uiComponentsTable.row();
+        uiComponentsTable.add(WidgetFactory.genBottomBar("MAIN MENU", new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 main.setMenuScreen();}
 
-        })).colspan(2);
+        })).colspan(2).fillX();
+
+        return uiComponentsTable;
+    }
+
+
+    private Table setupBackground(){
+        Table backgroundTable = new Table();
+        backgroundTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/menuBackground.png"))));
+        backgroundTable.pad(0);
+        backgroundTable.add(setupUi());
+        return backgroundTable;
     }
 
     /**

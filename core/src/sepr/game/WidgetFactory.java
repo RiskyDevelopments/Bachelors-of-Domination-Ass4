@@ -25,6 +25,7 @@ public class WidgetFactory {
 
     private static Texture sliderBarTexture;
     private static Texture sliderKnobTexture;
+    private static Texture selectionBoxTexture;
 
     private static Texture textFieldCursorTexture;
 
@@ -67,10 +68,11 @@ public class WidgetFactory {
 
         basicButtonTexture = new Texture("uiComponents/Menu-Button-Full.png");
         mapGraphicTexture = new Texture("uiComponents/Main-Menu-Map.png");
-        optionsGraphicTexture = new Texture("uiComponents/General-Jack.png");
+        optionsGraphicTexture = new Texture("uiComponents/RuncinatorGraphic.png");
 
         sliderBarTexture = new Texture("uiComponents/sliderBar.png");
         sliderKnobTexture = new Texture("uiComponents/sliderKnob.png");
+        selectionBoxTexture = new Texture("uiComponents/selectionBox.png");
 
         textFieldCursorTexture = new Texture("uiComponents/textFieldCursor.png");
 
@@ -80,7 +82,7 @@ public class WidgetFactory {
         playerLabelTexture = new Texture("uiComponents/Player-Label.png");
         playerLeftBtnTexture = new Texture("uiComponents/Player-Left-Button-Full.png");
         playerRightBtnTexture = new Texture("uiComponents/Player-Right-Button-Full.png");
-        menuBtnLabelTexture = new Texture("uiComponents/Menu-Button.png");
+        menuBtnLabelTexture = new Texture("uiComponents/labelTexture.png");
         collegeLeftBtnTexture = new Texture("uiComponents/College-Left-Button.png");
         collegeRightBtnTexture = new Texture("uiComponents/College-Right-Button.png");
         startGameBtnTexture = new Texture("uiComponents/Start-Game-Button-Full.png");
@@ -332,8 +334,8 @@ public class WidgetFactory {
      */
     public static Button genPlayerLeftButton() {
         Button.ButtonStyle style = new Button.ButtonStyle();
-        style.up = new TextureRegionDrawable(new TextureRegion(playerLeftBtnTexture, 0, 0, 111, 123));
-        style.down = new TextureRegionDrawable(new TextureRegion(playerLeftBtnTexture, 0, 123, 111, 123));
+        style.up = new TextureRegionDrawable(new TextureRegion(playerLeftBtnTexture, 0, 0, 126, 141));
+        style.down = new TextureRegionDrawable(new TextureRegion(playerLeftBtnTexture, 0, 141, 126, 141));
 
         return new Button(style);
     }
@@ -344,8 +346,8 @@ public class WidgetFactory {
      */
     public static Button genPlayerRightButton() {
         Button.ButtonStyle style = new Button.ButtonStyle();
-        style.up = new TextureRegionDrawable(new TextureRegion(playerRightBtnTexture, 0, 0, 111, 123));
-        style.down = new TextureRegionDrawable(new TextureRegion(playerRightBtnTexture, 0, 123, 111, 123));
+        style.up = new TextureRegionDrawable(new TextureRegion(playerRightBtnTexture, 0, 0, 126, 141));
+        style.down = new TextureRegionDrawable(new TextureRegion(playerRightBtnTexture, 0, 141, 126, 141));
 
         return new Button(style);
     }
@@ -380,8 +382,8 @@ public class WidgetFactory {
      */
     public static TextButton genStartGameButton() {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
-        style.up = new TextureRegionDrawable(new TextureRegion(startGameBtnTexture, 0, 0, 723, 123));
-        style.down = new TextureRegionDrawable(new TextureRegion(startGameBtnTexture, 0, 123, 723, 123));
+        style.up = new TextureRegionDrawable(new TextureRegion(startGameBtnTexture, 0, 0, 740, 141));
+        style.down = new TextureRegionDrawable(new TextureRegion(startGameBtnTexture, 0, 141, 740, 141));
         style.font = fontSmall;
 
         return new TextButton("START GAME",style);
@@ -457,9 +459,11 @@ public class WidgetFactory {
         SelectBox.SelectBoxStyle style = new SelectBox.SelectBoxStyle();
         style.font = fontSmall;
         style.listStyle = new List.ListStyle(fontSmall, Color.BLACK, Color.BLACK, new TextureRegionDrawable(new TextureRegion(sliderBarTexture)));
-        style.scrollStyle = new ScrollPane.ScrollPaneStyle(new TextureRegionDrawable(new TextureRegion(sliderKnobTexture)), new TextureRegionDrawable(new TextureRegion(sliderKnobTexture)), new TextureRegionDrawable(new TextureRegion(sliderKnobTexture)), new TextureRegionDrawable(new TextureRegion(sliderKnobTexture)), new TextureRegionDrawable(new TextureRegion(sliderKnobTexture)));
+        style.scrollStyle = new ScrollPane.ScrollPaneStyle(new TextureRegionDrawable(new TextureRegion(selectionBoxTexture)), new TextureRegionDrawable(new TextureRegion(selectionBoxTexture)), new TextureRegionDrawable(new TextureRegion(sliderKnobTexture)), new TextureRegionDrawable(new TextureRegion(sliderKnobTexture)), new TextureRegionDrawable(new TextureRegion(sliderKnobTexture)));
+
 
         SelectBox<String> selectBox = new SelectBox<String>(style);
+
         selectBox.setItems(items);
         return selectBox;
     }

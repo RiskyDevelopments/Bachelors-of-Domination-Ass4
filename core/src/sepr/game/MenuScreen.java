@@ -134,7 +134,6 @@ public class MenuScreen implements Screen {
                 DialogFactory.exitProgramDialogBox(stage);}
 
         })).colspan(2).fillX();
-
         return uiComponentsTable;
     }
 
