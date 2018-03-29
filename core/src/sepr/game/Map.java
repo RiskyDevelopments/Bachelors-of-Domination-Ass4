@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import javafx.util.Pair;
+import sepr.game.utils.SectorStatusEffect;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -27,6 +29,8 @@ public class Map {
     private GlyphLayout layout = new GlyphLayout();
 
     private Texture troopCountOverlay = new Texture("uiComponents/troopCountOverlay.png");
+    private Texture pooStatus = new Texture("pooStatus.png");
+    private Texture asbestosStatus = new Texture("asbestosStatus.png");
 
     private int[] unitsToMove; // units to move from an attacking to conquered sector, 3 index array : [0] amount to move; [1] source sector id ; [2] target sector id
 
@@ -123,7 +127,10 @@ public class Map {
         int sectorY = Integer.parseInt(sectorData[9]);
         boolean decor = Boolean.parseBoolean(sectorData[10]);
 
-        return new Sector(sectorId, ownerId, filename, sectorTexture, texturePath, sectorPixmap, displayName, unitsInSector, reinforcementsProvided, college, neutral, adjacentSectors, sectorX, sectorY, decor);
+        ////////////////////////////////////////////
+        //   NEED TO ADD SECTOR STATUS EFFECT SAVING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        return new Sector(sectorId, ownerId, filename, sectorTexture, texturePath, sectorPixmap, displayName, unitsInSector, reinforcementsProvided, college, neutral, adjacentSectors, sectorX, sectorY, decor, new ArrayList<Pair<SectorStatusEffect, Integer>>(), this);
     }
 
     /**
@@ -415,6 +422,21 @@ public class Map {
                 batch.draw(troopCountOverlay, sector.getSectorCentreX() - overlaySize / 2, sector.getSectorCentreY() - overlaySize / 2, overlaySize, overlaySize);
                 font.draw(batch, layout, sector.getSectorCentreX() - layout.width / 2, sector.getSectorCentreY() + layout.height / 2);
             }
+
+            int offset = 0;
+            for (Pair<SectorStatusEffect, Integer> effect : sector.getSectorStatusEffects()) {
+                String turnsRemaing = effect.getValue() + "";
+                switch (effect.getKey()) {
+                    case POOPY_PATH:
+                        batch.draw(pooStatus, sector.getSectorCentreX() - 20 + offset, sector.getSectorCentreY() - 20);
+                    case ASBESTOS_LEAK:
+                        batch.draw(asbestosStatus, sector.getSectorCentreX() - 20 + offset, sector.getSectorCentreY() - 20);
+
+                }
+                layout.setText(font, turnsRemaing);
+                font.draw(batch, layout, sector.getSectorCentreX() - layout.width/2 + offset, sector.getSectorCentreY() + layout.height / 2);
+
+            }
         }
 
         // render particles
@@ -430,5 +452,11 @@ public class Map {
 
     public HashMap<Integer, Sector> getSectors() {
         return sectors;
+    }
+
+    public void updateSectorStatusEffects() {
+        for (Sector sector : sectors.values()) {
+            sector.updateStatusEffects();
+        }
     }
 }

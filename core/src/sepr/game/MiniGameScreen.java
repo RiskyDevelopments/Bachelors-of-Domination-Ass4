@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import javafx.util.Pair;
+import sepr.game.utils.PunishmentCardType;
 
 import java.util.ArrayList;
 import java.util.Collections;

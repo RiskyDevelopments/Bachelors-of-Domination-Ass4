@@ -1,11 +1,13 @@
 package sepr.game.saveandload;
 
 import com.badlogic.gdx.graphics.Color;
+import javafx.util.Pair;
 import sepr.game.GameSetupScreen;
 import sepr.game.Map;
 import sepr.game.Player;
 import sepr.game.Sector;
 import sepr.game.utils.PlayerType;
+import sepr.game.utils.SectorStatusEffect;
 import sepr.game.utils.TurnPhaseType;
 
 import java.util.HashMap;
@@ -67,5 +69,8 @@ public class GameState {
         public boolean decor; // Is this sector for visual purposes only, i.e. lakes are decor
         public String fileName; // The filename of the sector
         public boolean allocated; // Becomes true once the sector has been allocated
+        public Map map;
+        public List<Pair<SectorStatusEffect, Integer>> sectorStatusEffects;
+
     }
 }

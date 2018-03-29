@@ -1,4 +1,4 @@
-package sepr.game;
+package sepr.game.utils;
 
 /**
  * Created by Dom's Surface Mark 2 on 17/03/2018.

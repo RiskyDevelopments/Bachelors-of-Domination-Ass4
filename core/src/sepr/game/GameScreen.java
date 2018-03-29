@@ -239,8 +239,6 @@ public class GameScreen implements Screen, InputProcessor{
     protected void nextPhase() {
         this.phases.get(currentPhase).endPhase();
 
-
-
         switch (currentPhase) {
             case REINFORCEMENT:
                 currentPhase = TurnPhaseType.ATTACK;
@@ -274,6 +272,8 @@ public class GameScreen implements Screen, InputProcessor{
         }
 
         resetCameraPosition(); // re-centres the camera for the next player
+
+        map.updateSectorStatusEffects(); // apply status effects to tiles
 
         if (this.turnTimerEnabled) { // if the turn timer is on reset it for the next player
             this.turnTimeStart = System.currentTimeMillis();
