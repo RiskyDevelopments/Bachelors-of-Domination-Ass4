@@ -75,9 +75,10 @@ public abstract class Phase extends Stage {
         });
         bottomBarRightPart = WidgetFactory.genGameHUDBottomBarRightPart("INIT");
         Table bottomBarLeftPart = genGameHUDBottomBarLeftPart();
-
+        table.setDebug(true);
+        table.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/Scanline-Border.png"))));
         table.top().center();
-        table.add(WidgetFactory.genGameHUDTopBar(turnPhase, gameScreen)).colspan(2).expandX().height(60).width(910);
+        table.add(WidgetFactory.genGameHUDTopBar(turnPhase, gameScreen)).colspan(2).expandX().height(60).width(910).padTop(80);
 
         table.row();
         table.add(new Table()).expand();
@@ -89,12 +90,14 @@ public abstract class Phase extends Stage {
         subTable.add(bottomBarRightPart).bottom().expandX().fillX().height(60);
 
         table.row();
-        table.add(subTable).expandX().fill();
+        table.add(subTable).expandX().fill().padBottom(80).padLeft(90);
         table.bottom().right();
-        table.add(endPhaseButton).fill().height(60).width(170);
+        table.add(endPhaseButton).fill().height(60).width(170).padRight(90);
 
         setBottomBarText(null);
     }
+
+
 
     /**
      * generates the UI widget to be displayed at the bottom left of the HUD

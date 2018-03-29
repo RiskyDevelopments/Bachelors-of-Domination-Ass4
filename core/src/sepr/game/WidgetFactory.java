@@ -35,6 +35,7 @@ public class WidgetFactory {
     private static Texture gameHUDBottomBarRightPartTexture;
     private static Texture gameHUDTopBarTexture;
     private static Texture endPhaseBtnTexture;
+    private static Texture pauseBtnTexture;
 
     private static Texture playerLabelTexture;
     private static Texture playerLeftBtnTexture;
@@ -95,6 +96,7 @@ public class WidgetFactory {
         gameHUDBottomBarRightPartTexture = new Texture("uiComponents/HUD-Bottom-Bar-Right-Part.png");
         gameHUDTopBarTexture = new Texture("uiComponents/HUD-Top-Bar.png");
         endPhaseBtnTexture = new Texture("uiComponents/End-Phase-Button.png");
+        //pauseBtnTexture = new Texture("uiComponents/Pause-Btn-Icon.png");
 
         // load college logos
         alcuinLogoTexture = new Texture("logos/alcuin-logo.png");
@@ -410,6 +412,10 @@ public class WidgetFactory {
      * @return the top bar of the HUD for the specified phase
      */
     public static Table genGameHUDTopBar(TurnPhaseType turnPhase, final GameScreen gameScreen) {
+
+        Button pauseBtn = new Button();
+        //pauseBtn.setBackground(new TextureRegionDrawable(new TextureRegion(pauseBtnTexture)));
+
         TextButton.TextButtonStyle btnStyle = new TextButton.TextButtonStyle();
         btnStyle.font = fontSmall;
         TextButton exitButton = new TextButton("QUIT", btnStyle);
