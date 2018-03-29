@@ -71,7 +71,7 @@ public class GameScreen implements Screen, InputProcessor{
         this.gameplayCamera = new OrthographicCamera();
         this.gameplayViewport = new ScreenViewport(gameplayCamera);
 
-        this.mapBackground = new Texture("uiComponents/mapBackgroundGrid.png");
+        this.mapBackground = new Texture("uiComponents/mapBackgroundBox.png");
 
         // setup hashmap to check which keys were previously pressed
         this.keysDown = new HashMap<Integer, Boolean>();

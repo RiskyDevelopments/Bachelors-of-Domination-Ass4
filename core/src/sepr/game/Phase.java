@@ -76,7 +76,7 @@ public abstract class Phase extends Stage {
         bottomBarRightPart = WidgetFactory.genGameHUDBottomBarRightPart("INIT");
         Table bottomBarLeftPart = genGameHUDBottomBarLeftPart();
         table.setDebug(true);
-        table.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/Scanline-Border.png"))));
+        //table.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/Scanline-Border.png"))));
         table.top().center();
         table.add(WidgetFactory.genGameHUDTopBar(turnPhase, gameScreen)).colspan(2).expandX().height(60).width(910).padTop(80);
 
