@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import javafx.util.Pair;
+import sepr.game.utils.SectorStatusEffect;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -27,6 +29,8 @@ public class Map {
     private GlyphLayout layout = new GlyphLayout();
 
     private Texture troopCountOverlay = new Texture("uiComponents/troopCountOverlay.png");
+    private Texture pooStatus = new Texture("pooStatus.png");
+    private Texture asbestosStatus = new Texture("asbestosStatus.png");
 
     private int[] unitsToMove; // units to move from an attacking to conquered sector, 3 index array : [0] amount to move; [1] source sector id ; [2] target sector id
 
@@ -123,7 +127,10 @@ public class Map {
         int sectorY = Integer.parseInt(sectorData[9]);
         boolean decor = Boolean.parseBoolean(sectorData[10]);
 
-        return new Sector(sectorId, ownerId, filename, sectorTexture, texturePath, sectorPixmap, displayName, unitsInSector, reinforcementsProvided, college, neutral, adjacentSectors, sectorX, sectorY, decor);
+        ////////////////////////////////////////////
+        //   NEED TO ADD SECTOR STATUS EFFECT SAVING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        return new Sector(sectorId, ownerId, filename, sectorTexture, texturePath, sectorPixmap, displayName, unitsInSector, reinforcementsProvided, college, neutral, adjacentSectors, sectorX, sectorY, decor, 0, 0, this);
     }
 
     /**
@@ -163,7 +170,6 @@ public class Map {
         for (Integer i : players.keySet()) {
             if (i != GameScreen.NEUTRAL_PLAYER_ID) playerReinforcements.put(i, 0);
         }
-
 
         int lowestReinforcementId = players.keySet().iterator().next(); // id of player currently receiving the least reinforcements, any player id is chosen to start as all have 0 reinforcements
         List<Integer> sectorIdsRandOrder = new ArrayList<Integer>(getSectorIds()); // list of sector ids
@@ -418,6 +424,20 @@ public class Map {
             }
         }
 
+        for (Sector sector : sectors.values()) {
+            if (sector.getAsbestosCount() != 0) {
+                batch.draw(asbestosStatus, sector.getSectorCentreX(), sector.getSectorCentreY() + 10);
+                layout.setText(font, sector.getAsbestosCount() + "");
+                font.draw(batch, layout, sector.getSectorCentreX() + layout.width + 2, sector.getSectorCentreY() + layout.height + 18);
+            }
+
+            if (sector.getPoopCount() != 0) {
+                batch.draw(pooStatus, sector.getSectorCentreX(), sector.getSectorCentreY() - 50);
+                layout.setText(font, sector.getPoopCount() + "");
+                font.draw(batch, layout, sector.getSectorCentreX() + layout.width + 2, sector.getSectorCentreY() + layout.height - 40);
+            }
+        }
+
         // render particles
         List<UnitChangeParticle> toDelete = new ArrayList<UnitChangeParticle>();
         for (UnitChangeParticle particle : particles) {
@@ -431,5 +451,11 @@ public class Map {
 
     public HashMap<Integer, Sector> getSectors() {
         return sectors;
+    }
+
+    public void updateSectorStatusEffects(int currentPlayerId) {
+        for (Sector sector : sectors.values()) {
+            sector.updateStatusEffects(currentPlayerId);
+        }
     }
 }

@@ -1,31 +1,33 @@
 package sepr.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.RandomXS128;
-import com.badlogic.gdx.scenes.scene2d.*;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import javafx.util.Pair;
+import sepr.game.utils.PunishmentCardType;
 
-import java.util.Arrays;
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class MiniGameScreen implements Screen {
 
-    private static final int MAX_CARDS = 16; // maximum number of cards, must be divisible by 4
-    private static final int NUM_PAIRS = MAX_CARDS / 2;
-    private static final int COLS = MAX_CARDS / 4;
-    private static final int ROWS = MAX_CARDS / COLS;
-    private static final float DELAY_TIME = 5; // time in seconds before cards are hidden
+    private static final int COLS = 3;
+    private static final int ROWS = 3;
+    private static final float DELAY_TIME = 3; // time in seconds before cards are hidden
 
     private Main main;
     private Stage stage;
@@ -34,122 +36,23 @@ public class MiniGameScreen implements Screen {
     private Player player; // player to allocate gang members to at the end of the minigame
     private AudioManager Audio = AudioManager.getInstance();
 
-    private int[] locations = new int[MAX_CARDS]; // array to contain random locations of values
-    private TextButton[] textButtons = new TextButton[MAX_CARDS]; // array to contain all buttons
+    private PunishmentCardType[][] locations; // array containing card type locations
+    private ImageButton[][] cardButtons; // array to contain all buttons
 
-    private int score; // score equates to additional gang members at the end of the minigame
-    private int currentValue = -1; // -1 is designated as invalid
+    private List<PunishmentCardType> rewards; // lists which cards the player has won so far
 
-    MiniGameScreen(final Main main, final GameScreen gameScreen) {
+    private Pair<Integer, Integer> pairSelected; // location of pair currently selected, (-1,-1) if no pair currently selected
+
+    public MiniGameScreen(final Main main, final GameScreen gameScreen) {
         this.main = main;
         this.gameScreen = gameScreen;
-        this.stage = new Stage() {
-            @Override
-            public boolean keyUp(int keyCode) {
-                if (keyCode == Input.Keys.ESCAPE) { // ask player if they would like to exit the game if they press escape
-                    DialogFactory.exitMinigame(stage, gameScreen, main);
-
-                }
-                return super.keyUp(keyCode);
-            }
-        };
+        this.stage = new Stage();
         this.stage.setViewport(new ScreenViewport());
 
         this.table = new Table();
         this.table.setFillParent(true); // make ui table fill the entire screen
         this.stage.addActor(table);
         this.table.setDebug(false); // enable table drawing for ui debug
-    }
-
-    /**
-     * Sets up a table containing all of the buttons for the minigame
-     *
-     * @return the table containing the buttons
-     */
-    private Table setupMenuTable() {
-        /* Listener for the buttons, passes the value of the clicked button to the buttonClicked method */
-        InputListener listener = new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                TextButton buttonUsed = (TextButton) event.getListenerActor();
-                String location = buttonUsed.getName(); // name of button equal to its location in textButtons
-                buttonClicked(location);
-                return true;
-            }
-        };
-
-        /* Procedurally generate buttons */
-        for (int i = 0; i < MAX_CARDS; i++) {
-            textButtons[i] = WidgetFactory.genBasicButton(Integer.toString(locations[i]));
-            textButtons[i].setName("-1"); // -1 is invalid, disables buttons at the start
-            textButtons[i].addListener(listener);
-        }
-
-        /* Create sub-table for all the menu buttons */
-        Table btnTable = new Table();
-        btnTable.setDebug(false);
-
-        for (int i = 0; i < COLS; i++) {
-            for (int j = 0; j < ROWS; j++) {
-                btnTable.add(textButtons[i + (j * COLS)]).height(100).width(100).pad(30);
-                btnTable.right();
-            }
-            btnTable.row();
-        }
-
-        /* Sub-table complete */
-        return btnTable;
-    }
-
-    /**
-     * Sets up the user interface
-     */
-    private void setupUi() {
-        table.background(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/menuBackground.png"))));
-
-        table.center();
-        table.add(WidgetFactory.genMenusTopBar("MINIGAME - MATCH THE PAIRS")).colspan(2);
-
-        table.row();
-        table.left();
-        table.add(setupMenuTable()).expand();
-
-        table.row();
-        table.center();
-        table.add(WidgetFactory.genBottomBar("QUIT", new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                DialogFactory.exitProgramDialogBox(stage);
-            }
-
-        })).colspan(2);
-    }
-
-    /**
-     * Sets up the game by mapping values to locations and calling the function to set up the UI
-     *
-     * @param player player to be given additional troops at the end of the minigame
-     */
-    public void setupGame(Player player) {
-        this.player = player;
-
-        Arrays.fill(locations, 0, MAX_CARDS, -1);
-        RandomXS128 rand = new RandomXS128();
-
-        /* Randomly assigns values to an array to be used as locations for the values in a table */
-        for (int i = 0; i < NUM_PAIRS; i++) {
-            for (int j = 0; j < 2; j++) {
-                while (true) {
-                    int randInt = rand.nextInt(MAX_CARDS);
-                    if (locations[randInt] == -1) {
-                        locations[randInt] = i;
-                        break;
-                    }
-                }
-            }
-        }
-        Gdx.app.log("locations:", Arrays.toString(locations));
-        setupUi();
     }
 
     /**
@@ -160,9 +63,11 @@ public class MiniGameScreen implements Screen {
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
-                for (int i = 0; i < MAX_CARDS; i++) {
-                    textButtons[i].setName(Integer.toString(i)); // activates buttons
-                    textButtons[i].setText(""); // hides button values
+                for (int i = 0; i < ROWS; i++) {
+                    for (int j = 0; j < COLS; j++) {
+                        cardButtons[i][j].setName(i + " " + j); // activates buttons
+                        hideCardType(new Pair<Integer, Integer>(i, j));
+                    }
                 }
             }
 
@@ -171,115 +76,183 @@ public class MiniGameScreen implements Screen {
     }
 
     /**
-     * Helpful and clean way of translating button location into button value
+     * Sets up the game by mapping values to locations and calling the function to set up the UI
      *
-     * @param location index in textButtons of the target button
-     * @return the value of the target button, or -1 if button is invalid (if location is -1)
+     * @param player player to be given additional troops at the end of the minigame
      */
-    private int getValueAtLocation(String location) {
-        int loc = Integer.parseInt(location); // integer value of location
-        /* If button invalid */
-        if (location.equals("-1")) {
-            Gdx.app.log("getValueAtLocation:", "-1");
-            return -1;
-        }
-        /* If button not marked invalid but in valid range */
-        else if (loc > -1 && loc < MAX_CARDS){
-            Gdx.app.log("getValueAtLocation", Integer.toString(locations[Integer.parseInt(location)]));
-            return locations[Integer.parseInt(location)];
-        }
-        /* If location out of range */
-        else {
-            throw new IllegalArgumentException("location must be -1 or in range of 0 - " + Integer.toString(MAX_CARDS));
+    public void setupGame(Player player) {
+        pairSelected = new Pair<Integer, Integer>(-1, -1);
+        rewards = new ArrayList<PunishmentCardType>();
+        this.player = player; // sets the player to the one that is playing this game
+        setupCardLocations();
+        setupUi();
+    }
+
+    /**
+     * Added by Dom (18/03/2018)
+     *
+     * sets up the locations array as a 3x3 2D array containing 2 of each real card type and one of each fake card type spread randomly
+     */
+    private void setupCardLocations() {
+        locations = new PunishmentCardType[3][3];
+        List<PunishmentCardType> cardList = new ArrayList<PunishmentCardType>();
+        cardList.add(PunishmentCardType.COLLUSION_CARD);
+        cardList.add(PunishmentCardType.COLLUSION_CARD);
+        cardList.add(PunishmentCardType.FAUX_COLLUSION_CARD);
+        cardList.add(PunishmentCardType.POOPY_PATH_CARD);
+        cardList.add(PunishmentCardType.POOPY_PATH_CARD);
+        cardList.add(PunishmentCardType.FAUX_POOPY_PATH_CARD);
+        cardList.add(PunishmentCardType.ASBESTOS_CARD);
+        cardList.add(PunishmentCardType.ASBESTOS_CARD);
+        cardList.add(PunishmentCardType.FAUX_ASBESTOS_CARD);
+
+        Collections.shuffle(cardList);
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                locations[i][j] = cardList.remove(0);
+            }
         }
     }
 
     /**
-     * Handles the possible outcomes of a button being pressed
+     * revelas the type of card at the specified location
+     * @param coord location of card to be shown
+     */
+    private void revealCardType(Pair<Integer, Integer> coord) {
+        Drawable btnImage = WidgetFactory.genPunishmentCardDrawable(locations[coord.getKey()][coord.getValue()]);
+        ImageButton.ImageButtonStyle revealedStyle = new ImageButton.ImageButtonStyle();
+        revealedStyle.up = btnImage;
+        revealedStyle.over = btnImage;
+        revealedStyle.down = btnImage;
+        cardButtons[coord.getKey()][coord.getValue()].setStyle(revealedStyle);
+    }
+
+    /**
+     * sets the card image at the passed location to the hidden image
+     * @param coord location of card to hide
+     */
+    private void hideCardType(Pair<Integer, Integer> coord) {
+        Drawable btnImage = WidgetFactory.genPunishmentCardDrawable(PunishmentCardType.HIDDEN_CARD);
+        ImageButton.ImageButtonStyle revealedStyle = new ImageButton.ImageButtonStyle();
+
+        revealedStyle.up = btnImage;
+        revealedStyle.over = btnImage;
+        revealedStyle.down = btnImage;
+        cardButtons[coord.getKey()][coord.getValue()].setStyle(revealedStyle);
+    }
+
+    /**
+     * adds the card type at the second location found to the rewards list
+     * ends game if all 3 pairs have been found
+     * @param secondPairLocation location of the second pair found
+     */
+    private void pairFound(Pair<Integer, Integer> secondPairLocation) {
+        rewards.add(locations[secondPairLocation.getKey()][secondPairLocation.getValue()]);
+        pairSelected = new Pair<Integer, Integer>(-1, -1); // deselect the selected pair
+
+        if (rewards.size() == 3) {
+            // all pairs have been found so end game
+            endGame(true);
+        }
+    }
+
+    /**
      *
-     * @param location index in textButtons of the pressed button
+     * @param win true if the player should be allocated the rewards else false
+     */
+    public void endGame(boolean win) {
+        if (!win) rewards.clear(); // clear rewards if player did not win the minigame
+        player.addTroopsToAllocate(rewards.size()); // need to change to danger card allocation
+        DialogFactory.miniGameOverDialog(main, stage, gameScreen, rewards);
+    }
+
+    /**
+     *
+     * @param location string describing the button's location in the grid in form "<digit> <digit>" where the digit is number 0 - 2
      */
     private void buttonClicked(String location) {
-        /* Gets the value of the clicked button */
-        int value = getValueAtLocation(location);
+        if (location.equals("-1")) return; // button has already been clicked so return without doing anything
 
-        /* If button invalid */
-        if (value == -1) {
-            Gdx.app.log("buttonClicked:", "invalid");
-            return;
-        }
-        /* If at start of choosing a pair, nothing currently selected */
-        if (currentValue == -1) {
-            Gdx.app.log("buttonClicked:", "start of pair");
-            currentValue = value;
-            textButtons[Integer.parseInt(location)].setName("-1"); // first button becomes invalid
-            textButtons[Integer.parseInt(location)].setText(Integer.toString(getValueAtLocation(location)));
-        }
+        // convert the string location to a coordinate
+        Pair<Integer, Integer> btnPressedLocation = new Pair<Integer, Integer>(Integer.parseInt(location.split(" ")[0]), Integer.parseInt(location.split(" ")[1]));
+        revealCardType(btnPressedLocation); // show the image of the card pressed
+        cardButtons[btnPressedLocation.getKey()][btnPressedLocation.getValue()].setName("-1"); // make button unclickable
 
-        /* If correct */
-        else if (value == currentValue) {
-            Gdx.app.log("buttonClicked:", "correct match");
-            score += 1;
-            currentValue = -1;
-            textButtons[Integer.parseInt(location)].setName("-1");
-            textButtons[Integer.parseInt(location)].setText(Integer.toString(getValueAtLocation(location)));
-            pairFound();
-        }
-
-        /* If incorrect */
-        else {
-            Gdx.app.log("buttonClicked:", "incorrect match");
-            score = 0;
-            endMiniGame();
+        if (pairSelected.equals(new Pair<Integer, Integer>(-1, -1))) {
+            // no card currently selected
+            pairSelected = btnPressedLocation;
+        } else {
+            // card is currently selected
+            if (locations[pairSelected.getKey()][pairSelected.getValue()].equals(locations[btnPressedLocation.getKey()][btnPressedLocation.getValue()])) {
+                // the selected pair are a match
+                pairFound(btnPressedLocation);
+            } else {
+                // not a match so player looses game
+                endGame(false);
+            }
         }
     }
 
     /**
-     * Removes a pair of values and asks the user if they would like to continue playing
+     * sets up the table containing the game i.e. a 3x3 grid of cards
      */
-    private void pairFound() {
-        /* If all pairs found */
-        if (score == NUM_PAIRS) {
-            endMiniGame();
+    private Table setupGameTable() {
+        /* Listener for the buttons, passes the value of the clicked button to the buttonClicked method */
+        InputListener listener = new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                ImageButton buttonUsed = (ImageButton) event.getListenerActor();
+                String location = buttonUsed.getName(); // name of button equal to its location in cardButtons
+                buttonClicked(location);
+                return true;
+            }
+        };
+
+        // generate each of the image buttons and set their name and listener
+        cardButtons = new ImageButton[ROWS][COLS];
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                cardButtons[i][j] = WidgetFactory.genPunishmentCardButton(locations[i][j]);
+                cardButtons[i][j].setName("-1");
+                cardButtons[i][j].addListener(listener);
+            }
         }
-        /* If more pairs still to be found */
-        else {
-            DialogFactory.leaveMiniGameDialog(this, stage);
+
+        Table gameTable = new Table();
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                gameTable.add(cardButtons[i][j]).height(100).width(100).pad(30);
+                gameTable.right();
+            }
+            gameTable.row();
         }
+
+        return gameTable;
     }
 
     /**
-     * Correctly ends the minigame by giving the appropriate number of troops to the player
-     * and switching back to the main game
+     * sets up the UI for this screen when a new game is started
      */
-    public void endMiniGame() {
-        Random random = new Random();
-        player.addTroopsToAllocate(score);
-        DialogFactory.miniGameOverDialog(main, stage, gameScreen, score);
+    private void setupUi() {
+        table.background(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/menuBackground.png"))));
 
-        if (score == 0) {
-            Timer.schedule(new Timer.Task() { // delay the poor performance sound so it doesn't interfere with the PVC captured sound
-                @Override
-                public void run() {
+        table.center();
+        table.add(WidgetFactory.genMenusTopBar("MINIGAME - MATCH THE PAIRS")).colspan(2);
 
-                    Audio.get("sound/Minigame/Colin_That_was_a_poor_performance.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                }
+        table.row();
+        table.left();
+        table.add(setupGameTable()).expand();
 
-            }, 2);
-        }
+        table.row();
+        table.center();
+        table.add(WidgetFactory.genBottomBar("END MINI-GAME", new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                endGame(true); // player choosing to quit the game early counts as win and keeps cards collected so far
+            }
 
-
-        int voice = random.nextInt(1);
-        switch (voice) {
-            case 0:
-                Audio.get("sound/PVC/Colin_The_PVC_has_been_captured.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                break;
-            case 1:
-                Audio.get("sound/PVC/Colin_You_have_captured_the_PVC.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                break;
-        }
-        this.dispose();
-
+        })).colspan(2);
     }
 
     @Override
