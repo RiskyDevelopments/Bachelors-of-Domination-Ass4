@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture;
 import javafx.util.Pair;
 import sepr.game.utils.SectorStatusEffect;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -36,7 +37,8 @@ public class Sector implements ApplicationListener {
     private boolean isPVCTile;
     private Map map;
 
-    private List<Pair<SectorStatusEffect, Integer>> sectorStatusEffects; // list of effects on this sector paired with amount of turns the effect will last for
+    private int asbestosCount; // turn the asbestos effect is active on this tile, 0 = not active
+    private int poopCount; // turn the poop effect is active on this tile, 0 = not active
 
     /**
      * @param id sector id
@@ -53,7 +55,7 @@ public class Sector implements ApplicationListener {
      * @param sectorCentreY ycoord of sector centre
      * @param decor false if a sector is accessible to a player and true if sector is decorative
      */
-    public Sector(int id, int ownerId, String fileName, Texture sectorTexture, String texturePath, Pixmap sectorPixmap, String displayName, int unitsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, List<Pair<SectorStatusEffect, Integer>> sectorStatusEffects, Map map) {
+    public Sector(int id, int ownerId, String fileName, Texture sectorTexture, String texturePath, Pixmap sectorPixmap, String displayName, int unitsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, int asbestosCount, int poopCount, Map map) {
         this.id = id;
         this.ownerId = ownerId;
         this.displayName = displayName;
@@ -70,18 +72,19 @@ public class Sector implements ApplicationListener {
         this.decor = decor;
         this.fileName = fileName;
         this.allocated = false;
-        this.sectorStatusEffects = sectorStatusEffects;
+        this.asbestosCount = asbestosCount;
+        this.poopCount = poopCount;
         this.map = map;
 
 
         //DELETLE
         Random r = new Random();
-        if (r.nextInt(3) == 0) sectorStatusEffects.add(new Pair<SectorStatusEffect, Integer>(SectorStatusEffect.ASBESTOS_LEAK, 1 + r.nextInt(5)));
-        if (r.nextInt(3) == 0) sectorStatusEffects.add(new Pair<SectorStatusEffect, Integer>(SectorStatusEffect.POOPY_PATH, 1 + r.nextInt(5)));
+        if (r.nextInt(3) == 0) this.asbestosCount = r.nextInt(4);
+        if (r.nextInt(3) == 0) this.poopCount = r.nextInt(4);
     }
 
-    public Sector(int id, int ownerId, String fileName, String texturePath, Pixmap sectorPixmap, String displayName, int unitsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, boolean allocated, Color color, List<Pair<SectorStatusEffect, Integer>> sectorStatusEffects, Map map) {
-        this(id, ownerId, fileName, new Texture(texturePath), texturePath, sectorPixmap, displayName, unitsInSector, reinforcementsProvided, college, neutral, adjacentSectorIds, sectorCentreX, sectorCentreY, decor, sectorStatusEffects, map);
+    public Sector(int id, int ownerId, String fileName, String texturePath, Pixmap sectorPixmap, String displayName, int unitsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, boolean allocated, Color color, int asbestosCount, int poopCount, Map map) {
+        this(id, ownerId, fileName, new Texture(texturePath), texturePath, sectorPixmap, displayName, unitsInSector, reinforcementsProvided, college, neutral, adjacentSectorIds, sectorCentreX, sectorCentreY, decor, asbestosCount, poopCount, map);
         
         this.allocated = allocated;
         this.sectorCentreY = sectorCentreY;
@@ -91,7 +94,7 @@ public class Sector implements ApplicationListener {
         }
     }
 
-    public Sector(int id, int ownerId, String fileName, String texturePath, Pixmap sectorPixmap, String displayName, int unitsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, boolean allocated, Color color, boolean test, List<Pair<SectorStatusEffect, Integer>> sectorStatusEffects, Map map) {
+    public Sector(int id, int ownerId, String fileName, String texturePath, Pixmap sectorPixmap, String displayName, int unitsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, boolean allocated, Color color, boolean test, int asbestosCount, int poopCount, Map map) {
         HeadlessApplicationConfiguration conf = new HeadlessApplicationConfiguration();
 
         new HeadlessApplication(this, conf);
@@ -112,7 +115,8 @@ public class Sector implements ApplicationListener {
         this.decor = decor;
         this.fileName = fileName;
         this.allocated = allocated;
-        this.sectorStatusEffects = sectorStatusEffects;
+        this.asbestosCount = asbestosCount;
+        this.poopCount = poopCount;
         this.map = map;
     }
 
@@ -143,28 +147,16 @@ public class Sector implements ApplicationListener {
     }
 
     public boolean canAttack() {
-        for (Pair<SectorStatusEffect, Integer> effect : sectorStatusEffects) {
-            if (effect.getKey().equals(SectorStatusEffect.POOPY_PATH) && effect.getValue() > 0) return false;
-        }
-        if (unitsInSector > 1) return true;
-        return true;
-
+        return poopCount == 0 && unitsInSector > 1;
     }
 
     public boolean canBeAttacked() {
-        for (Pair<SectorStatusEffect, Integer> effect : sectorStatusEffects) {
-            if (effect.getKey().equals(SectorStatusEffect.POOPY_PATH) && effect.getValue() > 0) return false;
-        }
-        return true;
+        return poopCount == 0;
     }
 
     public boolean canChangeUnits() {
-        for (Pair<SectorStatusEffect, Integer> effect : sectorStatusEffects) {
-            if (effect.getKey().equals(SectorStatusEffect.POOPY_PATH) && effect.getValue() > 0) return false;
-        }
-        return true;
+        return poopCount == 0;
     }
-
 
     /**
      *
@@ -343,18 +335,24 @@ public class Sector implements ApplicationListener {
 
     /**
      * called at the end of a turn and applies any active status effect and decrements the count that they apply for
+     * @param currentPlayerId id of the player whos turn it currently is
      */
-    public void updateStatusEffects() {
-        for (Pair<SectorStatusEffect, Integer> effect : sectorStatusEffects) {
-            if (effect.getKey().equals(SectorStatusEffect.ASBESTOS_LEAK)) {
-                map.addUnitsToSectorAnimated(this.id, -(int)Math.ceil(unitsInSector * 0.1));
-            }
-        }
+    public void updateStatusEffects(int currentPlayerId) {
+        if (this.ownerId != currentPlayerId) return;
 
+        if (poopCount > 0) poopCount--;
+        if (asbestosCount > 0) {
+            asbestosCount--;
+            map.addUnitsToSectorAnimated(this.id, -(int)Math.ceil(unitsInSector * 0.1));
+        }
     }
 
-    public List<Pair<SectorStatusEffect, Integer>> getSectorStatusEffects() {
-        return sectorStatusEffects;
+    public int getAsbestosCount() {
+        return asbestosCount;
+    }
+
+    public int getPoopCount() {
+        return poopCount;
     }
 
     @Override

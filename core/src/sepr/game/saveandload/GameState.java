@@ -70,7 +70,8 @@ public class GameState {
         public String fileName; // The filename of the sector
         public boolean allocated; // Becomes true once the sector has been allocated
         public Map map;
-        public List<Pair<SectorStatusEffect, Integer>> sectorStatusEffects;
+        public int asbestosCount;
+        public int poopCount;
 
     }
 }

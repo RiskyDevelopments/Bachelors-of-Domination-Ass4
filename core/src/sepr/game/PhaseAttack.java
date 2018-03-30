@@ -104,7 +104,7 @@ public class PhaseAttack extends PhaseAttackMove{
     public void phaseAct() {
         if (sourceSector != null && targetSector != null && numOfUnits[0] != -1) {
 
-            if (numOfUnits[0] == 0 || sourceSector.canAttack() || targetSector.canBeAttacked()) {
+            if (numOfUnits[0] == 0 || !sourceSector.canAttack() || !targetSector.canBeAttacked()) {
                 // cancel attack
                 int voice = random.nextInt(3);
 

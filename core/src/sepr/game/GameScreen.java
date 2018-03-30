@@ -268,12 +268,11 @@ public class GameScreen implements Screen, InputProcessor{
         currentPlayerPointer++;
         if (currentPlayerPointer == turnOrder.size()) { // reached end of players, reset to 0 and increase turn number
             currentPlayerPointer = 0;
-
         }
 
         resetCameraPosition(); // re-centres the camera for the next player
 
-        map.updateSectorStatusEffects(); // apply status effects to tiles
+        map.updateSectorStatusEffects(getCurrentPlayer().getId()); // apply status effects to tiles
 
         if (this.turnTimerEnabled) { // if the turn timer is on reset it for the next player
             this.turnTimeStart = System.currentTimeMillis();

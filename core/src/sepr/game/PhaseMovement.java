@@ -54,7 +54,7 @@ public class PhaseMovement extends PhaseAttackMove {
     public void phaseAct() {
         if (sourceSector != null && targetSector != null && numOfUnits[0] != -1) {
 
-            if (numOfUnits[0] != 0 && !sourceSector.canChangeUnits() && !targetSector.canChangeUnits()) {
+            if (numOfUnits[0] != 0 && sourceSector.canChangeUnits() && targetSector.canChangeUnits()) {
                 executeMoveTroops();
             }
 

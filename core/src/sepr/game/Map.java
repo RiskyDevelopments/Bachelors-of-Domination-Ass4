@@ -130,7 +130,7 @@ public class Map {
         ////////////////////////////////////////////
         //   NEED TO ADD SECTOR STATUS EFFECT SAVING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-        return new Sector(sectorId, ownerId, filename, sectorTexture, texturePath, sectorPixmap, displayName, unitsInSector, reinforcementsProvided, college, neutral, adjacentSectors, sectorX, sectorY, decor, new ArrayList<Pair<SectorStatusEffect, Integer>>(), this);
+        return new Sector(sectorId, ownerId, filename, sectorTexture, texturePath, sectorPixmap, displayName, unitsInSector, reinforcementsProvided, college, neutral, adjacentSectors, sectorX, sectorY, decor, 0, 0, this);
     }
 
     /**
@@ -422,20 +422,19 @@ public class Map {
                 batch.draw(troopCountOverlay, sector.getSectorCentreX() - overlaySize / 2, sector.getSectorCentreY() - overlaySize / 2, overlaySize, overlaySize);
                 font.draw(batch, layout, sector.getSectorCentreX() - layout.width / 2, sector.getSectorCentreY() + layout.height / 2);
             }
+        }
 
-            int offset = 0;
-            for (Pair<SectorStatusEffect, Integer> effect : sector.getSectorStatusEffects()) {
-                String turnsRemaing = effect.getValue() + "";
-                switch (effect.getKey()) {
-                    case POOPY_PATH:
-                        batch.draw(pooStatus, sector.getSectorCentreX() - 20 + offset, sector.getSectorCentreY() - 20);
-                    case ASBESTOS_LEAK:
-                        batch.draw(asbestosStatus, sector.getSectorCentreX() - 20 + offset, sector.getSectorCentreY() - 20);
+        for (Sector sector : sectors.values()) {
+            if (sector.getAsbestosCount() != 0) {
+                batch.draw(asbestosStatus, sector.getSectorCentreX(), sector.getSectorCentreY() + 10);
+                layout.setText(font, sector.getAsbestosCount() + "");
+                font.draw(batch, layout, sector.getSectorCentreX() + layout.width + 2, sector.getSectorCentreY() + layout.height + 18);
+            }
 
-                }
-                layout.setText(font, turnsRemaing);
-                font.draw(batch, layout, sector.getSectorCentreX() - layout.width/2 + offset, sector.getSectorCentreY() + layout.height / 2);
-
+            if (sector.getPoopCount() != 0) {
+                batch.draw(pooStatus, sector.getSectorCentreX(), sector.getSectorCentreY() - 50);
+                layout.setText(font, sector.getPoopCount() + "");
+                font.draw(batch, layout, sector.getSectorCentreX() + layout.width + 2, sector.getSectorCentreY() + layout.height - 40);
             }
         }
 
@@ -454,9 +453,9 @@ public class Map {
         return sectors;
     }
 
-    public void updateSectorStatusEffects() {
+    public void updateSectorStatusEffects(int currentPlayerId) {
         for (Sector sector : sectors.values()) {
-            sector.updateStatusEffects();
+            sector.updateStatusEffects(currentPlayerId);
         }
     }
 }
