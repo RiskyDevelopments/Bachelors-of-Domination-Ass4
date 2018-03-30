@@ -209,8 +209,10 @@
       <module fileurl="file://$PROJECT_DIR$/Bachelors-of-Domination_main.iml" filepath="$PROJECT_DIR$/Bachelors-of-Domination_main.iml" group="Bachelors-of-Domination" />
       <module fileurl="file://$PROJECT_DIR$/Bachelors-of-Domination_test.iml" filepath="$PROJECT_DIR$/Bachelors-of-Domination_test.iml" group="Bachelors-of-Domination" />
       <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" group="core" />
+      <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" group="core" />
       <module fileurl="file://$PROJECT_DIR$/core/core_main.iml" filepath="$PROJECT_DIR$/core/core_main.iml" group="core" />
       <module fileurl="file://$PROJECT_DIR$/core/core_test.iml" filepath="$PROJECT_DIR$/core/core_test.iml" group="core" />
+      <module fileurl="file://$PROJECT_DIR$/desktop/desktop.iml" filepath="$PROJECT_DIR$/desktop/desktop.iml" group="desktop" />
       <module fileurl="file://$PROJECT_DIR$/desktop/desktop.iml" filepath="$PROJECT_DIR$/desktop/desktop.iml" group="desktop" />
       <module fileurl="file://$PROJECT_DIR$/desktop/desktop_main.iml" filepath="$PROJECT_DIR$/desktop/desktop_main.iml" group="desktop" />
       <module fileurl="file://$PROJECT_DIR$/desktop/desktop_test.iml" filepath="$PROJECT_DIR$/desktop/desktop_test.iml" group="desktop" />
@@ -327,6 +329,7 @@
     <library name="Gradle: net.bytebuddy:byte-buddy-agent:1.4.33">
       <CLASSES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.4.33/726a5aa27a9a2a2428e96846c4775aaf7c62ec87/byte-buddy-agent-1.4.33.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/net/bytebuddy/byte-buddy-agent/1.4.33/byte-buddy-agent-1.4.33.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -336,6 +339,7 @@
     <library name="Gradle: net.bytebuddy:byte-buddy:1.4.33">
       <CLASSES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.4.33/911428f94b1efd9b07a59f1ee57eb011c283ed51/byte-buddy-1.4.33.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/net/bytebuddy/byte-buddy/1.4.33/byte-buddy-1.4.33.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -457,6 +461,7 @@
     <library name="Gradle: org.objenesis:objenesis:2.4">
       <CLASSES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.objenesis/objenesis/2.4/2916b6c96b50c5b3ec4452ed99401db745aabb27/objenesis-2.4.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/objenesis/objenesis/2.4/objenesis-2.4.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>

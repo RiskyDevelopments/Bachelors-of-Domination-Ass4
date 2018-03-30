@@ -1,8 +1,6 @@
 package sepr.game;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
@@ -12,6 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.StringBuilder;
+import sepr.game.utils.PunishmentCardType;
+
+import java.util.List;
 
 /**
  * class that produces reusable dialog windows for displaying information to the player and receiving input from them
@@ -177,7 +178,7 @@ public class DialogFactory {
      * @param stage to draw the box onto
      */
     public static void allocateUnitsDialog(Integer maxAllocation, final int[] allocation, String sectorName, Stage stage) {
-        final Slider slider = new Slider(0, maxAllocation, 1, false, DialogFactory.skin);
+        final Slider slider = new Slider(1, maxAllocation, 1, false, DialogFactory.skin);
         final Label sliderValue = new Label("1", DialogFactory.skin);
         slider.addListener(new ChangeListener() {
             @Override
@@ -373,7 +374,7 @@ public class DialogFactory {
         Dialog dialog = new Dialog("Continue?", DialogFactory.skin) {
             protected void result(Object object) {
                 if (object.toString().equals("0")){ // yes pressed : quit the minigame
-                    miniGameScreen.endMiniGame();
+                    miniGameScreen.endGame(true);
 
                 }
             }
@@ -391,11 +392,9 @@ public class DialogFactory {
      * @param main  for changing back to the map
      * @param stage to draw the box onto
      * @param gameScreen the map screen
-     * @param troops number of troops gained from the mini game
+     * @param rewards list of cards the player has won
      */
-
-
-    public static void miniGameOverDialog(final Main main, Stage stage, final GameScreen gameScreen, int troops) {
+    public static void miniGameOverDialog(final Main main, Stage stage, final GameScreen gameScreen, List<PunishmentCardType> rewards) {
         Dialog dialog = new Dialog("Game Completed", DialogFactory.skin) {
             protected void result(Object object) {
                 main.setScreen(gameScreen);  // change to menu screen when ok button is pressed
@@ -403,8 +402,26 @@ public class DialogFactory {
 
             }
         };
-        dialog.text("Minigame complete!\nYou have received " + troops + " additional troops");
+        String rewardText = "";
+
+        switch (rewards.size()) {
+            case 0:
+                rewardText = "The Minigame is over. You failed to earn any rewards";
+                break;
+            case 1 :
+                rewardText = "The Minigame is over and you won The " + rewards.get(0).toString() + "!";
+                break;
+            case 2:
+                rewardText = "The Minigame is over and you won The " + rewards.get(0).toString() + " and The " + rewards.get(1).toString() + "!";
+                break;
+            case 3:
+                rewardText = "The Minigame is over and you won The " + rewards.get(0).toString() + ", The " + rewards.get(1).toString() + " and The " + rewards.get(2).toString() + "!";
+                break;
+        }
+
+        dialog.text(rewardText);
         dialog.button("Ok", "0");
         dialog.show(stage);
     }
+
 }

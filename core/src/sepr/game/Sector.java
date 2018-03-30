@@ -7,6 +7,12 @@ import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import javafx.util.Pair;
+import sepr.game.utils.SectorStatusEffect;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * class for specifying properties of a sector that is part of a map
@@ -29,6 +35,10 @@ public class Sector implements ApplicationListener {
     private String fileName;
     private boolean allocated; // becomes true once the sector has been allocated
     private boolean isPVCTile;
+    private Map map;
+
+    private int asbestosCount; // turn the asbestos effect is active on this tile, 0 = not active
+    private int poopCount; // turn the poop effect is active on this tile, 0 = not active
 
     /**
      * @param id sector id
@@ -45,7 +55,7 @@ public class Sector implements ApplicationListener {
      * @param sectorCentreY ycoord of sector centre
      * @param decor false if a sector is accessible to a player and true if sector is decorative
      */
-    public Sector(int id, int ownerId, String fileName, Texture sectorTexture, String texturePath, Pixmap sectorPixmap, String displayName, int unitsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor) {
+    public Sector(int id, int ownerId, String fileName, Texture sectorTexture, String texturePath, Pixmap sectorPixmap, String displayName, int unitsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, int asbestosCount, int poopCount, Map map) {
         this.id = id;
         this.ownerId = ownerId;
         this.displayName = displayName;
@@ -62,10 +72,19 @@ public class Sector implements ApplicationListener {
         this.decor = decor;
         this.fileName = fileName;
         this.allocated = false;
+        this.asbestosCount = asbestosCount;
+        this.poopCount = poopCount;
+        this.map = map;
+
+
+        //DELETLE
+        Random r = new Random();
+        if (r.nextInt(3) == 0) this.asbestosCount = r.nextInt(4);
+        if (r.nextInt(3) == 0) this.poopCount = r.nextInt(4);
     }
 
-    public Sector(int id, int ownerId, String fileName, String texturePath, Pixmap sectorPixmap, String displayName, int unitsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, boolean allocated, Color color) {
-        this(id, ownerId, fileName, new Texture(texturePath), texturePath, sectorPixmap, displayName, unitsInSector, reinforcementsProvided, college, neutral, adjacentSectorIds, sectorCentreX, sectorCentreY, decor);
+    public Sector(int id, int ownerId, String fileName, String texturePath, Pixmap sectorPixmap, String displayName, int unitsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, boolean allocated, Color color, int asbestosCount, int poopCount, Map map) {
+        this(id, ownerId, fileName, new Texture(texturePath), texturePath, sectorPixmap, displayName, unitsInSector, reinforcementsProvided, college, neutral, adjacentSectorIds, sectorCentreX, sectorCentreY, decor, asbestosCount, poopCount, map);
         
         this.allocated = allocated;
         this.sectorCentreY = sectorCentreY;
@@ -75,7 +94,7 @@ public class Sector implements ApplicationListener {
         }
     }
 
-    public Sector(int id, int ownerId, String fileName, String texturePath, Pixmap sectorPixmap, String displayName, int unitsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, boolean allocated, Color color, boolean test){
+    public Sector(int id, int ownerId, String fileName, String texturePath, Pixmap sectorPixmap, String displayName, int unitsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, boolean allocated, Color color, boolean test, int asbestosCount, int poopCount, Map map) {
         HeadlessApplicationConfiguration conf = new HeadlessApplicationConfiguration();
 
         new HeadlessApplication(this, conf);
@@ -96,6 +115,9 @@ public class Sector implements ApplicationListener {
         this.decor = decor;
         this.fileName = fileName;
         this.allocated = allocated;
+        this.asbestosCount = asbestosCount;
+        this.poopCount = poopCount;
+        this.map = map;
     }
 
     /**
@@ -117,8 +139,6 @@ public class Sector implements ApplicationListener {
      * @param player the player object that owns this sector
      */
     public void setOwner(Player player) {
-
-
         this.ownerId = player.getId();
         if(!this.isPVCTile){
             this.changeSectorColor(player.getSectorColour());
@@ -126,6 +146,17 @@ public class Sector implements ApplicationListener {
         this.allocated = true;
     }
 
+    public boolean canAttack() {
+        return poopCount == 0 && unitsInSector > 1;
+    }
+
+    public boolean canBeAttacked() {
+        return poopCount == 0;
+    }
+
+    public boolean canChangeUnits() {
+        return poopCount == 0;
+    }
 
     /**
      *
@@ -300,6 +331,28 @@ public class Sector implements ApplicationListener {
 
     public String getTexturePath() {
         return texturePath;
+    }
+
+    /**
+     * called at the end of a turn and applies any active status effect and decrements the count that they apply for
+     * @param currentPlayerId id of the player whos turn it currently is
+     */
+    public void updateStatusEffects(int currentPlayerId) {
+        if (this.ownerId != currentPlayerId) return;
+
+        if (poopCount > 0) poopCount--;
+        if (asbestosCount > 0) {
+            asbestosCount--;
+            map.addUnitsToSectorAnimated(this.id, -(int)Math.ceil(unitsInSector * 0.1));
+        }
+    }
+
+    public int getAsbestosCount() {
+        return asbestosCount;
+    }
+
+    public int getPoopCount() {
+        return poopCount;
     }
 
     @Override
