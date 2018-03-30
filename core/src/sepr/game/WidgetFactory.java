@@ -33,7 +33,6 @@ public class WidgetFactory {
     private static Texture offSwitchTexture;
 
     private static Texture gameHUDBottomBarRightPartTexture;
-    private static Texture gameHUDTopBarTexture;
     private static Texture endPhaseBtnTexture;
     private static Texture pauseBtnTexture;
 
@@ -94,7 +93,6 @@ public class WidgetFactory {
 
 
         gameHUDBottomBarRightPartTexture = new Texture("uiComponents/HUD-Bottom-Bar-Right-Part.png");
-        gameHUDTopBarTexture = new Texture("uiComponents/HUD-Top-Bar.png");
         endPhaseBtnTexture = new Texture("uiComponents/End-Phase-Button.png");
         //pauseBtnTexture = new Texture("uiComponents/Pause-Btn-Icon.png");
 
@@ -401,7 +399,7 @@ public class WidgetFactory {
         style.down = new TextureRegionDrawable(new TextureRegion(endPhaseBtnTexture, 0,123, 348, 123));
         style.font = fontSmall;
 
-        return new TextButton("END PHASE", style);
+        return new TextButton("", style);
     }
 
     /**
@@ -413,14 +411,18 @@ public class WidgetFactory {
      */
     public static Table genGameHUDTopBar(TurnPhaseType turnPhase, final GameScreen gameScreen) {
 
-        Button pauseBtn = new Button();
-        //pauseBtn.setBackground(new TextureRegionDrawable(new TextureRegion(pauseBtnTexture)));
 
-        TextButton.TextButtonStyle btnStyle = new TextButton.TextButtonStyle();
-        btnStyle.font = fontSmall;
-        TextButton exitButton = new TextButton("QUIT", btnStyle);
+        Button.ButtonStyle menuBtnStyle = new Button.ButtonStyle();
+        menuBtnStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/HUD-Top-Bar-Left-Part.png")));
+        menuBtnStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/HUD-Top-Bar-Left-Part-Pressed.png")));
+        Button menuBtn = new Button(menuBtnStyle);
 
-        exitButton.addListener(new ChangeListener() {
+        Button.ButtonStyle cardsBtnStyle = new Button.ButtonStyle();
+        cardsBtnStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/HUD-Top-Bar-Right-Part.png")));
+        cardsBtnStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/HUD-Top-Bar-Right-Part-Pressed.png")));
+        Button cardsBtn = new Button(cardsBtnStyle);
+
+        menuBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 DialogFactory.leaveGameDialogBox(gameScreen, actor.getStage());
@@ -429,6 +431,7 @@ public class WidgetFactory {
 
         Label.LabelStyle style = new Label.LabelStyle();
         style.font = fontSmall;
+        style.background = new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/HUD-Top-Bar-Center-Part.png")));
 
         String text = "";
         switch (turnPhase) {
@@ -446,10 +449,11 @@ public class WidgetFactory {
         Label label = new Label(text, style);
         label.setAlignment(Align.center);
 
+
         Table table = new Table();
-        table.background(new TextureRegionDrawable(new TextureRegion(gameHUDTopBarTexture)));
-        table.left().add(exitButton).padRight(190).padLeft(20);
-        table.add(label).height(60);
+        table.left().add(menuBtn).height(70).width(85).padLeft(20);
+        table.add(label).height(72).width(749);
+        table.add(cardsBtn).height(70).width(85);
 
         return table;
     }

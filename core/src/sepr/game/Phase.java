@@ -75,10 +75,9 @@ public abstract class Phase extends Stage {
         });
         bottomBarRightPart = WidgetFactory.genGameHUDBottomBarRightPart("INIT");
         Table bottomBarLeftPart = genGameHUDBottomBarLeftPart();
-        table.setDebug(true);
-        //table.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/Scanline-Border.png"))));
+        table.setDebug(false);
         table.top().center();
-        table.add(WidgetFactory.genGameHUDTopBar(turnPhase, gameScreen)).colspan(2).expandX().height(60).width(910).padTop(80);
+        table.add(WidgetFactory.genGameHUDTopBar(turnPhase, gameScreen)).colspan(2).expandX().height(72).width(910).padTop(80);
 
         table.row();
         table.add(new Table()).expand();
@@ -86,13 +85,13 @@ public abstract class Phase extends Stage {
         Table subTable = new Table();
 
         subTable.bottom();
-        subTable.add(bottomBarLeftPart).height(190).width(250);
-        subTable.add(bottomBarRightPart).bottom().expandX().fillX().height(60);
+        subTable.add(bottomBarLeftPart).height(220).width(285);
+        subTable.add(bottomBarRightPart).bottom().expandX().fillX().height(72);
 
         table.row();
-        table.add(subTable).expandX().fill().padBottom(80).padLeft(90);
+        table.add(subTable).expandX().fill().padBottom(80).padLeft(90).padRight(30);
         table.bottom().right();
-        table.add(endPhaseButton).fill().height(60).width(170).padRight(90);
+        table.add(endPhaseButton).fill().height(60).width(170).padRight(95).padTop(80);
 
         setBottomBarText(null);
     }
