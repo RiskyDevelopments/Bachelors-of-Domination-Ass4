@@ -106,7 +106,7 @@ public class MiniGameScreen implements Screen {
      */
     private Table setupUi() {
         Table uiComponentsTable =  new Table();
-        uiComponentsTable.background(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/Scanline.png"))));
+        uiComponentsTable.background(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/Scanline-Purple.png"))));
         uiComponentsTable.pad(80).padLeft(85).padRight(95);
 
         uiComponentsTable.center();
@@ -131,7 +131,7 @@ public class MiniGameScreen implements Screen {
 
     private Table setupBackground(){
         Table backgroundTable = new Table();
-        backgroundTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/menuBackground.png"))));
+        backgroundTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/miniGameBackground.png"))));
         backgroundTable.pad(0);
         backgroundTable.add(setupUi());
         return backgroundTable;
