@@ -21,7 +21,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 public class MenuScreen implements Screen {
     private Main main;
     private Stage stage;
-    private Table table; // table for inserting ui widgets into
+    private Table backgroundTable;// table for inserting ui widgets into
 
     /**
      * sets up the menu screen
@@ -42,11 +42,12 @@ public class MenuScreen implements Screen {
         };
         this.stage.setViewport(new ScreenViewport());
 
-        this.table = new Table();
-        this.table.setFillParent(true); // make ui table fill the entire screen
-        this.stage.addActor(table);
-        this.table.setDebug(false); // enable table drawing for ui debug
-        this.setupUi();
+        this.backgroundTable = setupBackground();
+        this.backgroundTable.setFillParent(true); // make ui table fill the entire screen
+        this.stage.addActor(backgroundTable);
+        this.backgroundTable.setDebug(false); // enable table drawing for ui debug
+
+
 
     }
 
@@ -67,15 +68,15 @@ public class MenuScreen implements Screen {
         Table btnTable = new Table();
         btnTable.setDebug(false);
         btnTable.left();
-        btnTable.add(startGameBtn).height(60).width(420).pad(30);
+        btnTable.add(startGameBtn).height(72).width(439).pad(30);
 
         btnTable.row();
         btnTable.left();
-        btnTable.add(loadGameBtn).height(60).width(420).pad(30);
+        btnTable.add(loadGameBtn).height(72).width(439).pad(30);
 
         btnTable.row();
         btnTable.left();
-        btnTable.add(optionsBtn).height(60).width(420).pad(30);
+        btnTable.add(optionsBtn).height(72).width(439).pad(30);
 
         startGameBtn.addListener(new ChangeListener() {
             @Override
@@ -108,28 +109,42 @@ public class MenuScreen implements Screen {
     /**
      * sets up the UI tables for the menu screen
      */
-    private void setupUi() {
-        table.background(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/menuBackground.png"))));
 
-        table.center();
-        table.add(WidgetFactory.genMenusTopBar("MAIN MENU")).colspan(2);
+    private Table setupUi() {
+        Table uiComponentsTable =  new Table();
+        uiComponentsTable.setDebug(false);
 
-        table.row();
-        table.left();
-        table.add(setupMenuTable()).expand();
+        uiComponentsTable.background(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/Scanline.png"))));
+        uiComponentsTable.pad(80).padLeft(85).padRight(95);
 
-        table.right();
-        table.add(WidgetFactory.genMapGraphic()).height(657).width(811).pad(30);
+        uiComponentsTable.center();
+        uiComponentsTable.add(WidgetFactory.genMenusTopBar("MAIN MENU")).colspan(2);
 
-        table.row();
-        table.center();
-        table.add(WidgetFactory.genBottomBar("QUIT", new ChangeListener() {
+        uiComponentsTable.row();
+        uiComponentsTable.left();
+        uiComponentsTable.add(setupMenuTable()).expand();
+
+        uiComponentsTable.right();
+        uiComponentsTable.add(WidgetFactory.genMapGraphic()).height(657).width(811).pad(30);
+
+        uiComponentsTable.row();
+        uiComponentsTable.add(WidgetFactory.genBottomBar("QUIT", new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 DialogFactory.exitProgramDialogBox(stage);}
 
-        })).colspan(2);
+        })).colspan(2).fillX();
+        return uiComponentsTable;
     }
+
+    private Table setupBackground(){
+        Table backgroundTable = new Table();
+        backgroundTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/menuBackground.png"))));
+        backgroundTable.pad(0);
+        backgroundTable.add(setupUi());
+        return backgroundTable;
+    }
+
 
     @Override
     public void show() {

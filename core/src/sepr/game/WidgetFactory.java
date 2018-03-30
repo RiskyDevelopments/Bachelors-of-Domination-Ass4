@@ -25,6 +25,7 @@ public class WidgetFactory {
 
     private static Texture sliderBarTexture;
     private static Texture sliderKnobTexture;
+    private static Texture selectionBoxTexture;
 
     private static Texture textFieldCursorTexture;
 
@@ -32,8 +33,8 @@ public class WidgetFactory {
     private static Texture offSwitchTexture;
 
     private static Texture gameHUDBottomBarRightPartTexture;
-    private static Texture gameHUDTopBarTexture;
     private static Texture endPhaseBtnTexture;
+    private static Texture pauseBtnTexture;
 
     private static Texture playerLabelTexture;
     private static Texture playerLeftBtnTexture;
@@ -44,6 +45,7 @@ public class WidgetFactory {
     private static Texture startGameBtnTexture;
 
     private static Texture menusTopBarLeftTexture;
+    private static Texture menusTopBarCenterTexture;
     private static Texture menusTopBarRightTexture;
 
     private static Texture alcuinLogoTexture;
@@ -66,10 +68,11 @@ public class WidgetFactory {
 
         basicButtonTexture = new Texture("uiComponents/Menu-Button-Full.png");
         mapGraphicTexture = new Texture("uiComponents/Main-Menu-Map.png");
-        optionsGraphicTexture = new Texture("uiComponents/General-Jack.png");
+        optionsGraphicTexture = new Texture("uiComponents/RuncinatorGraphic.png");
 
         sliderBarTexture = new Texture("uiComponents/sliderBar.png");
         sliderKnobTexture = new Texture("uiComponents/sliderKnob.png");
+        selectionBoxTexture = new Texture("uiComponents/selectionBox.png");
 
         textFieldCursorTexture = new Texture("uiComponents/textFieldCursor.png");
 
@@ -79,17 +82,19 @@ public class WidgetFactory {
         playerLabelTexture = new Texture("uiComponents/Player-Label.png");
         playerLeftBtnTexture = new Texture("uiComponents/Player-Left-Button-Full.png");
         playerRightBtnTexture = new Texture("uiComponents/Player-Right-Button-Full.png");
-        menuBtnLabelTexture = new Texture("uiComponents/Menu-Button.png");
+        menuBtnLabelTexture = new Texture("uiComponents/labelTexture.png");
         collegeLeftBtnTexture = new Texture("uiComponents/College-Left-Button.png");
         collegeRightBtnTexture = new Texture("uiComponents/College-Right-Button.png");
         startGameBtnTexture = new Texture("uiComponents/Start-Game-Button-Full.png");
 
         menusTopBarLeftTexture = new Texture("uiComponents/MenusTopBarLeft.png");
+        menusTopBarCenterTexture = new Texture("uiComponents/MenusTopBarCenter.png");
         menusTopBarRightTexture = new Texture("uiComponents/MenusTopBarRight.png");
 
+
         gameHUDBottomBarRightPartTexture = new Texture("uiComponents/HUD-Bottom-Bar-Right-Part.png");
-        gameHUDTopBarTexture = new Texture("uiComponents/HUD-Top-Bar.png");
         endPhaseBtnTexture = new Texture("uiComponents/End-Phase-Button.png");
+        //pauseBtnTexture = new Texture("uiComponents/Pause-Btn-Icon.png");
 
         // load college logos
         alcuinLogoTexture = new Texture("logos/alcuin-logo.png");
@@ -120,8 +125,8 @@ public class WidgetFactory {
      */
     public static TextButton genBasicButton(String buttonText) {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle(); // create style for buttons to use
-        style.up = new TextureRegionDrawable(new TextureRegion(basicButtonTexture, 0, 0, 857, 123)); // image for button to use in default state
-        style.down = new TextureRegionDrawable(new TextureRegion(basicButtonTexture, 0, 123, 857, 123)); // image for button to use when pressed down
+        style.up = new TextureRegionDrawable(new TextureRegion(basicButtonTexture, 0, 0, 878, 145)); // image for button to use in default state
+        style.down = new TextureRegionDrawable(new TextureRegion(basicButtonTexture, 0, 145, 878, 145)); // image for button to use when pressed down
         style.font = fontSmall;
 
         return new TextButton(buttonText, style);
@@ -136,6 +141,7 @@ public class WidgetFactory {
      */
     public static Table genMenusTopBar(String text){
         Image menusTopBarLeft = new Image(new TextureRegionDrawable(new TextureRegion(menusTopBarLeftTexture)));
+        Image menusTopBarCenter = new Image(new TextureRegionDrawable(new TextureRegion(menusTopBarCenterTexture)));
         Image menusTopBarRight = new Image(new TextureRegionDrawable(new TextureRegion(menusTopBarRightTexture)));
 
         Label.LabelStyle style = new Label.LabelStyle();
@@ -145,9 +151,10 @@ public class WidgetFactory {
         Table topBar = new Table();
         topBar.setDebug(false);
         topBar.left();
-        topBar.add(menusTopBarLeft).height(60);
+        topBar.add(menusTopBarLeft).height(72).width(40);
         topBar.add(textLabel).padRight(20).padLeft(20);
-        topBar.add(menusTopBarRight).fillX().height(60);
+        topBar.add(menusTopBarCenter).fillX().height(72);
+        topBar.add(menusTopBarRight).height(72).width(78);
 
         return topBar;
     }
@@ -170,6 +177,7 @@ public class WidgetFactory {
         escButton.addListener(changeListener);
 
         Image centerPart = new Image(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/Center-Part-Bottom-Bar.png"))));
+        Image endCenterPart = new Image((new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/End-Center-Part-Bottom-Bar.png")))));
 
 
         Label.LabelStyle style = new Label.LabelStyle();
@@ -177,15 +185,18 @@ public class WidgetFactory {
         style.background = new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/Right-Part-Bottom-Bar.png")));
         String text = "BACHELORS OF" + "\n" + "DOMINATION";
         Label textLabel = new Label(text, style);
-        textLabel.setAlignment(0, 40);
+        textLabel.setAlignment(0,40);
+        //textLabel.setAlignment(Align.right);
+
 
         Table bottomBar = new Table();
         bottomBar.setDebug(false);
         bottomBar.left();
-        bottomBar.add(leftPart).height(60).width(45).bottom();
-        bottomBar.add(escButton).height((float) 51.5).width(190).bottom();
-        bottomBar.add(centerPart).height(60).fillX().bottom();
-        bottomBar.add(textLabel).height(120).width(280);
+        bottomBar.add(leftPart).height(72).width(54).bottom();
+        bottomBar.add(escButton).height((float) 64.5).width(210).bottom();
+        bottomBar.add(centerPart).height(72).expandX().fillX().bottom();
+        bottomBar.add(endCenterPart).height(89).width(73).bottom();
+        bottomBar.add(textLabel).height(144).width(260);
 
         return bottomBar;
     }
@@ -323,8 +334,8 @@ public class WidgetFactory {
      */
     public static Button genPlayerLeftButton() {
         Button.ButtonStyle style = new Button.ButtonStyle();
-        style.up = new TextureRegionDrawable(new TextureRegion(playerLeftBtnTexture, 0, 0, 111, 123));
-        style.down = new TextureRegionDrawable(new TextureRegion(playerLeftBtnTexture, 0, 123, 111, 123));
+        style.up = new TextureRegionDrawable(new TextureRegion(playerLeftBtnTexture, 0, 0, 126, 141));
+        style.down = new TextureRegionDrawable(new TextureRegion(playerLeftBtnTexture, 0, 141, 126, 141));
 
         return new Button(style);
     }
@@ -335,8 +346,8 @@ public class WidgetFactory {
      */
     public static Button genPlayerRightButton() {
         Button.ButtonStyle style = new Button.ButtonStyle();
-        style.up = new TextureRegionDrawable(new TextureRegion(playerRightBtnTexture, 0, 0, 111, 123));
-        style.down = new TextureRegionDrawable(new TextureRegion(playerRightBtnTexture, 0, 123, 111, 123));
+        style.up = new TextureRegionDrawable(new TextureRegion(playerRightBtnTexture, 0, 0, 126, 141));
+        style.down = new TextureRegionDrawable(new TextureRegion(playerRightBtnTexture, 0, 141, 126, 141));
 
         return new Button(style);
     }
@@ -371,8 +382,8 @@ public class WidgetFactory {
      */
     public static TextButton genStartGameButton() {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
-        style.up = new TextureRegionDrawable(new TextureRegion(startGameBtnTexture, 0, 0, 723, 123));
-        style.down = new TextureRegionDrawable(new TextureRegion(startGameBtnTexture, 0, 123, 723, 123));
+        style.up = new TextureRegionDrawable(new TextureRegion(startGameBtnTexture, 0, 0, 740, 141));
+        style.down = new TextureRegionDrawable(new TextureRegion(startGameBtnTexture, 0, 141, 740, 141));
         style.font = fontSmall;
 
         return new TextButton("START GAME",style);
@@ -388,7 +399,7 @@ public class WidgetFactory {
         style.down = new TextureRegionDrawable(new TextureRegion(endPhaseBtnTexture, 0,123, 348, 123));
         style.font = fontSmall;
 
-        return new TextButton("END PHASE", style);
+        return new TextButton("", style);
     }
 
     /**
@@ -399,11 +410,19 @@ public class WidgetFactory {
      * @return the top bar of the HUD for the specified phase
      */
     public static Table genGameHUDTopBar(TurnPhaseType turnPhase, final GameScreen gameScreen) {
-        TextButton.TextButtonStyle btnStyle = new TextButton.TextButtonStyle();
-        btnStyle.font = fontSmall;
-        TextButton exitButton = new TextButton("QUIT", btnStyle);
 
-        exitButton.addListener(new ChangeListener() {
+
+        Button.ButtonStyle menuBtnStyle = new Button.ButtonStyle();
+        menuBtnStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/HUD-Top-Bar-Left-Part.png")));
+        menuBtnStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/HUD-Top-Bar-Left-Part-Pressed.png")));
+        Button menuBtn = new Button(menuBtnStyle);
+
+        Button.ButtonStyle cardsBtnStyle = new Button.ButtonStyle();
+        cardsBtnStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/HUD-Top-Bar-Right-Part.png")));
+        cardsBtnStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/HUD-Top-Bar-Right-Part-Pressed.png")));
+        Button cardsBtn = new Button(cardsBtnStyle);
+
+        menuBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 DialogFactory.leaveGameDialogBox(gameScreen, actor.getStage());
@@ -412,6 +431,7 @@ public class WidgetFactory {
 
         Label.LabelStyle style = new Label.LabelStyle();
         style.font = fontSmall;
+        style.background = new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/HUD-Top-Bar-Center-Part.png")));
 
         String text = "";
         switch (turnPhase) {
@@ -429,10 +449,11 @@ public class WidgetFactory {
         Label label = new Label(text, style);
         label.setAlignment(Align.center);
 
+
         Table table = new Table();
-        table.background(new TextureRegionDrawable(new TextureRegion(gameHUDTopBarTexture)));
-        table.left().add(exitButton).padRight(190).padLeft(20);
-        table.add(label).height(60);
+        table.left().add(menuBtn).height(70).width(85).padLeft(20);
+        table.add(label).height(72).width(749);
+        table.add(cardsBtn).height(70).width(85);
 
         return table;
     }
@@ -448,9 +469,11 @@ public class WidgetFactory {
         SelectBox.SelectBoxStyle style = new SelectBox.SelectBoxStyle();
         style.font = fontSmall;
         style.listStyle = new List.ListStyle(fontSmall, Color.BLACK, Color.BLACK, new TextureRegionDrawable(new TextureRegion(sliderBarTexture)));
-        style.scrollStyle = new ScrollPane.ScrollPaneStyle(new TextureRegionDrawable(new TextureRegion(sliderKnobTexture)), new TextureRegionDrawable(new TextureRegion(sliderKnobTexture)), new TextureRegionDrawable(new TextureRegion(sliderKnobTexture)), new TextureRegionDrawable(new TextureRegion(sliderKnobTexture)), new TextureRegionDrawable(new TextureRegion(sliderKnobTexture)));
+        style.scrollStyle = new ScrollPane.ScrollPaneStyle(new TextureRegionDrawable(new TextureRegion(selectionBoxTexture)), new TextureRegionDrawable(new TextureRegion(selectionBoxTexture)), new TextureRegionDrawable(new TextureRegion(sliderKnobTexture)), new TextureRegionDrawable(new TextureRegion(sliderKnobTexture)), new TextureRegionDrawable(new TextureRegion(sliderKnobTexture)));
+
 
         SelectBox<String> selectBox = new SelectBox<String>(style);
+
         selectBox.setItems(items);
         return selectBox;
     }

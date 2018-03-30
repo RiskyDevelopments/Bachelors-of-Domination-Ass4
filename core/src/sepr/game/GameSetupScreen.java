@@ -40,7 +40,7 @@ public class GameSetupScreen implements Screen{
 
     private Main main; // main stored so that screen can be changed
     private Stage stage; // stage for drawing the UI to
-    private Table table; // table for laying out the UI components
+    private Table backgroundTable; // table for laying out the UI components
     private AudioManager Audio = AudioManager.getInstance();
     private final int MAX_NUMBER_OF_PLAYERS = 4; // maximum number of players that cna be in a game
 
@@ -107,16 +107,17 @@ public class GameSetupScreen implements Screen{
                 return super.keyUp(keyCode);
             }
         };
+        this.collegeTableBackground = new Texture("uiComponents/Game-Setup-Name-Box.png");
+
         this.stage.setViewport(new ScreenViewport());
 
-        this.table = new Table();
-        this.table.setFillParent(true); // make ui table fill the entire screen
-        this.stage.addActor(table);
-        this.table.setDebug(false); // enable table drawing for ui debug
+        this.backgroundTable = setupBackground();
+        this.backgroundTable.setFillParent(true); // make ui table fill the entire screen
+        this.stage.addActor(backgroundTable);
+        this.backgroundTable.setDebug(false); // enable table drawing for ui debug
 
-        this.collegeTableBackground = new Texture("uiComponents/Game-Setup-Name-Box.png");
+
         this.Audio.loadMusic("sound/IntroMusic/introMusic.mp3"); //load the introMusic
-        this.setupUi();
     }
 
     /**
@@ -221,10 +222,10 @@ public class GameSetupScreen implements Screen{
         // add the buttons and labels to the table
         for(int i = 0; i < MAX_NUMBER_OF_PLAYERS; i++){
             leftTable.left();
-            leftTable.add(leftButtons[i]).height(60).width(50).pad(5);
-            leftTable.add(playerTypes[i]).height(60).width(320).expandX().padTop(20).padBottom(20);
+            leftTable.add(leftButtons[i]).height(70).width(63).pad(5);
+            leftTable.add(playerTypes[i]).height(70).width(312).expandX().padTop(20).padBottom(20);
             leftTable.right();
-            leftTable.add(rightButtons[i]).height(60).width(50).pad(5);
+            leftTable.add(rightButtons[i]).height(70).width(63).pad(5);
             leftTable.row();
         }
 
@@ -255,14 +256,14 @@ public class GameSetupScreen implements Screen{
         switchTable.setDebug(false);
 
         switchTable.left();
-        switchTable.add(neutralPlayerLabel).height(60).width(420);
+        switchTable.add(neutralPlayerLabel).height(72).width(439);
         switchTable.right();
         switchTable.add(neutralPlayerSwitch).padLeft(50);
 
         switchTable.row().padTop(20).padBottom(20);
 
         switchTable.left();
-        switchTable.add(turnTimerLabel).height(60).width(420);
+        switchTable.add(turnTimerLabel).height(72).width(439);
         switchTable.right();
         switchTable.add(turnTimerSwitch).padLeft(50);
 
@@ -322,9 +323,9 @@ public class GameSetupScreen implements Screen{
             });
 
 
-            logoTable.add(leftButton).height(50).width(25);
+            logoTable.add(leftButton).height(60).width(35);
             logoTable.add(playerColleges[i].getValue()).height(80).width(100);
-            logoTable.add(rightButton).height(50).width(25);
+            logoTable.add(rightButton).height(60).width(35);
 
             Table temp = new Table();
             temp.background(new TextureRegionDrawable(new TextureRegion(collegeTableBackground)));
@@ -492,7 +493,13 @@ public class GameSetupScreen implements Screen{
     /**
      * sets up the UI for the game setup screen
      */
-    private void setupUi() {
+    private Table setupUi() {
+        Table uiComponentsTable =  new Table();
+        uiComponentsTable.setDebug(false);
+
+        uiComponentsTable.background(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/Scanline.png"))));
+        uiComponentsTable.pad(80).padLeft(85).padRight(95);
+
         TextButton startGameButton = WidgetFactory.genStartGameButton();
         startGameButton.addListener(new ChangeListener() {
             @Override
@@ -501,32 +508,39 @@ public class GameSetupScreen implements Screen{
             }
         });
 
-        // add the menu background
-        table.background(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/menuBackground.png"))));
+        uiComponentsTable.center();
+        uiComponentsTable.add(WidgetFactory.genMenusTopBar("GAME SETUP")).colspan(2);
 
-        table.center();
-        table.add(WidgetFactory.genMenusTopBar("GAME SETUP")).colspan(2);
+        uiComponentsTable.row();
+        uiComponentsTable.left();
+        uiComponentsTable.add(setUpPlayerTypesTable()).expand();
+        uiComponentsTable.right();
+        uiComponentsTable.add(setUpCollegeTable()).expand();
 
-        table.row();
-        table.left();
-        table.add(setUpPlayerTypesTable()).expand();
-        table.right();
-        table.add(setUpCollegeTable()).expand();
+        uiComponentsTable.row();
+        uiComponentsTable.left();
+        uiComponentsTable.add(setupSwitchTable()).expand();
+        uiComponentsTable.add(startGameButton).height(72).width(370);
 
-        table.row();
-        table.left();
-        table.add(setupSwitchTable()).expand();
-        table.add(startGameButton).height(60).width(420);
-
-        table.row();
-        table.center();
-        table.add(WidgetFactory.genBottomBar("MAIN MENU", new ChangeListener() {
+        uiComponentsTable.row();
+        uiComponentsTable.center();
+        uiComponentsTable.add(WidgetFactory.genBottomBar("MAIN MENU", new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 main.setMenuScreen();
             }
 
-        })).colspan(2);
+        })).colspan(2).fillX();
+
+        return uiComponentsTable;
+    }
+
+    private Table setupBackground(){
+        Table backgroundTable = new Table();
+        backgroundTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/menuBackground.png"))));
+        backgroundTable.pad(0);
+        backgroundTable.add(setupUi());
+        return backgroundTable;
     }
 
 
