@@ -37,7 +37,6 @@ public class PhaseAttack extends PhaseAttackMove{
      * carries out attack once number of attackers has been set using the dialog
      */
     private void executeAttack() {
-        System.out.println("attacking");
         // record owners to keep track of changes after the attack
         int sourceSectorOwner = sourceSector.getOwnerId();
         int targetSectorOwner = targetSector.getOwnerId();
@@ -45,7 +44,7 @@ public class PhaseAttack extends PhaseAttackMove{
         gameScreen.getMap().completeAttack(gameScreen.getPlayerById(sourceSectorOwner), gameScreen.getPlayerById(GameScreen.NEUTRAL_PLAYER_ID), sourceSector, targetSector, numOfUnits[0]);
 
         if (targetSector.getOwnerId() == sourceSectorOwner) { // attacker took over the target sector
-            numOfUnits = new int[] {-1, sourceSector.getId(), targetSector.getId()};
+            unitsToMove = new int[] {-1, sourceSector.getId(), targetSector.getId()};
 
             DialogFactory.attackSuccessDialogBox(targetSector.getReinforcementsProvided(),
                     sourceSector.getUnitsInSector(),

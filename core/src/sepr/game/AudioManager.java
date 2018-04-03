@@ -109,7 +109,6 @@ public class AudioManager extends AssetManager {
      */
 
     public void setMusicVolume() {
-
         for (String x : currentPlayingMusic) {
             this.get(x, Music.class).setVolume(GlobalMusicVolume);
         }

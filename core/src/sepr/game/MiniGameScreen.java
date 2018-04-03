@@ -34,7 +34,6 @@ public class MiniGameScreen implements Screen {
     private GameScreen gameScreen;
     private Table table; // table for inserting ui widgets into
     private Player player; // player to allocate gang members to at the end of the minigame
-    private AudioManager Audio = AudioManager.getInstance();
 
     private PunishmentCardType[][] locations; // array containing card type locations
     private ImageButton[][] cardButtons; // array to contain all buttons
@@ -163,7 +162,11 @@ public class MiniGameScreen implements Screen {
      */
     public void endGame(boolean win) {
         if (!win) rewards.clear(); // clear rewards if player did not win the minigame
-        player.addTroopsToAllocate(rewards.size()); // need to change to danger card allocation
+
+        if (rewards.contains(PunishmentCardType.COLLUSION_CARD)) player.addCollusionCards(1);
+        if (rewards.contains(PunishmentCardType.POOPY_PATH_CARD)) player.addPoopyPathCards(1);
+        if (rewards.contains(PunishmentCardType.ASBESTOS_CARD)) player.addAsbestosCards(1);
+
         DialogFactory.miniGameOverDialog(main, stage, gameScreen, rewards);
     }
 
