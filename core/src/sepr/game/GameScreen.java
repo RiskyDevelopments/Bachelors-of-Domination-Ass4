@@ -26,7 +26,7 @@ import java.util.Random;
 public class GameScreen implements Screen, InputProcessor{
     public static final int NEUTRAL_PLAYER_ID = 4;
 
-    public AudioManager Audio = AudioManager.getInstance(); // Access to the AudioManager
+    private AudioManager Audio = AudioManager.getInstance(); // Access to the AudioManager
     private Main main; // main stored for switching between screens
 
     private TurnPhaseType currentPhase = TurnPhaseType.REINFORCEMENT; // set initial phase to the reinforcement phase
@@ -63,7 +63,6 @@ public class GameScreen implements Screen, InputProcessor{
      *
      * @param main used to change screenthis.phases = phases;
      */
-
     public GameScreen(Main main) {
         this.main = main;
 
@@ -124,7 +123,6 @@ public class GameScreen implements Screen, InputProcessor{
             }
         }
 
-
         this.currentPlayerPointer = 0; // set the current player to the player in the first position of the turnOrder list
 
         this.turnTimerEnabled = turnTimerEnabled;
@@ -137,7 +135,7 @@ public class GameScreen implements Screen, InputProcessor{
         gameSetup = true; // game is now setup
     }
 
-    public void setUpPhases(){
+    private void setUpPhases() {
         // create the game phases and add them to the phases hashmap
         this.phases = new HashMap<TurnPhaseType, Phase>();
         this.phases.put(TurnPhaseType.REINFORCEMENT, new PhaseReinforce(this));
@@ -199,15 +197,6 @@ public class GameScreen implements Screen, InputProcessor{
         return players.get(id);
     }
 
-
-    /**
-     *
-     * @return gets the player object for the player who's turn it currently is
-     */
-    private Player getPreviousPlayer() {
-        return players.get(turnOrder.get(previousPlayerPointer));
-    }
-
     /**
      *
      * @return gets the player object for the player who's turn it currently is
@@ -250,13 +239,12 @@ public class GameScreen implements Screen, InputProcessor{
                 currentPhase = TurnPhaseType.REINFORCEMENT;
 
                 nextPlayer(); // nextPhase called during final phase of a player's turn so goto next player
-
                 break;
         }
 
         this.updateInputProcessor(); // phase changed so update input handling
         this.phases.get(currentPhase).enterPhase(getCurrentPlayer()); // setup the new phase for the current player
-        removeEliminatedPlayers(); // check no players have been eliminated
+        this.removeEliminatedPlayers(); // removes all players who have no remaining sectors from the turn order
     }
 
     /**
@@ -536,10 +524,10 @@ public class GameScreen implements Screen, InputProcessor{
             DialogFactory.leaveGameDialogBox(this, phases.get(currentPhase)); // confirm if the player wants to leave if escape is pressed
         }
         if (keycode == Input.Keys.S) {
-            this.main.SaveGame();
+            this.main.saveGame();
         }
         if (keycode == Input.Keys.L) {
-            this.main.LoadGame();
+            this.main.loadGame();
         }
         return true;
     }

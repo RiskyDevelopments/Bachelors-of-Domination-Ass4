@@ -15,6 +15,10 @@ public class Player {
     private PlayerType playerType; // Human or Neutral player
     private Boolean OwnsPVC;
 
+    private int collusionCards = 0;  // num of collusion cards this player has
+    private int poopyPathCards = 0;  // num of poopy path cards this player has
+    private int asbestosCards = 0;   // num of asbestos cards this player has
+
     /**
      * creates a player object with the specified properties
      *
@@ -24,7 +28,7 @@ public class Player {
      * @param playerType is this player a Human, AI or Neutral AI
      * @param playerName player's name to be displayed
      */
-    public Player(int id, GameSetupScreen.CollegeName collegeName, Color sectorColour, PlayerType playerType, String playerName) {
+    public Player(int id, GameSetupScreen.CollegeName collegeName, Color sectorColour, PlayerType playerType, String playerName, int collusionCards, int poopyPathCards, int asbestosCards) {
         this.id = id;
         this.collegeName = collegeName;
         this.troopsToAllocate = 0;
@@ -32,10 +36,13 @@ public class Player {
         this.playerType = playerType;
         this.playerName = playerName;
         this.OwnsPVC = false;
+        this.collusionCards = collusionCards;
+        this.poopyPathCards = poopyPathCards;
+        this.asbestosCards = asbestosCards;
     }
 
-    public Player(int id, GameSetupScreen.CollegeName collegeName, Color sectorColour, PlayerType playerType, String playerName, int troopsToAllocate, boolean ownsPVC){
-        this(id, collegeName, sectorColour, playerType, playerName);
+    public Player(int id, GameSetupScreen.CollegeName collegeName, Color sectorColour, PlayerType playerType, String playerName, int collusionCards, int poopyPathCards, int asbestosCards, int troopsToAllocate, boolean ownsPVC){
+        this(id, collegeName, sectorColour, playerType, playerName, collusionCards, poopyPathCards, asbestosCards);
 
         this.troopsToAllocate = troopsToAllocate;
         this.setOwnsPVC(ownsPVC);
@@ -48,14 +55,14 @@ public class Player {
      * @param playerName player's name to be displayed
      */
     public static Player createHumanPlayer(int id, GameSetupScreen.CollegeName collegeName, Color sectorColour, String playerName) {
-        return new Player(id, collegeName, sectorColour, PlayerType.HUMAN, playerName);
+        return new Player(id, collegeName, sectorColour, PlayerType.HUMAN, playerName, 0, 0, 0);
     }
 
     /**
      * @param id player's unique identifier
      */
     public static Player createNeutralPlayer(int id) {
-        return new Player(id, GameSetupScreen.CollegeName.UNI_OF_YORK, Color.GRAY, PlayerType.NEUTRAL_AI, "THE NEUTRAL PLAYER");
+        return new Player(id, GameSetupScreen.CollegeName.UNI_OF_YORK, Color.GRAY, PlayerType.NEUTRAL_AI, "THE NEUTRAL PLAYER", 0, 0, 0);
     }
 
 
@@ -70,8 +77,6 @@ public class Player {
      */
 
     public void setOwnsPVC(Boolean ownsPVC) { OwnsPVC = ownsPVC; }
-
-
 
     /**
      *
@@ -136,5 +141,17 @@ public class Player {
      */
     public void addTroopsToAllocate(int troopsToAllocate) {
         this.troopsToAllocate += troopsToAllocate;
+    }
+
+    public void addCollusionCards(int num) {
+        this.collusionCards += num;
+    }
+
+    public void addPoopyPathCards(int num) {
+        this.poopyPathCards += num;
+    }
+
+    public void addAsbestosCards(int num) {
+        this.asbestosCards += num;
     }
 }

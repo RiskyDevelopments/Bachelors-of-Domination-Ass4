@@ -7,6 +7,9 @@ import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import javafx.util.Pair;
 import sepr.game.utils.SectorStatusEffect;
 
@@ -36,6 +39,12 @@ public class Sector implements ApplicationListener {
     private boolean allocated; // becomes true once the sector has been allocated
     private boolean isPVCTile;
     private Map map;
+
+    private static Texture troopCountOverlay = new Texture("uiComponents/troopCountOverlay.png");
+    private static Texture pooStatus = new Texture("pooStatus.png");
+    private static Texture asbestosStatus = new Texture("asbestosStatus.png");
+    private static BitmapFont font = WidgetFactory.getFontSmall(); // font for rendering sector unit data
+    private static GlyphLayout layout = new GlyphLayout();
 
     private int asbestosCount; // turn the asbestos effect is active on this tile, 0 = not active
     private int poopCount; // turn the poop effect is active on this tile, 0 = not active
@@ -347,12 +356,36 @@ public class Sector implements ApplicationListener {
         }
     }
 
-    public int getAsbestosCount() {
+    private int getAsbestosCount() {
         return asbestosCount;
     }
 
-    public int getPoopCount() {
+    private int getPoopCount() {
         return poopCount;
+    }
+
+    public void draw (SpriteBatch batch) {
+        String text = this.getUnitsInSector() + "";
+        batch.draw(this.getSectorTexture(), 0, 0);
+        if (!this.isDecor()) { // don't need to draw the amount of units on a decor sector
+            layout.setText(font, text);
+
+            float overlaySize = 40.0f;
+            batch.draw(troopCountOverlay, this.getSectorCentreX() - overlaySize / 2, this.getSectorCentreY() - overlaySize / 2, overlaySize, overlaySize);
+            font.draw(batch, layout, this.getSectorCentreX() - layout.width / 2, this.getSectorCentreY() + layout.height / 2);
+        }
+
+        if (this.getAsbestosCount() != 0) {
+            batch.draw(asbestosStatus, this.getSectorCentreX(), this.getSectorCentreY() + 10);
+            layout.setText(font, this.getAsbestosCount() + "");
+            font.draw(batch, layout, this.getSectorCentreX() + layout.width + 2, this.getSectorCentreY() + layout.height + 18);
+        }
+
+        if (this.getPoopCount() != 0) {
+            batch.draw(pooStatus, this.getSectorCentreX(), this.getSectorCentreY() - 50);
+            layout.setText(font, this.getPoopCount() + "");
+            font.draw(batch, layout, this.getSectorCentreX() + layout.width + 2, this.getSectorCentreY() + layout.height - 40);
+        }
     }
 
     @Override

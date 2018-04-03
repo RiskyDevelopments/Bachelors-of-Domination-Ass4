@@ -48,6 +48,9 @@ public class GameState {
         public Color sectorColour; // The colour to use for the player's sectors
         public PlayerType playerType; // The player's type
         public boolean ownsPVC; // Whether the player owns the PVC
+        public int collusionCards;
+        public int poopyPathCards;
+        public int asbestosCards;
     }
 
     /**
