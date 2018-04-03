@@ -87,8 +87,8 @@ public class MenuScreen implements Screen {
         loadGameBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(main.HasLoadedSaves()) {
-                    main.LoadGame();
+                if(main.hasLoadedSaves()) {
+                    main.loadGame();
                 }
             }
         });

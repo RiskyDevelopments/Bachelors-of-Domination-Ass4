@@ -1,15 +1,11 @@
 package sepr.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import javafx.util.Pair;
-import sepr.game.utils.SectorStatusEffect;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -21,18 +17,10 @@ import java.util.*;
  * stores the game map and the sectors within it
  */
 public class Map {
+    private AudioManager Audio = AudioManager.getInstance(); // Access to the AudioManager
     private HashMap<Integer, Sector> sectors; // mapping of sector ID to the sector object
     private List<UnitChangeParticle> particles; // list of active particle effects displaying the changes to the amount of units on a sector
     private PVC proViceChancellor;
-
-    private BitmapFont font; // font for rendering sector unit data
-    private GlyphLayout layout = new GlyphLayout();
-
-    private Texture troopCountOverlay = new Texture("uiComponents/troopCountOverlay.png");
-    private Texture pooStatus = new Texture("pooStatus.png");
-    private Texture asbestosStatus = new Texture("asbestosStatus.png");
-
-    private int[] unitsToMove; // units to move from an attacking to conquered sector, 3 index array : [0] amount to move; [1] source sector id ; [2] target sector id
 
     private Random random;
 
@@ -48,7 +36,6 @@ public class Map {
         random = new Random();
 
         this.loadSectors();
-        font = WidgetFactory.getFontSmall();
 
         particles = new ArrayList<UnitChangeParticle>();
         this.allocateSectors(players, allocateNeutralPlayer);
@@ -127,9 +114,6 @@ public class Map {
         int sectorY = Integer.parseInt(sectorData[9]);
         boolean decor = Boolean.parseBoolean(sectorData[10]);
 
-        ////////////////////////////////////////////
-        //   NEED TO ADD SECTOR STATUS EFFECT SAVING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
         return new Sector(sectorId, ownerId, filename, sectorTexture, texturePath, sectorPixmap, displayName, unitsInSector, reinforcementsProvided, college, neutral, adjacentSectors, sectorX, sectorY, decor, 0, 0, this);
     }
 
@@ -194,100 +178,6 @@ public class Map {
             }
         }
     }
-
-
-    /**
-     * spawns the PVC tile and sets the colour to gold and then starts the mini game
-     */
-
-    public void spawnPVC(Stage stage, int defendingSectorId) {
-        sectors.get(defendingSectorId).setIsPVCTile(true); //set the taken over tile to be the PVC tile
-        DialogFactory.TakenOverPVCDialogue(stage);
-        sectors.get(defendingSectorId).changeSectorColor(com.badlogic.gdx.graphics.Color.GOLD);
-        proViceChancellor.setPVCSpawned(true);
-        proViceChancellor.startMiniGame();
-
-    }
-
-
-    /**
-     * processes an attack from one sector to another
-     * triggers specific dialogs dependent on the outcome of the attack
-     * controls reassigning owners dependent on the outcome of the attack
-     * sets up drawing particle effects showing changes in amount of units in a sector
-     * sets up movement of units after conquering a sector
-     *
-     * @param attackingSectorId id of the sector the attack is coming from
-     * @param defendingSectorId id of the defending sectorthis.sectors = sectors;
-     * @param attackersLost     amount of units lost on the attacking sector
-     * @param defendersLost     amount of units lost on the defenfing sector
-     * @param attacker          the player who is carrying out the attack
-     * @param defender          the player who is being attacked
-     * @param netrualPlayer     the neutral player
-     * @param stage             the stage to draw any dialogs to
-     * @return true if attack successful else false
-     * @throws IllegalArgumentException if the amount of attackers lost exceeds the amount of attackers
-     * @throws IllegalArgumentException if the amount of defenders lost exceeds the amount of attackers
-     */
-
-
-    public boolean attackSector(int attackingSectorId, int defendingSectorId, int attackersLost, int defendersLost, Player attacker, Player defender, Player netrualPlayer, Stage stage) {
-        if (sectors.get(attackingSectorId).getUnitsInSector() < attackersLost) {
-            throw new IllegalArgumentException("Cannot loose more attackers than are on the sector: Attackers " + sectors.get(attackingSectorId).getUnitsInSector() + "     Attackers Lost " + attackersLost);
-        }
-        if (sectors.get(defendingSectorId).getUnitsInSector() < defendersLost) {
-            throw new IllegalArgumentException("Cannot loose more defenders than are on the sector: Defenders " + sectors.get(attackingSectorId).getUnitsInSector() + "     Defenders Lost " + attackersLost);
-        }
-
-        addUnitsToSectorAnimated(attackingSectorId, -attackersLost); // apply amount of attacking units lost
-        addUnitsToSectorAnimated(defendingSectorId, -defendersLost); // apply amount of defending units lost
-
-        /* explain outcome to player using dialog boxes, possible outcomes
-         * - All defenders killed, more than one attacker left      -->     successfully conquered sector, player is asked how many units they want to move onto it
-         * - All defenders killed, one attacker left                -->     sector attacked becomes neutral as player can't move units onto it
-         * - Not all defenders killed, all attackers killed         -->     attacking sector becomes unAssigned
-         * - Not all defenders killed, not all attackers killed     -->     both sides loose troops, no dialog to display
-         * */
-        if (sectors.get(attackingSectorId).getUnitsInSector() == 0) { // attacker lost all troops
-            DialogFactory.sectorOwnerChangeDialog(attacker.getPlayerName(), netrualPlayer.getPlayerName(), sectors.get(attackingSectorId).getDisplayName(), stage);
-            sectors.get(attackingSectorId).setOwner(netrualPlayer);
-            if (sectors.get(defendingSectorId).getUnitsInSector() == 0) { // both players wiped each other out
-                DialogFactory.sectorOwnerChangeDialog(defender.getPlayerName(), netrualPlayer.getPlayerName(), sectors.get(attackingSectorId).getDisplayName(), stage);
-                sectors.get(defendingSectorId).setOwner(netrualPlayer);
-            }
-
-        } else if (sectors.get(defendingSectorId).getUnitsInSector() == 0 && sectors.get(attackingSectorId).getUnitsInSector() > 1) { // territory conquered
-
-            unitsToMove = new int[3];
-            unitsToMove[0] = -1;
-            unitsToMove[1] = attackingSectorId;
-            unitsToMove[2] = defendingSectorId;
-
-
-            attacker.addTroopsToAllocate(sectors.get(defendingSectorId).getReinforcementsProvided());
-            sectors.get(defendingSectorId).setOwner(attacker);
-
-            if (sectors.get(defendingSectorId).getIsPVCTile()) //if the player takes over PVC tile add PVC bonus
-            {
-                defender.setOwnsPVC(false);
-                attacker.setOwnsPVC(true);
-                sectors.get(defendingSectorId).changeSectorColor(com.badlogic.gdx.graphics.Color.GOLD);
-                proViceChancellor.startMiniGame();
-
-            }
-            if (proViceChancellor.PVCSpawn() && !proViceChancellor.isPVCSpawned()) {
-                spawnPVC(stage, defendingSectorId);
-            }
-            DialogFactory.attackSuccessDialogBox(sectors.get(defendingSectorId).getReinforcementsProvided(), sectors.get(attackingSectorId).getUnitsInSector(), unitsToMove, defender.getPlayerName(), attacker.getPlayerName(), sectors.get(defendingSectorId).getDisplayName(), stage);
-
-
-        } else if (sectors.get(defendingSectorId).getUnitsInSector() == 0 && sectors.get(attackingSectorId).getUnitsInSector() == 1) { // territory conquered but only one attacker remaining so can't move troops onto it
-            DialogFactory.sectorOwnerChangeDialog(defender.getPlayerName(), netrualPlayer.getPlayerName(), sectors.get(defendingSectorId).getDisplayName(), stage);
-            sectors.get(defendingSectorId).setOwner(netrualPlayer);
-        }
-        return true;
-    }
-
 
     /**
      * processes a movement from one sector to another
@@ -378,29 +268,82 @@ public class Map {
      * @throws IllegalArgumentException if the amount exceeds the (number of units - 1) on the source sector
      * @throws IllegalArgumentException if the sectors are not connected
      */
-    private void moveUnits() throws IllegalArgumentException {
-        if (sectors.get(unitsToMove[1]).getOwnerId() != sectors.get(unitsToMove[2]).getOwnerId()) {
+    public void moveUnits(int sourceSectorId, int targetSecotId, int amount) throws IllegalArgumentException {
+        System.out.println(sourceSectorId + "  " + targetSecotId + "  " + amount);
+        if (sectors.get(sourceSectorId).getOwnerId() != sectors.get(targetSecotId).getOwnerId()) {
             throw new IllegalArgumentException("Source and target sectors must have the same owners");
         }
-        if (sectors.get(unitsToMove[1]).getUnitsInSector() <= unitsToMove[0]) {
+        if (sectors.get(sourceSectorId).getUnitsInSector() <= amount) {
             throw new IllegalArgumentException("Must leave at least one unit on source sector and can't move more units than are on source sector");
         }
-        if (!sectors.get(unitsToMove[1]).isAdjacentTo(sectors.get(unitsToMove[2]))) {
+        if (!sectors.get(sourceSectorId).isAdjacentTo(sectors.get(targetSecotId))) {
             throw new IllegalArgumentException("Sectors must be adjacent in order to move units");
         }
-        addUnitsToSectorAnimated(unitsToMove[1], -unitsToMove[0]); // remove units from source
-        addUnitsToSectorAnimated(unitsToMove[2], unitsToMove[0]); // add units to target
+        addUnitsToSectorAnimated(sourceSectorId, -amount); // remove units from source
+        addUnitsToSectorAnimated(targetSecotId, amount); // add units to target
     }
 
-    /**
-     * once unitsToMove has had the amount of units to move and the ids of the source and target sector set, perform the move
-     */
-    private void detectUnitsMove() {
-        if (unitsToMove != null) {
-            if (unitsToMove[0] != -1) {
-                moveUnits();
-                unitsToMove = null;
+    public void completeAttack(Player attacker, Player neutral, Sector source, Sector target, int attackers) {
+        int defenders = target.getUnitsInSector();
+
+        int attackersLost = 0;
+        int defendersLost = 0;
+
+        while (attackers != attackersLost && defenders != defendersLost) {
+            if (random.nextFloat() > 0.55f) {
+                attackersLost++;
+            } else {
+                defendersLost++;
             }
+        }
+
+        if(attackersLost > defendersLost){
+            // Poor Move
+            int voice = random.nextInt(3);
+
+            switch (voice){
+                case 0:
+                    Audio.get("sound/Invalid Move/Colin_Your_actions_are_questionable.wav", Sound.class).play(AudioManager.GlobalFXvolume);
+                    break;
+                case 1:
+                    Audio.get("sound/Battle Phrases/Colin_Seems_Risky_To_Me.wav", Sound.class).play(AudioManager.GlobalFXvolume);
+                    break;
+                case 2:
+                    break;
+            }
+        } else {
+            // Good move
+            int voice = random.nextInt(5);
+
+            switch (voice){
+                case 0:
+                    Audio.get("sound/Battle Phrases/Colin_An_Unlikely_Victory.wav", Sound.class).play(AudioManager.GlobalFXvolume);
+                    break;
+                case 1:
+                    Audio.get("sound/Battle Phrases/Colin_Far_better_than_I_expected.wav", Sound.class).play(AudioManager.GlobalFXvolume);
+                    break;
+                case 2:
+                    Audio.get("sound/Battle Phrases/Colin_I_couldnt_have_done_it_better_myself.wav", Sound.class).play(AudioManager.GlobalFXvolume);
+                    break;
+                case 3:
+                    Audio.get("sound/Battle Phrases/Colin_Multiplying_by_the_identity_matrix_is_more_fasinating_than_your_last_move.wav", Sound.class).play(AudioManager.GlobalFXvolume);
+                    break;
+                case 4:
+                    Audio.get("sound/Battle Phrases/Colin_Well_Done.wav", Sound.class).play(AudioManager.GlobalFXvolume);
+                    break;
+                case 5:
+                    break;
+            }
+        }
+
+        // apply the attack to the map
+        addUnitsToSectorAnimated(source.getId(), -attackersLost);
+        addUnitsToSectorAnimated(target.getId(), -defendersLost);
+
+        if (source.getUnitsInSector() == 0) {
+            source.setOwner(neutral);
+        } else {
+            target.setOwner(attacker);
         }
     }
 
@@ -410,32 +353,8 @@ public class Map {
      * @param batch
      */
     public void draw(SpriteBatch batch) {
-        detectUnitsMove(); // check if units need to be moved, and carry the movement out if required
-
         for (Sector sector : sectors.values()) {
-            String text = sector.getUnitsInSector() + "";
-            batch.draw(sector.getSectorTexture(), 0, 0);
-            if (!sector.isDecor()) { // don't need to draw the amount of units on a decor sector
-                layout.setText(font, text);
-
-                float overlaySize = 40.0f;
-                batch.draw(troopCountOverlay, sector.getSectorCentreX() - overlaySize / 2, sector.getSectorCentreY() - overlaySize / 2, overlaySize, overlaySize);
-                font.draw(batch, layout, sector.getSectorCentreX() - layout.width / 2, sector.getSectorCentreY() + layout.height / 2);
-            }
-        }
-
-        for (Sector sector : sectors.values()) {
-            if (sector.getAsbestosCount() != 0) {
-                batch.draw(asbestosStatus, sector.getSectorCentreX(), sector.getSectorCentreY() + 10);
-                layout.setText(font, sector.getAsbestosCount() + "");
-                font.draw(batch, layout, sector.getSectorCentreX() + layout.width + 2, sector.getSectorCentreY() + layout.height + 18);
-            }
-
-            if (sector.getPoopCount() != 0) {
-                batch.draw(pooStatus, sector.getSectorCentreX(), sector.getSectorCentreY() - 50);
-                layout.setText(font, sector.getPoopCount() + "");
-                font.draw(batch, layout, sector.getSectorCentreX() + layout.width + 2, sector.getSectorCentreY() + layout.height - 40);
-            }
+            sector.draw(batch);
         }
 
         // render particles

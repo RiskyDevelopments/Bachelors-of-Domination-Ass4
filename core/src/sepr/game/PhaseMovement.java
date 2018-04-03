@@ -10,10 +10,8 @@ import sepr.game.utils.TurnPhaseType;
  */
 public class PhaseMovement extends PhaseAttackMove {
 
-
     public PhaseMovement(GameScreen gameScreen) {
         super(gameScreen, TurnPhaseType.MOVEMENT);
-
     }
 
     /**
@@ -34,17 +32,7 @@ public class PhaseMovement extends PhaseAttackMove {
      * carries out movement once number of troops has been set using the dialog
      */
     private void executeMoveTroops() {
-
-        int attackersLost = numOfUnits[0];
-        int defendersLost = numOfUnits[0];
-
-
-        // apply the movement to the map
-        if (gameScreen.getMap().moveTroops(sourceSector.getId(), targetSector.getId(), attackersLost, defendersLost)) {
-
-
-            updateTroopReinforcementLabel();
-        }
+        gameScreen.getMap().moveUnits(sourceSector.getId(), targetSector.getId(), numOfUnits[0]);
     }
 
     /**
@@ -64,7 +52,6 @@ public class PhaseMovement extends PhaseAttackMove {
             numOfUnits = null;
         }
     }
-
 
     /**
      * @param screenX mouse x position on screen when clicked

@@ -9,11 +9,12 @@ import sepr.game.utils.TurnPhaseType;
  */
 public class PhaseAttack extends PhaseAttackMove{
 
-    public AudioManager Audio = AudioManager.getInstance();
+    private AudioManager Audio = AudioManager.getInstance();
+    private int[] unitsToMove;
+
 
     public PhaseAttack(GameScreen gameScreen) {
         super(gameScreen, TurnPhaseType.ATTACK);
-
     }
 
     /**
@@ -36,66 +37,40 @@ public class PhaseAttack extends PhaseAttackMove{
      * carries out attack once number of attackers has been set using the dialog
      */
     private void executeAttack() {
-        int attackers = numOfUnits[0];
-        int defenders = targetSector.getUnitsInSector();
+        System.out.println("attacking");
+        // record owners to keep track of changes after the attack
+        int sourceSectorOwner = sourceSector.getOwnerId();
+        int targetSectorOwner = targetSector.getOwnerId();
 
-        int attackersLost = 0;
-        int defendersLost = 0;
+        gameScreen.getMap().completeAttack(gameScreen.getPlayerById(sourceSectorOwner), gameScreen.getPlayerById(GameScreen.NEUTRAL_PLAYER_ID), sourceSector, targetSector, numOfUnits[0]);
 
-        while (attackers != attackersLost && defenders != defendersLost) {
-            if (random.nextFloat() > 0.55f) {
-                attackersLost++;
-            } else {
-                defendersLost++;
-            }
-        }
+        if (targetSector.getOwnerId() == sourceSectorOwner) { // attacker took over the target sector
+            numOfUnits = new int[] {-1, sourceSector.getId(), targetSector.getId()};
 
-        if(attackersLost > defendersLost){
-            // Poor Move
-            int voice = random.nextInt(3);
+            DialogFactory.attackSuccessDialogBox(targetSector.getReinforcementsProvided(),
+                    sourceSector.getUnitsInSector(),
+                    unitsToMove,
+                    gameScreen.getPlayerById(targetSectorOwner).getPlayerName(),
+                    gameScreen.getPlayerById(sourceSectorOwner).getPlayerName(),
+                    targetSector.getDisplayName(),
+                    this);
 
-            switch (voice){
-                case 0:
-                    Audio.get("sound/Invalid Move/Colin_Your_actions_are_questionable.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                    break;
-                case 1:
-                    Audio.get("sound/Battle Phrases/Colin_Seems_Risky_To_Me.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                    break;
-                case 2:
-                    break;
-            }
-        } else {
-            // Good move
-            int voice = random.nextInt(5);
-
-            switch (voice){
-                case 0:
-                    Audio.get("sound/Battle Phrases/Colin_An_Unlikely_Victory.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                    break;
-                case 1:
-                    Audio.get("sound/Battle Phrases/Colin_Far_better_than_I_expected.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                    break;
-                case 2:
-                    Audio.get("sound/Battle Phrases/Colin_I_couldnt_have_done_it_better_myself.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                    break;
-                case 3:
-                    Audio.get("sound/Battle Phrases/Colin_Multiplying_by_the_identity_matrix_is_more_fasinating_than_your_last_move.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                    break;
-                case 4:
-                    Audio.get("sound/Battle Phrases/Colin_Well_Done.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                    break;
-                case 5:
-                    break;
-            }
-        }
-
-        // apply the attack to the map
-        if (gameScreen.getMap().attackSector(sourceSector.getId(), targetSector.getId(), attackersLost, defendersLost, gameScreen.getPlayerById(sourceSector.getOwnerId()), gameScreen.getPlayerById(targetSector.getOwnerId()), gameScreen.getPlayerById(gameScreen.NEUTRAL_PLAYER_ID), this)) {
-            updateTroopReinforcementLabel();
+        } else { // defender wiped out attacking units and attacker sector is now neutral
+            DialogFactory.sectorOwnerChangeDialog(gameScreen.getPlayerById(sourceSectorOwner).getPlayerName(), gameScreen.getPlayerById(GameScreen.NEUTRAL_PLAYER_ID).getPlayerName(), sourceSector.getDisplayName(), this);
         }
     }
 
-
+    /**
+     * once unitsToMove has had the amount of units to move and the ids of the source and target sector set, perform the move
+     */
+    private void detectUnitsMove() {
+        if (unitsToMove != null) {
+            if (unitsToMove[0] != -1) {
+                gameScreen.getMap().moveUnits(unitsToMove[1], unitsToMove[2], unitsToMove[0]);
+                unitsToMove = null;
+            }
+        }
+    }
 
     /**
      * process an attack if one is being carried out
@@ -122,9 +97,7 @@ public class PhaseAttack extends PhaseAttackMove{
                         // play no sound
                         break;
                 }
-            }
-
-            else {
+            } else {
                 executeAttack();
             }
             // reset attack
@@ -132,6 +105,7 @@ public class PhaseAttack extends PhaseAttackMove{
             targetSector = null;
             numOfUnits = null;
         }
+        detectUnitsMove();
     }
 
 

@@ -17,11 +17,12 @@ import java.util.HashMap;
  * main game class used for controlling what screen is currently being displayed
  */
 public class Main extends Game implements ApplicationListener {
-	private MiniGameScreen miniGameScreen;
 	private MenuScreen menuScreen;
-	private GameScreen gameScreen;
-	private OptionsScreen optionsScreen;
 	private GameSetupScreen gameSetupScreen;
+	private OptionsScreen optionsScreen;
+	private GameScreen gameScreen;
+	private MiniGameScreen miniGameScreen;
+
 	private SaveLoadManager saveLoadManager;
 	private AudioManager Audio = AudioManager.getInstance();
 
@@ -35,11 +36,12 @@ public class Main extends Game implements ApplicationListener {
 		new DialogFactory(); // setup dialog factory for generating dialogs
 
 		this.menuScreen = new MenuScreen(this);
-		this.gameScreen = new GameScreen(this);
-		this.optionsScreen = new OptionsScreen(this);
 		this.gameSetupScreen = new GameSetupScreen(this);
-		this.saveLoadManager = new SaveLoadManager(this, gameScreen);
+		this.optionsScreen = new OptionsScreen(this);
+		this.gameScreen = new GameScreen(this);
 		this.miniGameScreen = new MiniGameScreen( this, gameScreen);
+
+		this.saveLoadManager = new SaveLoadManager(this, gameScreen);
 
 		applyPreferences();
 
@@ -118,6 +120,22 @@ public class Main extends Game implements ApplicationListener {
 		}
 	}
 
+	//Dom modified method name to fit rest of program's convention
+	public void saveGame(){
+        this.saveLoadManager.SaveByID(this.saveLoadManager.GetCurrentSaveID()); // TODO get next id/current id
+    }
+
+	//Dom modified method name to fit rest of program's convention
+    public void loadGame(){
+	    this.saveLoadManager.LoadFromFile();
+		this.saveLoadManager.LoadSaveByID(0);
+	}
+
+	//Dom modified method name to fit rest of program's convention
+	public boolean hasLoadedSaves(){
+		return this.saveLoadManager.savesToLoad;
+	}
+
 	@Override
 	public void render () {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
@@ -132,19 +150,6 @@ public class Main extends Game implements ApplicationListener {
 		optionsScreen.dispose();
 		gameSetupScreen.dispose();
 		gameScreen.dispose();
-	}
-
-	public void SaveGame(){
-        this.saveLoadManager.SaveByID(this.saveLoadManager.GetCurrentSaveID()); // TODO get next id/current id
-    }
-
-    public void LoadGame(){
-	    this.saveLoadManager.LoadFromFile();
-		this.saveLoadManager.LoadSaveByID(0);
-	}
-
-	public boolean HasLoadedSaves(){
-		return this.saveLoadManager.savesToLoad;
 	}
 
 }
