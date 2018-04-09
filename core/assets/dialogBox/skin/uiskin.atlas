@@ -1,6 +1,6 @@
 
-uiskin.png
-size: 256,128
+uiskin2.png
+size: 400,400
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
@@ -141,9 +141,9 @@ default-slider
   index: -1
 default-slider-knob
   rotate: false
-  xy: 1, 1
-  size: 9, 18
-  orig: 9, 18
+  xy: 40, 1
+  size: 20, 20
+  orig: 20, 20
   offset: 0, 0
   index: -1
 default-splitpane
@@ -164,10 +164,10 @@ default-splitpane-vertical
   index: -1
 default-window
   rotate: false
-  xy: 1, 20
-  size: 27, 29
-  split: 4, 3, 20, 3
-  orig: 27, 29
+  xy: 1, 99
+  size: 74, 110
+  split: 35, 35, 80, 30
+  orig: 74, 110
   offset: 0, 0
   index: -1
 selection
