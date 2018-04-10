@@ -85,7 +85,7 @@ default-round
   rotate: false
   xy: 4, 52
   size: 20, 29
-  split: 6, 6, 6, 6
+  split: 7, 7, 7, 7
   pad: 6, 6, 6, 6
   orig: 29, 54
   offset: 0, 0
@@ -94,7 +94,7 @@ default-round-down
   rotate: false
   xy: 64, 52
   size: 20, 29
-  split: 6, 6, 6, 6
+  split: 7, 7, 7, 7
   pad: 6, 6, 6, 6
   orig: 29, 54
   offset: 0, 0

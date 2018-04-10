@@ -3,13 +3,11 @@ package sepr.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.StringBuilder;
+import sepr.game.saveandload.SaveLoadManager;
 import sepr.game.utils.PunishmentCardType;
 
 import java.util.List;
@@ -36,8 +34,19 @@ public class DialogFactory {
     public static void basicDialogBox(String title, String message, Stage stage) {
         Dialog dialog = new Dialog(title, DialogFactory.skin);
         dialog.text(message);
+        basicStyle(dialog, 60);
         dialog.button("Ok", "0");
         dialog.show(stage);
+    }
+
+    /**
+     * Used to uniformly style buttons
+     * @param dialog Dialog box to style
+     * @param width Width of each button
+     */
+    private static void basicStyle(Dialog dialog, int width){
+        dialog.getButtonTable().defaults().width(width);
+        dialog.getButtonTable().row().padBottom(10);
     }
 
     /**
@@ -65,6 +74,7 @@ public class DialogFactory {
                 }
             }
         };
+        basicStyle(dialog, 60);
         dialog.text("Are you sure you want to exit the game?");
         dialog.button("Yes", "1");
         dialog.button("No", "0");
@@ -109,9 +119,41 @@ public class DialogFactory {
                 }
             }
         };
+        basicStyle(dialog, 60);
         dialog.text("Are you sure you want to exit the game?");
         dialog.button("Yes", "1");
         dialog.button("No", "0");
+        dialog.show(stage);
+    }
+
+    /**
+     * Dialog box for the pause menu
+     *
+     * @param gameScreen for changing the screen
+     * @param stage the stage to draw the box onto
+     */
+    public static void pauseGameDialogBox(final GameScreen gameScreen, Stage stage) {
+        Dialog dialog = new Dialog("Paused", DialogFactory.skin) {
+            protected void result(Object object) {
+                if (object.equals("save")) {
+                    gameScreen.getMain().saveGame();
+                } else if (object.equals("saveExit")) {
+                    gameScreen.getMain().saveGame();
+                    gameScreen.openMenu(); // change screen to menu screen
+                } else if (object.equals("exit")) {
+                    gameScreen.openMenu(); // change screen to menu screen
+                }
+            }
+        };
+        dialog.getButtonTable().defaults().width(180);
+        dialog.getButtonTable().row().padBottom(10);
+        dialog.button("Resume", "resume");
+        dialog.getButtonTable().row().padBottom(10);
+        dialog.button("Save Game", "save");
+        dialog.getButtonTable().row().padBottom(10);
+        dialog.button("Save and Exit", "saveExit");
+        dialog.getButtonTable().row().padBottom(10);
+        dialog.button("Exit", "exit");
         dialog.show(stage);
     }
 
@@ -165,6 +207,7 @@ public class DialogFactory {
 
         dialog.getContentTable().row();
 
+        basicStyle(dialog, 60);
         dialog.button("Ok", "0");
         dialog.show(stage);
     }
@@ -205,6 +248,7 @@ public class DialogFactory {
 
         dialog.getContentTable().row();
 
+        basicStyle(dialog, 90);
         dialog.button("Cancel", "0");
         dialog.button("Ok", "1");
         dialog.show(stage);
@@ -253,6 +297,7 @@ public class DialogFactory {
 
         dialog.getContentTable().row();
 
+        basicStyle(dialog, 90);
         // add buttons for accepting or canceling the selection
         dialog.button("Cancel", "0").padLeft(20).padRight(40).align(Align.center);
         dialog.button("Ok", "1").padLeft(40).padRight(20).align(Align.center);
@@ -303,6 +348,7 @@ public class DialogFactory {
 
         dialog.getContentTable().row();
 
+        basicStyle(dialog, 90);
         // add buttons for accepting or canceling the selection
         dialog.button("Cancel", "0").padLeft(20).padRight(40).align(Align.center);
         dialog.button("Ok", "1").padLeft(40).padRight(20).align(Align.center);
@@ -328,6 +374,7 @@ public class DialogFactory {
             message += "\n    " + s;
         }
         dialog.text(message);
+        basicStyle(dialog, 60);
         dialog.button("Ok", "0");
         dialog.show(stage);
     }
@@ -347,6 +394,7 @@ public class DialogFactory {
             }
         };
         dialog.text("Game Over!\n" + playerName + " of College " + collegeName + " has conquered the University of York!");
+        basicStyle(dialog, 60);
         dialog.button("Ok", "0");
         dialog.show(stage);
     }
@@ -420,6 +468,7 @@ public class DialogFactory {
         }
 
         dialog.text(rewardText);
+        basicStyle(dialog, 60);
         dialog.button("Ok", "0");
         dialog.show(stage);
     }

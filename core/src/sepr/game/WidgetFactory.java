@@ -472,7 +472,7 @@ public class WidgetFactory {
         menuBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                DialogFactory.leaveGameDialogBox(gameScreen, actor.getStage());
+                DialogFactory.pauseGameDialogBox(gameScreen, actor.getStage());
             }
         });
 
