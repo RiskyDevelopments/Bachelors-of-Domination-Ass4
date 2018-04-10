@@ -1,6 +1,6 @@
 
 uiskin.png
-size: 256,128
+size: 400,400
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
@@ -83,20 +83,20 @@ default-rect-down
   index: -1
 default-round
   rotate: false
-  xy: 112, 29
-  size: 12, 20
-  split: 5, 5, 5, 4
-  pad: 4, 4, 1, 1
-  orig: 12, 20
+  xy: 4, 52
+  size: 20, 29
+  split: 6, 6, 6, 6
+  pad: 6, 6, 6, 6
+  orig: 29, 54
   offset: 0, 0
   index: -1
 default-round-down
   rotate: false
-  xy: 99, 29
-  size: 12, 20
-  split: 5, 5, 5, 4
-  pad: 4, 4, 1, 1
-  orig: 12, 20
+  xy: 64, 52
+  size: 20, 29
+  split: 6, 6, 6, 6
+  pad: 6, 6, 6, 6
+  orig: 29, 54
   offset: 0, 0
   index: -1
 default-round-large
@@ -133,17 +133,17 @@ default-select-selection
   index: -1
 default-slider
   rotate: false
-  xy: 29, 20
-  size: 8, 8
+  xy: 46, 50
+  size: 6, 14
   split: 2, 2, 2, 2
-  orig: 8, 8
+  orig: 6, 14
   offset: 0, 0
   index: -1
 default-slider-knob
   rotate: false
-  xy: 1, 1
-  size: 9, 18
-  orig: 9, 18
+  xy: 30, 53
+  size: 13, 28
+  orig: 13, 28
   offset: 0, 0
   index: -1
 default-splitpane
@@ -164,10 +164,10 @@ default-splitpane-vertical
   index: -1
 default-window
   rotate: false
-  xy: 1, 20
-  size: 27, 29
-  split: 4, 3, 20, 3
-  orig: 27, 29
+  xy: 1, 99
+  size: 74, 110
+  split: 35, 35, 80, 22
+  orig: 74, 110
   offset: 0, 0
   index: -1
 selection
