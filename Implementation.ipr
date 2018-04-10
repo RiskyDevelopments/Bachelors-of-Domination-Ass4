@@ -199,6 +199,11 @@
         <w>minigame</w>
       </words>
     </dictionary>
+    <dictionary name="Ryan">
+      <words>
+        <w>postgrad</w>
+      </words>
+    </dictionary>
   </component>
   <component name="ProjectModuleManager">
     <modules>
