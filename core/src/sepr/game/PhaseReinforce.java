@@ -13,7 +13,7 @@ import java.util.Random;
 public class PhaseReinforce extends Phase {
     public AudioManager Audio = AudioManager.getInstance();
 
-    private int[] allocateUnits; // 2 index array storing : [0] number of troops to allocate ; [1] id of sector to allocate to
+    private int[] allocateUnits; // 3 index array storing : [0] number of undergraduate; [1] number of postgraduates; [2] id of sector to allocate to
 
     private Random random;
 
@@ -30,7 +30,6 @@ public class PhaseReinforce extends Phase {
         if (player.getOwnsPVC())  // assigns a bonus of two troops if they own the PVC tile
         {
             currentPlayer.addTroopsToAllocate(2);
-
         }
 
         updateTroopReinforcementLabel();
@@ -48,11 +47,11 @@ public class PhaseReinforce extends Phase {
      */
     private void detectUnitAllocation() {
         if (allocateUnits != null) { // check that an allocation has been initiated
-            if (allocateUnits[1] == -1 || allocateUnits[0] == 0) { // cancel allocation if sector id set to -1 or 0 units are allocated
+            if (allocateUnits[2] == -1 || (allocateUnits[0] == 0 && allocateUnits[1] == 0)) { // cancel allocation if sector id set to -1 or 0 units are allocated
                 allocateUnits = null;
-            } else if (allocateUnits[0] != -1) { // dialog complete : perform the allocation
-                gameScreen.getMap().addUnitsToSectorAnimated(allocateUnits[1], allocateUnits[0]);
-                currentPlayer.addTroopsToAllocate(-allocateUnits[0]);
+            } else if (allocateUnits[0] != -1 || allocateUnits[1] != -1) {
+                gameScreen.getMap().addUnitsToSectorAnimated(allocateUnits[2], allocateUnits[0], allocateUnits[1]);
+                currentPlayer.addTroopsToAllocate(-(allocateUnits[0] + (allocateUnits[1]*2)));
                 allocateUnits = null;
                 updateTroopReinforcementLabel();
             }
@@ -95,10 +94,11 @@ public class PhaseReinforce extends Phase {
                     DialogFactory.basicDialogBox("Allocation Problem", "Cannot allocate units to a sector you do not own", this);
                 } else {
                     // setup allocation form
-                    allocateUnits = new int[2];
+                    allocateUnits = new int[3];
                     allocateUnits[0] = -1;
-                    allocateUnits[1] = sectorId;
-                    DialogFactory.allocateUnitsDialog(currentPlayer.getTroopsToAllocate(), allocateUnits, gameScreen.getMap().getSectorById(sectorId).getDisplayName(), this);
+                    allocateUnits[1] = -1;
+                    allocateUnits[2] = sectorId;
+                    DialogFactory.allocateUnitsDialog(currentPlayer.getTroopsToAllocate(), allocateUnits, this);
                 }
             } else {
                 invalidMove();

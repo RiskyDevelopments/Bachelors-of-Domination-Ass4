@@ -106,6 +106,7 @@ public class Map {
         Pixmap sectorPixmap = new Pixmap(Gdx.files.internal("mapData/" + sectorData[1]));
         String displayName = sectorData[2];
         int unitsInSector = 10 + random.nextInt(15);
+        int postgradsInSector = 0;
         int reinforcementsProvided = Integer.parseInt(sectorData[4]);
         String college = sectorData[5];
         boolean neutral = Boolean.parseBoolean(sectorData[6]);
@@ -114,7 +115,7 @@ public class Map {
         int sectorY = Integer.parseInt(sectorData[9]);
         boolean decor = Boolean.parseBoolean(sectorData[10]);
 
-        return new Sector(sectorId, ownerId, filename, sectorTexture, texturePath, sectorPixmap, displayName, unitsInSector, reinforcementsProvided, college, neutral, adjacentSectors, sectorX, sectorY, decor, 0, 0, this);
+        return new Sector(sectorId, ownerId, filename, sectorTexture, texturePath, sectorPixmap, displayName, unitsInSector, postgradsInSector, reinforcementsProvided, college, neutral, adjacentSectors, sectorX, sectorY, decor, 0, 0, this);
     }
 
     /**
@@ -192,8 +193,8 @@ public class Map {
      **/
     public Boolean moveTroops(int attackingSectorId, int defendingSectorId, int attackersLost, int defendersLost) {
 
-        addUnitsToSectorAnimated(attackingSectorId, -attackersLost); // apply amount of attacking units lost
-        addUnitsToSectorAnimated(defendingSectorId, defendersLost); // apply amount of defending units lost
+        addUnitsToSectorAnimated(attackingSectorId, -attackersLost, 0); // apply amount of attacking units lost
+        addUnitsToSectorAnimated(defendingSectorId, defendersLost, 0); // apply amount of defending units lost
         return true;
     }
 
@@ -202,11 +203,17 @@ public class Map {
      * adds the specified number of units to this sector and sets up drawing a particle effect showing the addition
      *
      * @param sectorId id of sector to add the units to
-     * @param amount   of units to add
+     * @param undergrad  number of undergrads to add
+     * @param postgrad number of postgrads to add
      */
-    public void addUnitsToSectorAnimated(int sectorId, int amount) {
-        this.sectors.get(sectorId).addUnits(amount);
-        this.particles.add(new UnitChangeParticle(amount, new Vector2(sectors.get(sectorId).getSectorCentreX(), sectors.get(sectorId).getSectorCentreY())));
+    public void addUnitsToSectorAnimated(int sectorId, int undergrad, int postgrad) {
+        this.sectors.get(sectorId).addUnits(undergrad, postgrad);
+        if (undergrad != 0){
+            this.particles.add(new UnitChangeParticle(undergrad, new Vector2(sectors.get(sectorId).getSectorCentreX(), sectors.get(sectorId).getSectorCentreY())));
+        }
+        if (postgrad != 0){
+            this.particles.add(new UnitChangeParticle(postgrad, new Vector2(sectors.get(sectorId).getSectorCentreX() + 10, sectors.get(sectorId).getSectorCentreY() + 10)));
+        }
     }
 
     /**
@@ -279,8 +286,8 @@ public class Map {
         if (!sectors.get(sourceSectorId).isAdjacentTo(sectors.get(targetSecotId))) {
             throw new IllegalArgumentException("Sectors must be adjacent in order to move units");
         }
-        addUnitsToSectorAnimated(sourceSectorId, -amount); // remove units from source
-        addUnitsToSectorAnimated(targetSecotId, amount); // add units to target
+        addUnitsToSectorAnimated(sourceSectorId, -amount, 0); // remove units from source
+        addUnitsToSectorAnimated(targetSecotId, amount, 0); // add units to target
     }
 
     public void completeAttack(Player attacker, Player neutral, Sector source, Sector target, int attackers) {
@@ -337,8 +344,8 @@ public class Map {
         }
 
         // apply the attack to the map
-        addUnitsToSectorAnimated(source.getId(), -attackersLost);
-        addUnitsToSectorAnimated(target.getId(), -defendersLost);
+        addUnitsToSectorAnimated(source.getId(), -attackersLost, 0);
+        addUnitsToSectorAnimated(target.getId(), -defendersLost, 0);
 
         if (source.getUnitsInSector() == 0) {
             source.setOwner(neutral);

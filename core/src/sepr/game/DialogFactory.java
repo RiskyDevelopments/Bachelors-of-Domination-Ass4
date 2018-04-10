@@ -172,18 +172,39 @@ public class DialogFactory {
     /**
      * creates a dialog modal allowing the user to select how many units they want to allocate to a sector
      *
-     * @param maxAllocation maximum amount of troops that can be assigned
-     * @param allocation 2 index array storing : [0] number of troops to allocate ; [1] id of sector to allocate to
-     * @param sectorName name of sector being allocated to
+     * @param allocationPoints maximum amount of troops that can be assigned
+     * @param allocation 3 index array storing : [0] number of undergraduate; [1] number of postgraduates; [2] id of sector to allocate to
      * @param stage to draw the box onto
      */
-    public static void allocateUnitsDialog(Integer maxAllocation, final int[] allocation, String sectorName, Stage stage) {
-        final Slider slider = new Slider(1, maxAllocation, 1, false, DialogFactory.skin);
-        final Label sliderValue = new Label("1", DialogFactory.skin);
-        slider.addListener(new ChangeListener() {
+    public static void allocateUnitsDialog(final Integer allocationPoints, final int[] allocation, Stage stage) {
+        int undergradMax = allocationPoints;
+        int postgradMax = (int)Math.floor((double)allocationPoints/2);
+        final Slider undergradSlider = new Slider(0, undergradMax, 1, false, DialogFactory.skin);
+        final Slider postgradSlider = new Slider(0, postgradMax, 1, false, DialogFactory.skin);
+
+        final Label undergradSliderValue = new Label("0", DialogFactory.skin);
+        final Label postgradSliderValue = new Label("0", DialogFactory.skin);
+        final Label unspentAllocation = new Label(new StringBuilder(allocationPoints + ""), DialogFactory.skin);
+
+        undergradSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                sliderValue.setText(new StringBuilder((int)slider.getValue() + ""));
+                undergradSliderValue.setText(new StringBuilder((int)undergradSlider.getValue() + ""));
+                double postgradAllocated = (int)postgradSlider.getValue()*2;
+                int postgradToAllocate = (allocationPoints - (int)undergradSlider.getValue());
+                postgradSlider.setRange(0, postgradToAllocate / 2);
+                unspentAllocation.setText(new StringBuilder((int)(allocationPoints - undergradSlider.getValue() - postgradAllocated) + ""));
+            }
+        });
+
+        postgradSlider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                postgradSliderValue.setText(new StringBuilder((int)postgradSlider.getValue() + ""));
+                double postgradAllocated = (int)postgradSlider.getValue()*2;
+                int undergradToAllocate = (allocationPoints - (int)(postgradAllocated));
+                undergradSlider.setRange(0, undergradToAllocate);
+                unspentAllocation.setText(new StringBuilder((int)(allocationPoints - undergradSlider.getValue() - postgradAllocated) + ""));
             }
         });
 
@@ -191,17 +212,28 @@ public class DialogFactory {
             protected void result(Object object) {
                 if (object.equals("0")) { // Cancel button pressed
                     allocation[0] = -1;
-                    allocation[1] = -1; // set allocating sector id to -1 to indicate the allocation has been cancelled
+                    allocation[1] = -1;
+                    allocation[2] = -1; // set allocating sector id to -1 to indicate the allocation has been cancelled
                 } else if (object.equals("1")) { // Ok button pressed
-                    allocation[0] = (int)slider.getValue(); // set the number of troops to allocate to the value of the slider
+                    allocation[0] = (int)undergradSlider.getValue(); // set the number of troops to allocate to the value of the slider
+                    allocation[1] = (int)postgradSlider.getValue();
                 }
             }
         };
-        dialog.text("You can allocate up to " + maxAllocation + " troops to " + sectorName);
+        dialog.getContentTable().add("Unspent allocation points").padLeft(20).padRight(20).align(Align.left).expandX();
+        dialog.getContentTable().add(unspentAllocation).padLeft(20).padRight(20).align(Align.left).expandX();
+
         dialog.getContentTable().row();
 
-        dialog.getContentTable().add(slider).padLeft(20).padRight(20).align(Align.left).expandX();
-        dialog.getContentTable().add(sliderValue).padLeft(20).padRight(20).align(Align.right);
+        dialog.getContentTable().add("Undergraduate troops").padLeft(20).padRight(20).align(Align.left).expandX();
+        dialog.getContentTable().add(undergradSlider).padLeft(20).padRight(20).align(Align.left).expandX();
+        dialog.getContentTable().add(undergradSliderValue).padLeft(20).padRight(20).align(Align.right);
+
+        dialog.getContentTable().row();
+
+        dialog.getContentTable().add("Postgraduate troops").padLeft(20).padRight(20).align(Align.left).expandX();
+        dialog.getContentTable().add(postgradSlider).padLeft(20).padRight(20).align(Align.left).expandX();
+        dialog.getContentTable().add(postgradSliderValue).padLeft(20).padRight(20).align(Align.right);
 
         dialog.getContentTable().row();
 
