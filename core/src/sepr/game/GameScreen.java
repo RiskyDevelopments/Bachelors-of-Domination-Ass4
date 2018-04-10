@@ -521,7 +521,7 @@ public class GameScreen implements Screen, InputProcessor{
             keysDown.put(Input.Keys.RIGHT, false);
         }
         if (keycode == Input.Keys.ESCAPE) {
-            DialogFactory.leaveGameDialogBox(this, phases.get(currentPhase)); // confirm if the player wants to leave if escape is pressed
+            DialogFactory.pauseGameDialogBox(this, phases.get(currentPhase)); // confirm if the player wants to leave if escape is pressed
         }
         if (keycode == Input.Keys.S) {
             this.main.saveGame();
@@ -599,5 +599,9 @@ public class GameScreen implements Screen, InputProcessor{
 
     public int getCurrentPlayerPointer(){
         return this.currentPlayerPointer;
+    }
+
+    public Main getMain(){
+        return this.main;
     }
 }
