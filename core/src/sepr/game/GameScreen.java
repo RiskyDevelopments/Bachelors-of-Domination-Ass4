@@ -528,4 +528,8 @@ public class GameScreen implements Screen, InputProcessor{
     public int getCurrentPlayerPointer(){
         return this.currentPlayerPointer;
     }
+
+    public Main getMain(){
+        return this.main;
+    }
 }
