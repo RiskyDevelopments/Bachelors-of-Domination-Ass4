@@ -212,7 +212,7 @@ public class Map {
             this.particles.add(new UnitChangeParticle(undergrad, new Vector2(sectors.get(sectorId).getSectorCentreX(), sectors.get(sectorId).getSectorCentreY())));
         }
         if (postgrad != 0){
-            this.particles.add(new UnitChangeParticle(postgrad, new Vector2(sectors.get(sectorId).getSectorCentreX() + 10, sectors.get(sectorId).getSectorCentreY() + 10)));
+            this.particles.add(new UnitChangeParticle(postgrad, new Vector2(sectors.get(sectorId).getSectorCentreX() + 40, sectors.get(sectorId).getSectorCentreY())));
         }
     }
 
@@ -254,9 +254,7 @@ public class Map {
             }
             int pixelValue = sector.getSectorPixmap().getPixel(worldX, worldYInverted); // get pixel value of the point in sector image the mouse is over
             if (pixelValue != -256) { // if pixel is not transparent then it is over the sector
-                if (sector.isDecor()) {
-                    continue; // sector is decor so continue checking to see if a non-decor sector contains point
-                } else {
+                if (!sector.isDecor()) {
                     return sector.getId(); // return id of sector which is hovered over
                 }
             }
@@ -280,7 +278,7 @@ public class Map {
         if (sectors.get(sourceSectorId).getOwnerId() != sectors.get(targetSecotId).getOwnerId()) {
             throw new IllegalArgumentException("Source and target sectors must have the same owners");
         }
-        if (sectors.get(sourceSectorId).getUnitsInSector() <= amount) {
+        if (sectors.get(sourceSectorId).getUnderGradsInSector() <= amount) {
             throw new IllegalArgumentException("Must leave at least one unit on source sector and can't move more units than are on source sector");
         }
         if (!sectors.get(sourceSectorId).isAdjacentTo(sectors.get(targetSecotId))) {
@@ -291,7 +289,7 @@ public class Map {
     }
 
     public void completeAttack(Player attacker, Player neutral, Sector source, Sector target, int attackers) {
-        int defenders = target.getUnitsInSector();
+        int defenders = target.getUnderGradsInSector();
 
         int attackersLost = 0;
         int defendersLost = 0;
@@ -347,10 +345,11 @@ public class Map {
         addUnitsToSectorAnimated(source.getId(), -attackersLost, 0);
         addUnitsToSectorAnimated(target.getId(), -defendersLost, 0);
 
-        if (source.getUnitsInSector() == 0) {
+        if (source.getUnderGradsInSector() == 0) { // defender won
             source.setOwner(neutral);
-        } else {
+        } else { // attacker won
             target.setOwner(attacker);
+            if (proViceChancellor.PVCSpawn()) proViceChancellor.startMiniGame();
         }
     }
 

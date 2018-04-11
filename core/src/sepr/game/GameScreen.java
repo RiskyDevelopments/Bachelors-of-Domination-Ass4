@@ -40,8 +40,6 @@ public class GameScreen implements Screen, InputProcessor{
     private Map map; // stores state of the game: who owns which sectors
     private HashMap<Integer, Player> players; // player id mapping to the relevant player
 
-    private HashMap<Integer, Boolean> keysDown; // mapping from key, (Input.Keys), to whether it has been pressed down
-
     // timer settings
     private boolean turnTimerEnabled;
     private int maxTurnTime;
@@ -49,7 +47,6 @@ public class GameScreen implements Screen, InputProcessor{
 
     private List<Integer> turnOrder; // array of player ids in order of players' turns;
     private int currentPlayerPointer; // index of current player in turnOrder list
-    private int previousPlayerPointer; // index of the previous player in turnOrder list
 
     private Texture mapBackground; // texture for drawing as a background behind the game
 
@@ -61,7 +58,7 @@ public class GameScreen implements Screen, InputProcessor{
      * sets up rendering objects and key input handling
      * setupGame then start game must be called before a game is ready to be played
      *
-     * @param main used to change screenthis.phases = phases;
+     * @param main used to change screen this.phases = phases;
      */
     public GameScreen(Main main) {
         this.main = main;
@@ -71,15 +68,6 @@ public class GameScreen implements Screen, InputProcessor{
         this.gameplayViewport = new ScreenViewport(gameplayCamera);
 
         this.mapBackground = new Texture("uiComponents/mapBackgroundBox.png");
-
-        // setup hashmap to check which keys were previously pressed
-        this.keysDown = new HashMap<Integer, Boolean>();
-        this.keysDown.put(Input.Keys.UP, false);
-        this.keysDown.put(Input.Keys.LEFT, false);
-        this.keysDown.put(Input.Keys.DOWN, false);
-        this.keysDown.put(Input.Keys.RIGHT, false);
-        this.keysDown.put(Input.Keys.S, false);
-        this.keysDown.put(Input.Keys.L, false);
 
         this.random = new Random();
     }
@@ -111,7 +99,7 @@ public class GameScreen implements Screen, InputProcessor{
      *
      * @param players HashMap of the players in this game
      * @param turnTimerEnabled should players turns be limited
-     * @param maxTurnTime time elapsed in cthis.phases = phases;urrent turn, irrelevant if turn timer not enabled
+     * @param maxTurnTime time elapsed in this.phases = phases;urrent turn, irrelevant if turn timer not enabled
      */
     public void setupGame(HashMap<Integer, Player> players, boolean turnTimerEnabled, int maxTurnTime, boolean allocateNeutralPlayer) {
         Audio.loadSounds(); //loads the sounds into memory
@@ -201,7 +189,7 @@ public class GameScreen implements Screen, InputProcessor{
      *
      * @return gets the player object for the player who's turn it currently is
      */
-    private Player getCurrentPlayer() {
+    public Player getCurrentPlayer() {
         return players.get(turnOrder.get(currentPlayerPointer));
     }
 
@@ -252,7 +240,6 @@ public class GameScreen implements Screen, InputProcessor{
      * increments the currentPlayerPointer and resets it to 0 if it now exceeds the number of players in the list
      */
     private void nextPlayer() {
-        previousPlayerPointer = currentPlayerPointer;
         currentPlayerPointer++;
         if (currentPlayerPointer == turnOrder.size()) { // reached end of players, reset to 0 and increase turn number
             currentPlayerPointer = 0;
@@ -343,25 +330,6 @@ public class GameScreen implements Screen, InputProcessor{
     }
 
     /**
-     * moves the camera in the appropriate direction if the corresponding arrow key is down
-     */
-    private void controlCamera() {
-        if (this.keysDown.get(Input.Keys.UP)) {
-            this.gameplayCamera.translate(0, 4, 0);
-        }
-        if (this.keysDown.get(Input.Keys.DOWN)) {
-            this.gameplayCamera.translate(0, -4, 0);
-        }
-        if (this.keysDown.get(Input.Keys.LEFT)) {
-            this.gameplayCamera.translate(-4, 0, 0);
-        }
-        if (this.keysDown.get(Input.Keys.RIGHT)) {
-            this.gameplayCamera.translate(4, 0, 0);
-        }
-
-    }
-
-    /**
      * re-centres the camera and sets the zoom level back to default
      */
     public void resetCameraPosition() {
@@ -426,8 +394,6 @@ public class GameScreen implements Screen, InputProcessor{
     public void render(float delta) {
         if (!gameSetup) throw new RuntimeException("Game must be setup before attempting to play it"); // throw exception if attempt to run game before its setup
 
-        this.controlCamera(); // move camera
-
         gameplayCamera.update();
         gameplayBatch.setProjectionMatrix(gameplayCamera.combined);
 
@@ -490,47 +456,10 @@ public class GameScreen implements Screen, InputProcessor{
     /* Input Processor implementation */
 
     @Override
-    public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.UP) {
-            keysDown.put(Input.Keys.UP, true);
-        }
-        if (keycode == Input.Keys.DOWN) {
-            keysDown.put(Input.Keys.DOWN, true);
-        }
-        if (keycode == Input.Keys.LEFT) {
-            keysDown.put(Input.Keys.LEFT, true);
-        }
-        if (keycode == Input.Keys.RIGHT) {
-            keysDown.put(Input.Keys.RIGHT, true);
-        }
-        return true;
-    }
+    public boolean keyDown(int keycode) { return false; }
 
     @Override
-    public boolean keyUp(int keycode) {
-        if (keycode == Input.Keys.UP) {
-            keysDown.put(Input.Keys.UP, false);
-        }
-        if (keycode == Input.Keys.DOWN) {
-            keysDown.put(Input.Keys.DOWN, false);
-        }
-        if (keycode == Input.Keys.LEFT) {
-            keysDown.put(Input.Keys.LEFT, false);
-        }
-        if (keycode == Input.Keys.RIGHT) {
-            keysDown.put(Input.Keys.RIGHT, false);
-        }
-        if (keycode == Input.Keys.ESCAPE) {
-            DialogFactory.pauseGameDialogBox(this, phases.get(currentPhase)); // confirm if the player wants to leave if escape is pressed
-        }
-        if (keycode == Input.Keys.S) {
-            this.main.saveGame();
-        }
-        if (keycode == Input.Keys.L) {
-            this.main.loadGame();
-        }
-        return true;
-    }
+    public boolean keyUp(int keycode) { return false; }
 
     @Override
     public boolean keyTyped(char character) {
@@ -566,15 +495,14 @@ public class GameScreen implements Screen, InputProcessor{
     }
 
     @Override
-    public boolean scrolled(int amount) {
-        if ((gameplayCamera.zoom > 0.5 && amount < 0) || (gameplayCamera.zoom < 1.5 && amount > 0)) { // if the mouse scrolled zoom in/out
-            gameplayCamera.zoom += amount * 0.03f;
-        }
-        return true;
+    public boolean scrolled(int amount) { return false; }
+
+    public TurnPhaseType getCurrentPhaseType(){
+        return this.currentPhase;
     }
 
-    public TurnPhaseType getCurrentPhase(){
-        return this.currentPhase;
+    public Phase getCurrentPhase() {
+        return phases.get(getCurrentPhaseType());
     }
 
     public HashMap<Integer, Player> getPlayers() {

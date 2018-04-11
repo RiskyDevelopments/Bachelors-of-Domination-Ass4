@@ -143,6 +143,18 @@ public class Player {
         this.troopsToAllocate += troopsToAllocate;
     }
 
+    public int getCollusionCards() {
+        return collusionCards;
+    }
+
+    public int getPoopyPathCards() {
+        return poopyPathCards;
+    }
+
+    public int getAsbestosCards() {
+        return asbestosCards;
+    }
+
     public void addCollusionCards(int num) {
         this.collusionCards += num;
     }

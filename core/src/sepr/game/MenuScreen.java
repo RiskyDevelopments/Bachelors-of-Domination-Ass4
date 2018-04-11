@@ -45,9 +45,6 @@ public class MenuScreen implements Screen {
         this.backgroundTable.setFillParent(true); // make ui table fill the entire screen
         this.stage.addActor(backgroundTable);
         this.backgroundTable.setDebug(false); // enable table drawing for ui debug
-
-
-
     }
 
     /**

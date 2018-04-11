@@ -74,9 +74,9 @@ public abstract class PhaseAttackMove extends Phase {
     @Override
     public void visualisePhase(SpriteBatch batch) {
         if (this.sourceSector != null) { // If attacking
-            Vector2 screenCoords = gameScreen.screenToWorldCoords(Gdx.input.getX(), Gdx.input.getY());
+            Vector2 worldCoords = gameScreen.screenToWorldCoords(Gdx.input.getX(), Gdx.input.getY());
             if (this.targetSector == null) { // In mid attack
-                generateArrow(batch, this.arrowTailPosition.x, this.arrowTailPosition.y, screenCoords.x, screenCoords.y);
+                generateArrow(batch, this.arrowTailPosition.x, this.arrowTailPosition.y, worldCoords.x, worldCoords.y);
             } else if (this.targetSector != null) { // Attack confirmed
                 generateArrow(batch, this.arrowTailPosition.x, this.arrowTailPosition.y, this.arrowHeadPosition.x, this.arrowHeadPosition.y);
             }

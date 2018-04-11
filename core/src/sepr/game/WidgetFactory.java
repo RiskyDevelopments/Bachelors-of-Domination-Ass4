@@ -7,13 +7,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import sepr.game.utils.PunishmentCardType;
-import sepr.game.utils.TurnPhaseType;
 
 /**
  * class that generates widgets for using in the UI
@@ -452,13 +452,10 @@ public class WidgetFactory {
     /**
      * creates a table containing the components to make up the top bar of the HUD
      *
-     * @param turnPhase the phase this bar is for
      * @param gameScreen for creating the leave game dialog
      * @return the top bar of the HUD for the specified phase
      */
-    public static Table genGameHUDTopBar(TurnPhaseType turnPhase, final GameScreen gameScreen) {
-
-
+    public static Table genGameHUDTopBar(final Stage stage, Label barText, final GameScreen gameScreen) {
         Button.ButtonStyle menuBtnStyle = new Button.ButtonStyle();
         menuBtnStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/HUD-Top-Bar-Left-Part.png")));
         menuBtnStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/HUD-Top-Bar-Left-Part-Pressed.png")));
@@ -476,30 +473,25 @@ public class WidgetFactory {
             }
         });
 
+        cardsBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                Player currentPlayer = gameScreen.getCurrentPlayer();
+                DialogFactory.selectPunishmentCardDialog(currentPlayer.getCollusionCards(), currentPlayer.getPoopyPathCards(), currentPlayer.getAsbestosCards(), gameScreen.getCurrentPhase(), stage);
+            }
+        });
+
         Label.LabelStyle style = new Label.LabelStyle();
         style.font = fontSmall;
         style.background = new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/HUD-Top-Bar-Center-Part.png")));
+        barText.setStyle(style);
 
-        String text = "";
-        switch (turnPhase) {
-            case REINFORCEMENT:
-                text = "REINFORCEMENT  -  Attack  -  Movement";
-                break;
-            case ATTACK:
-                text = "Reinforcement  -  ATTACK  -  Movement";
-                break;
-            case MOVEMENT:
-                text = "Reinforcement  -  Attack  -  MOVEMENT";
-                break;
-        }
-
-        Label label = new Label(text, style);
-        label.setAlignment(Align.center);
+        barText.setAlignment(Align.center);
 
 
         Table table = new Table();
         table.left().add(menuBtn).height(70).width(85).padLeft(20);
-        table.add(label).height(72).width(749);
+        table.add(barText).height(72).width(749);
         table.add(cardsBtn).height(70).width(85);
 
         return table;
