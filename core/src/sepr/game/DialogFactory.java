@@ -3,10 +3,7 @@ package sepr.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.StringBuilder;
@@ -19,7 +16,7 @@ import java.util.List;
  */
 public class DialogFactory {
 
-    private static Skin skin; // skin shared by all dialog windows for a uniform aesthetic
+    public static Skin skin; // skin shared by all dialog windows for a uniform aesthetic
 
     public DialogFactory() {
         skin = new Skin(Gdx.files.internal("dialogBox/skin/uiskin.json"));
@@ -70,28 +67,6 @@ public class DialogFactory {
         dialog.button("No", "0");
         dialog.show(stage);
     }
-
-    /**
-     * creates a dialog where the player can confirm if they want to exit the program
-     *
-     * @param stage The stage to draw the box onto
-     */
-    public static void exitMinigame(Stage stage, final GameScreen gameScreen, final Main main) {
-        Dialog dialog = new Dialog("Quit", DialogFactory.skin) {
-            protected void result(Object object) {
-                if (object.toString().equals("1")){ // yes pressed : quit the game
-                    main.setScreen(gameScreen);  // close the program
-                    gameScreen.resetCameraPosition();
-
-                }
-            }
-        };
-        dialog.text("Are you sure you want to exit the mini game?");
-        dialog.button("Yes", "1");
-        dialog.button("No", "0");
-        dialog.show(stage);
-    }
-
 
     /**
      * creates a dialog where the player can confirm if they want to leave the current game
@@ -292,8 +267,6 @@ public class DialogFactory {
         dialog.show(stage);
     }
 
-
-
     /**
      * creates a dialog box for the player to select how many troops they want to move with
      * if player cancels the attackers[0] = 0 to signify the attack has been cancelled
@@ -383,40 +356,14 @@ public class DialogFactory {
         dialog.show(stage);
     }
 
-
-
-
     /**
      * creates a dialog box displaying informing the player they have taken over the PVC tile
      *
      * @param stage to draw the box onto
      */
-    public static void TakenOverPVCDialogue(Stage stage) {
+    public static void takenOverPVCDialogue(Stage stage) {
         basicDialogBox("Pro Vice Chancellor tile captured","Well done you have found and captured the Pro Vice Chancellor tile. You now get extra 1 bonus troop per turn from this sector",stage);
     }
-
-    /**
-     * creates a dialog box asking if the player wants to exit the mini game
-     *
-     * @param stage to draw the box onto
-     * @param miniGameScreen the mini game screen where the dialog will be shown
-     */
-
-    public static void leaveMiniGameDialog(final MiniGameScreen miniGameScreen, Stage stage) {
-        Dialog dialog = new Dialog("Continue?", DialogFactory.skin) {
-            protected void result(Object object) {
-                if (object.toString().equals("0")){ // yes pressed : quit the minigame
-                    miniGameScreen.endGame(true);
-
-                }
-            }
-        };
-        dialog.text("Would you like to keep playing or quit now? (One incorrect answer loses all bonuses!)");
-        dialog.button("Keep playing", "1");
-        dialog.button("Quit", "0");
-        dialog.show(stage);
-    }
-
 
     /**
      * creates a dialog box asking if the player wants to exit the mini game
@@ -455,5 +402,117 @@ public class DialogFactory {
         dialog.button("Ok", "0");
         dialog.show(stage);
     }
+
+    public static void selectPunishmentCardDialog(final int collusionCards, final int poopyPathCards, final int asbestosCards, final Phase phase, final Stage stage) {
+        final Dialog dialog = new Dialog("Select Punishment Card", DialogFactory.skin);
+
+        final PunishmentCardType[] cardSelected = {PunishmentCardType.NO_CARD};
+        ImageButton collusionCardBtn = new ImageButton(WidgetFactory.genPunishmentCardDrawable(PunishmentCardType.COLLUSION_CARD));
+        final ImageButton poopyPathCardBtn = new ImageButton(WidgetFactory.genPunishmentCardDrawable(PunishmentCardType.POOPY_PATH_CARD));
+        ImageButton asbestosCardBtn = new ImageButton(WidgetFactory.genPunishmentCardDrawable(PunishmentCardType.ASBESTOS_CARD));
+        final Label cardSelectedLabel = new Label(cardSelected[0].toString(), DialogFactory.skin);
+
+
+        collusionCardBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                cardSelected[0] = PunishmentCardType.COLLUSION_CARD;
+                cardSelectedLabel.setText(cardSelected[0].toString());
+            }
+        });
+
+        poopyPathCardBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                cardSelected[0] = PunishmentCardType.POOPY_PATH_CARD;
+                cardSelectedLabel.setText(cardSelected[0].toString());
+            }
+        });
+
+        asbestosCardBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                cardSelected[0] = PunishmentCardType.ASBESTOS_CARD;
+                cardSelectedLabel.setText(cardSelected[0].toString());
+            }
+        });
+
+        TextButton cancelButton = new TextButton("Cancel", DialogFactory.skin);
+        TextButton confirmButton = new TextButton("Confirm", DialogFactory.skin);
+
+        cancelButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                phase.setPunishmentCardSelected(PunishmentCardType.NO_CARD);
+                dialog.hide();
+            }
+        });
+
+        confirmButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                switch (cardSelected[0]) {
+                    case COLLUSION_CARD:
+                        if (collusionCards == 0) {
+                            DialogFactory.basicDialogBox("Not enough cards!", "Please select a card with at least 1 available", stage);
+                            return;
+                        }
+                        break;
+
+                    case POOPY_PATH_CARD:
+                        if (poopyPathCards == 0) {
+                            DialogFactory.basicDialogBox("Not enough cards!", "Please select a card with at least 1 available", stage);
+                            return;
+                        }
+                        break;
+
+                    case ASBESTOS_CARD:
+                        if (asbestosCards == 0) {
+                            DialogFactory.basicDialogBox("Not enough cards!", "Please select a card with at least 1 available", stage);
+                            return;
+                        }
+                        break;
+
+                    default:
+                        DialogFactory.basicDialogBox("Select a card to play", "Please select a card, or choose cancel", stage);
+                        return;
+
+                }
+
+                phase.setPunishmentCardSelected(cardSelected[0]);
+                dialog.hide();
+            }
+        });
+
+
+        Table dialogTable = new Table(DialogFactory.skin);
+
+        dialogTable.add(new Label("Select a Punishment Card to apply: ", DialogFactory.skin));
+        dialogTable.add(cardSelectedLabel);
+
+        dialogTable.row();
+
+        dialogTable.add(collusionCardBtn);
+        dialogTable.add(poopyPathCardBtn);
+        dialogTable.add(asbestosCardBtn);
+
+        dialogTable.row();
+
+        dialogTable.add(new Label("Available: " + collusionCards, DialogFactory.skin));
+        dialogTable.add(new Label("Available: " + poopyPathCards, DialogFactory.skin));
+        dialogTable.add(new Label("Available: " + asbestosCards, DialogFactory.skin));
+
+        dialogTable.row();
+
+        dialogTable.right();
+        dialogTable.add(cancelButton).width(300).padTop(20).padBottom(20);
+        dialogTable.add(new Label("", DialogFactory.skin));
+        dialogTable.add(confirmButton).width(300).padTop(20).padBottom(20);
+
+        dialog.add(dialogTable);
+
+        dialog.show(stage);
+    }
+
 
 }

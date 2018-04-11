@@ -31,7 +31,6 @@ public class PVC {
      * @return true or false depending if the random float value is less than the spawn chance
      */
     public boolean PVCSpawn() {
-
         Random rand = new Random();
         Float randomValue = rand.nextFloat();
         if (randomValue <= spawnChance && (!PVCSpawned)) {
@@ -45,9 +44,7 @@ public class PVC {
     /**
      * starts the mini game
      */
-
     public void startMiniGame() {
-
         gameScreen.openMiniGame();
     }
 

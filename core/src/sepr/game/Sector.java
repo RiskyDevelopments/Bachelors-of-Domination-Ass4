@@ -10,11 +10,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import javafx.util.Pair;
-import sepr.game.utils.SectorStatusEffect;
+import sepr.game.utils.PunishmentCardType;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -24,8 +21,8 @@ public class Sector implements ApplicationListener {
     private int id;
     private int ownerId;
     private String displayName;
-    private int unitsInSector;
-    private int postgradsInSector;
+    private int underGradsInSector;
+    private int postGradsInSector;
     private int reinforcementsProvided;
     private String college; // name of the college this sector belongs to
     private boolean neutral; // is this sector a default neutral sector
@@ -55,8 +52,8 @@ public class Sector implements ApplicationListener {
      * @param id sector id
      * @param ownerId id of player who owns sector
      * @param displayName sector display name
-     * @param unitsInSector number of units in sector
-     8 @param postgradsInSector number of postgrads in sector
+     * @param underGradsInSector number of units in sector
+     8 @param postGradsInSector number of postgrads in sector
      * @param reinforcementsProvided number of reinforcements the sector provides
      * @param college unique id of the college this sector belongs to
      * @param adjacentSectorIds ids of adjacent sectors
@@ -67,12 +64,12 @@ public class Sector implements ApplicationListener {
      * @param sectorCentreY ycoord of sector centre
      * @param decor false if a sector is accessible to a player and true if sector is decorative
      */
-    public Sector(int id, int ownerId, String fileName, Texture sectorTexture, String texturePath, Pixmap sectorPixmap, String displayName, int unitsInSector, int postgradsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, int asbestosCount, int poopCount, Map map) {
+    public Sector(int id, int ownerId, String fileName, Texture sectorTexture, String texturePath, Pixmap sectorPixmap, String displayName, int underGradsInSector, int postGradsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, int asbestosCount, int poopCount, Map map) {
         this.id = id;
         this.ownerId = ownerId;
         this.displayName = displayName;
-        this.unitsInSector = unitsInSector;
-        this.postgradsInSector = postgradsInSector;
+        this.underGradsInSector = underGradsInSector;
+        this.postGradsInSector = postGradsInSector;
         this.reinforcementsProvided = reinforcementsProvided;
         this.college = college;
         this.neutral = neutral;
@@ -88,16 +85,10 @@ public class Sector implements ApplicationListener {
         this.asbestosCount = asbestosCount;
         this.poopCount = poopCount;
         this.map = map;
-
-
-        //DELETLE
-        Random r = new Random();
-        if (r.nextInt(3) == 0) this.asbestosCount = r.nextInt(4);
-        if (r.nextInt(3) == 0) this.poopCount = r.nextInt(4);
     }
 
-    public Sector(int id, int ownerId, String fileName, String texturePath, Pixmap sectorPixmap, String displayName, int unitsInSector, int postgradsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, boolean allocated, Color color, int asbestosCount, int poopCount, Map map) {
-        this(id, ownerId, fileName, new Texture(texturePath), texturePath, sectorPixmap, displayName, unitsInSector, postgradsInSector, reinforcementsProvided, college, neutral, adjacentSectorIds, sectorCentreX, sectorCentreY, decor, asbestosCount, poopCount, map);
+    public Sector(int id, int ownerId, String fileName, String texturePath, Pixmap sectorPixmap, String displayName, int underGradsInSector, int postGradsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, boolean allocated, Color color, int asbestosCount, int poopCount, Map map) {
+        this(id, ownerId, fileName, new Texture(texturePath), texturePath, sectorPixmap, displayName, underGradsInSector, postGradsInSector, reinforcementsProvided, college, neutral, adjacentSectorIds, sectorCentreX, sectorCentreY, decor, asbestosCount, poopCount, map);
         
         this.allocated = allocated;
         this.sectorCentreY = sectorCentreY;
@@ -107,7 +98,7 @@ public class Sector implements ApplicationListener {
         }
     }
 
-    public Sector(int id, int ownerId, String fileName, String texturePath, Pixmap sectorPixmap, String displayName, int unitsInSector, int postgradsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, boolean allocated, Color color, boolean test, int asbestosCount, int poopCount, Map map) {
+    public Sector(int id, int ownerId, String fileName, String texturePath, Pixmap sectorPixmap, String displayName, int underGradsInSector, int postGradsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, boolean allocated, Color color, boolean test, int asbestosCount, int poopCount, Map map) {
         HeadlessApplicationConfiguration conf = new HeadlessApplicationConfiguration();
 
         new HeadlessApplication(this, conf);
@@ -115,8 +106,8 @@ public class Sector implements ApplicationListener {
         this.id = id;
         this.ownerId = ownerId;
         this.displayName = displayName;
-        this.unitsInSector = unitsInSector;
-        this.postgradsInSector = postgradsInSector;
+        this.underGradsInSector = underGradsInSector;
+        this.postGradsInSector = postGradsInSector;
         this.reinforcementsProvided = reinforcementsProvided;
         this.college = college;
         this.neutral = neutral;
@@ -161,7 +152,7 @@ public class Sector implements ApplicationListener {
     }
 
     public boolean canAttack() {
-        return poopCount == 0 && unitsInSector > 1;
+        return poopCount == 0 && underGradsInSector > 1;
     }
 
     public boolean canBeAttacked() {
@@ -205,16 +196,16 @@ public class Sector implements ApplicationListener {
      *
      * @return number of units present in this sector
      */
-    public int getUnitsInSector() {
-        return unitsInSector;
+    public int getUnderGradsInSector() {
+        return underGradsInSector;
     }
 
     /**
      *
      * @return number of postgrads units present in this sector
      */
-    public int getPostgradsInSector() {
-        return postgradsInSector;
+    public int getPostGradsInSector() {
+        return postGradsInSector;
     }
 
     /**
@@ -311,20 +302,20 @@ public class Sector implements ApplicationListener {
     /**
      * Changes the number of units in this sector
      * If there are 0 units in sector then ownerId should be -1 (neutral)
-     * @param amount number of units to change by, (can be negative to subtract units
+     * @param undergrad number of units to change by, (can be negative to subtract units
      * @throws IllegalArgumentException if units in sector is below 0
      */
     public void addUnits(int undergrad, int postgrad) throws IllegalArgumentException {
-        this.unitsInSector += undergrad;
-        this.postgradsInSector += postgrad;
+        this.underGradsInSector += undergrad;
+        this.postGradsInSector += postgrad;
 
-        if (this.unitsInSector < 0) {
-            this.unitsInSector = 0;
+        if (this.underGradsInSector < 0) {
+            this.underGradsInSector = 0;
             throw new IllegalArgumentException("Cannot have less than 0 units on a sector");
         }
 
-        if (this.postgradsInSector < 0) {
-            this.postgradsInSector = 0;
+        if (this.postGradsInSector < 0) {
+            this.postGradsInSector = 0;
             throw new IllegalArgumentException("Cannot have less than 0 postgrad units on a sector");
         }
     }
@@ -362,6 +353,20 @@ public class Sector implements ApplicationListener {
         return texturePath;
     }
 
+    public void addPunishmentEffect(PunishmentCardType punishmentCardType) {
+        switch (punishmentCardType) {
+            case COLLUSION_CARD:
+                map.addUnitsToSectorAnimated(this.id, postGradsInSector, -postGradsInSector);
+                break;
+            case POOPY_PATH_CARD:
+                poopCount += 3;
+                break;
+            case ASBESTOS_CARD:
+                asbestosCount += 3;
+                break;
+        }
+    }
+
     /**
      * called at the end of a turn and applies any active status effect and decrements the count that they apply for
      * @param currentPlayerId id of the player whos turn it currently is
@@ -372,7 +377,7 @@ public class Sector implements ApplicationListener {
         if (poopCount > 0) poopCount--;
         if (asbestosCount > 0) {
             asbestosCount--;
-            map.addUnitsToSectorAnimated(this.id, -(int)Math.ceil(unitsInSector * 0.1), 0);
+            map.addUnitsToSectorAnimated(this.id, -(int)Math.ceil(underGradsInSector * 0.1), 0);
         }
     }
 
@@ -385,32 +390,29 @@ public class Sector implements ApplicationListener {
     }
 
     public void draw (SpriteBatch batch) {
-        String text = this.getUnitsInSector() + "";
         batch.draw(this.getSectorTexture(), 0, 0);
         if (!this.isDecor()) { // don't need to draw the amount of units on a decor sector
-            layout.setText(font, text);
 
             float overlaySize = 40.0f;
             batch.draw(troopCountOverlay, this.getSectorCentreX() - overlaySize / 2, this.getSectorCentreY() - overlaySize / 2, overlaySize, overlaySize);
+            layout.setText(font, this.getUnderGradsInSector() + "");
             font.draw(batch, layout, this.getSectorCentreX() - layout.width / 2, this.getSectorCentreY() + layout.height / 2);
-        }
 
-        if (this.getPostgradsInSector() != 0){
-            batch.draw(postgradIcon, this.getSectorCentreX() - 60, this.getSectorCentreY() - 20);
-            layout.setText(font, this.getPostgradsInSector() + "");
-            font.draw(batch, layout, this.getSectorCentreX() + layout.width / 2 - 53, this.getSectorCentreY() + layout.height / 2);
-        }
+            batch.draw(postgradIcon, this.getSectorCentreX() + 20, this.getSectorCentreY() - overlaySize / 2);
+            layout.setText(font, this.getPostGradsInSector() + "");
+            font.draw(batch, layout, this.getSectorCentreX() - layout.width / 2 + 40, this.getSectorCentreY() + layout.height / 2);
 
-        if (this.getAsbestosCount() != 0) {
-            batch.draw(asbestosStatus, this.getSectorCentreX(), this.getSectorCentreY() + 10);
-            layout.setText(font, this.getAsbestosCount() + "");
-            font.draw(batch, layout, this.getSectorCentreX() + layout.width + 2, this.getSectorCentreY() + layout.height + 18);
-        }
+            if (this.getAsbestosCount() != 0) {
+                batch.draw(asbestosStatus, this.getSectorCentreX(), this.getSectorCentreY() + 10);
+                layout.setText(font, this.getAsbestosCount() + "");
+                font.draw(batch, layout, this.getSectorCentreX() + layout.width + 2, this.getSectorCentreY() + layout.height + 18);
+            }
 
-        if (this.getPoopCount() != 0) {
-            batch.draw(pooStatus, this.getSectorCentreX(), this.getSectorCentreY() - 50);
-            layout.setText(font, this.getPoopCount() + "");
-            font.draw(batch, layout, this.getSectorCentreX() + layout.width + 2, this.getSectorCentreY() + layout.height - 40);
+            if (this.getPoopCount() != 0) {
+                batch.draw(pooStatus, this.getSectorCentreX(), this.getSectorCentreY() - 50);
+                layout.setText(font, this.getPoopCount() + "");
+                font.draw(batch, layout, this.getSectorCentreX() + layout.width + 2, this.getSectorCentreY() + layout.height - 40);
+            }
         }
     }
 

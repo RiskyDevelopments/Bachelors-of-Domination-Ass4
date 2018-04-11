@@ -22,11 +22,12 @@ import sepr.game.utils.PunishmentCardType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class MiniGameScreen implements Screen {
 
-    private static final int COLS = 3;
-    private static final int ROWS = 3;
+    private static final int ROWS = 2;
+    private static final int COLS = 4;
     private static final float DELAY_TIME = 3; // time in seconds before cards are hidden
 
     private Main main;
@@ -93,22 +94,36 @@ public class MiniGameScreen implements Screen {
      * sets up the locations array as a 3x3 2D array containing 2 of each real card type and one of each fake card type spread randomly
      */
     private void setupCardLocations() {
-        locations = new PunishmentCardType[3][3];
+        locations = new PunishmentCardType[ROWS][COLS];
         List<PunishmentCardType> cardList = new ArrayList<PunishmentCardType>();
         cardList.add(PunishmentCardType.COLLUSION_CARD);
         cardList.add(PunishmentCardType.COLLUSION_CARD);
-        cardList.add(PunishmentCardType.FAUX_COLLUSION_CARD);
         cardList.add(PunishmentCardType.POOPY_PATH_CARD);
         cardList.add(PunishmentCardType.POOPY_PATH_CARD);
-        cardList.add(PunishmentCardType.FAUX_POOPY_PATH_CARD);
         cardList.add(PunishmentCardType.ASBESTOS_CARD);
         cardList.add(PunishmentCardType.ASBESTOS_CARD);
-        cardList.add(PunishmentCardType.FAUX_ASBESTOS_CARD);
+
+        // select 2 fake cards to add
+        Random random = new Random();
+        switch (random.nextInt(3)) {
+            case 0 :
+                cardList.add(PunishmentCardType.FAUX_COLLUSION_CARD);
+                cardList.add(PunishmentCardType.FAUX_ASBESTOS_CARD);
+                break;
+            case 1 :
+                cardList.add(PunishmentCardType.FAUX_COLLUSION_CARD);
+                cardList.add(PunishmentCardType.FAUX_POOPY_PATH_CARD);
+                break;
+            case 2 :
+                cardList.add(PunishmentCardType.FAUX_POOPY_PATH_CARD);
+                cardList.add(PunishmentCardType.FAUX_ASBESTOS_CARD);
+                break;
+        }
 
         Collections.shuffle(cardList);
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
                 locations[i][j] = cardList.remove(0);
             }
         }
@@ -225,7 +240,7 @@ public class MiniGameScreen implements Screen {
         Table gameTable = new Table();
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLS; j++) {
-                gameTable.add(cardButtons[i][j]).height(100).width(100).pad(30);
+                gameTable.add(cardButtons[i][j]).pad(30);
                 gameTable.right();
             }
             gameTable.row();
