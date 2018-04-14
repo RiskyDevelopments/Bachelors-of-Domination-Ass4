@@ -4,6 +4,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import sepr.game.Main;
 
+
 /**
  * executable http://www.riskydevelopments.co.uk/bod/BoD.zip
  */
@@ -18,4 +19,7 @@ public class DesktopLauncher {
 
 		new LwjglApplication(new Main(), config);
 	}
+
+
 }
+

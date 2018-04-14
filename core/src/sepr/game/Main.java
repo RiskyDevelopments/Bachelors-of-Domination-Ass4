@@ -55,6 +55,7 @@ public class Main extends Game implements ApplicationListener {
 		miniGameScreen.startGame();
 	}
 
+
 	public void setMenuScreen() {
 		this.setScreen(menuScreen);
 	}
