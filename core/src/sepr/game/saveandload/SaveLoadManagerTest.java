@@ -1,25 +1,17 @@
 package sepr.game.saveandload;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import javafx.print.PageLayout;
 import org.junit.*;
-import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
-import org.lwjgl.Sys;
 import sepr.game.*;
 import sepr.game.utils.PlayerType;
 import sepr.game.utils.TurnPhaseType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -159,7 +151,7 @@ public class SaveLoadManagerTest implements ApplicationListener {
             assertTrue("Sector ID", value.getId() == index);
             assertTrue("Sector Owner ID", value.getOwnerId() == index);
             assertTrue("Sector Display Name", value.getDisplayName().equalsIgnoreCase(Integer.toString(index)));
-            assertTrue("Units In Sector", value.getUnitsInSector() == index);
+            assertTrue("Units In Sector", value.getUnderGradsInSector() == index);
             assertTrue("Reinforcements Provided", value.getReinforcementsProvided() == index);
             assertTrue("Sector College", value.getCollege() == "DERWENT");
             assertTrue("Sector Texture Path", value.getTexturePath().equalsIgnoreCase("assets/uiComponents/menuBackground.png"));

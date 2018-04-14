@@ -56,11 +56,9 @@ public class AudioManager extends AssetManager {
     /**
      * loads all the sound files that are used during game play so they can be played at anytime
      */
-
-
     public void loadSounds() {
 
-        this.load("sound/Other/click.mp3", Sound.class);
+        this.load("sound/Other/Electro button click.mp3", Sound.class);
 
         this.load("sound/Allocation/Colin_Insuffiecient_Gangmembers.wav", Sound.class);
         this.load("sound/Allocation/Colin_EmptySet.wav", Sound.class);
@@ -111,13 +109,8 @@ public class AudioManager extends AssetManager {
      */
 
     public void setMusicVolume() {
-
         for (String x : currentPlayingMusic) {
             this.get(x, Music.class).setVolume(GlobalMusicVolume);
-
-
         }
     }
-
-
 }

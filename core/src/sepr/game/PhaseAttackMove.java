@@ -13,12 +13,12 @@ public abstract class PhaseAttackMove extends Phase {
 
 
     protected TextureRegion arrow; // TextureRegion for rendering attack visualisation
-    protected Sector attackingSector; // Stores the sector being used to attack in the attack phase (could store as ID and lookup object each time to save memory)
-    protected Sector defendingSector; // Stores the sector being attacked in the attack phase (could store as ID and lookup object each time to save memory)
+    protected Sector sourceSector; // Stores the sector being used to attack in the attack phase (could store as ID and lookup object each time to save memory)
+    protected Sector targetSector; // Stores the sector being attacked in the attack phase (could store as ID and lookup object each time to save memory)
 
     protected Vector2 arrowTailPosition; // Vector x,y for the base of the arrow
     protected Vector2 arrowHeadPosition; // Vector x,y for the point of the arrow
-    protected int[] numOfAttackers;
+    protected int[] numOfUnits; // number of units being used to attack/move
 
 
     protected Random random; // random object for adding some unpredictability to the outcome of attacks
@@ -27,8 +27,8 @@ public abstract class PhaseAttackMove extends Phase {
 
         super(gameScreen, turnPhaseType);
         this.arrow = new TextureRegion(new Texture(Gdx.files.internal("uiComponents/arrow.png")));
-        this.attackingSector = null;
-        this.defendingSector = null;
+        this.sourceSector = null;
+        this.targetSector = null;
         this.arrowHeadPosition = new Vector2();
         this.arrowTailPosition = new Vector2();
 
@@ -46,8 +46,8 @@ public abstract class PhaseAttackMove extends Phase {
     @Override
     public void endPhase() {
         super.endPhase();
-        attackingSector = null;
-        defendingSector = null;
+        sourceSector = null;
+        targetSector = null;
     }
 
     /**
@@ -66,8 +66,6 @@ public abstract class PhaseAttackMove extends Phase {
         gameplayBatch.draw(arrow, startX, (startY - thickness / 2), 0, thickness / 2, (float) height, thickness, 1, 1, (float) angle);
     }
 
-
-
     /**
      * render graphics specific to the attack phase
      *
@@ -75,15 +73,13 @@ public abstract class PhaseAttackMove extends Phase {
      */
     @Override
     public void visualisePhase(SpriteBatch batch) {
-        if (this.attackingSector != null) { // If attacking
-            Vector2 screenCoords = gameScreen.screenToWorldCoords(Gdx.input.getX(), Gdx.input.getY());
-            if (this.defendingSector == null) { // In mid attack
-                generateArrow(batch, this.arrowTailPosition.x, this.arrowTailPosition.y, screenCoords.x, screenCoords.y);
-            } else if (this.defendingSector != null) { // Attack confirmed
+        if (this.sourceSector != null) { // If attacking
+            Vector2 worldCoords = gameScreen.screenToWorldCoords(Gdx.input.getX(), Gdx.input.getY());
+            if (this.targetSector == null) { // In mid attack
+                generateArrow(batch, this.arrowTailPosition.x, this.arrowTailPosition.y, worldCoords.x, worldCoords.y);
+            } else if (this.targetSector != null) { // Attack confirmed
                 generateArrow(batch, this.arrowTailPosition.x, this.arrowTailPosition.y, this.arrowHeadPosition.x, this.arrowHeadPosition.y);
             }
         }
     }
-
-
 }

@@ -1,11 +1,13 @@
 package sepr.game.saveandload;
 
 import com.badlogic.gdx.graphics.Color;
+import javafx.util.Pair;
 import sepr.game.GameSetupScreen;
 import sepr.game.Map;
 import sepr.game.Player;
 import sepr.game.Sector;
 import sepr.game.utils.PlayerType;
+import sepr.game.utils.SectorStatusEffect;
 import sepr.game.utils.TurnPhaseType;
 
 import java.util.HashMap;
@@ -46,6 +48,9 @@ public class GameState {
         public Color sectorColour; // The colour to use for the player's sectors
         public PlayerType playerType; // The player's type
         public boolean ownsPVC; // Whether the player owns the PVC
+        public int collusionCards;
+        public int poopyPathCards;
+        public int asbestosCards;
     }
 
     /**
@@ -57,6 +62,7 @@ public class GameState {
         public int ownerId; // Player ID of the owning player
         public String displayName; // Name of the sector
         public int unitsInSector; // Number of units in the sector
+        public int postgradsInSector; // Number of units in the sector
         public int reinforcementsProvided; // Number of reinforcements added to the sector
         public String college; // Name of the college this sector belongs to
         public String texturePath; // Path to the sector's texture
@@ -67,5 +73,9 @@ public class GameState {
         public boolean decor; // Is this sector for visual purposes only, i.e. lakes are decor
         public String fileName; // The filename of the sector
         public boolean allocated; // Becomes true once the sector has been allocated
+        public Map map;
+        public int asbestosCount;
+        public int poopCount;
+
     }
 }

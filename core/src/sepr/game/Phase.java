@@ -1,9 +1,11 @@
 package sepr.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -13,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import sepr.game.utils.PunishmentCardType;
 import sepr.game.utils.TurnPhaseType;
 
 /**
@@ -21,12 +24,14 @@ import sepr.game.utils.TurnPhaseType;
 public abstract class Phase extends Stage {
     GameScreen gameScreen;
     Player currentPlayer;
-    Player previousPlayer;
     AudioManager Audio = AudioManager.getInstance();
+
+    private PunishmentCardType punishmentCardSelected = PunishmentCardType.NO_CARD;
 
 
     private Table table;
     private Label bottomBarRightPart;
+    private Label topBarTextLabel;
     private TurnPhaseType turnPhase;
 
     private Label.LabelStyle playerNameStyle; // store style for updating player name colour with player's colour
@@ -69,7 +74,7 @@ public abstract class Phase extends Stage {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 gameScreen.nextPhase();
-                Audio.get("sound/Other/click.mp3", Sound.class).play(AudioManager.GlobalFXvolume); //plays the music
+                Audio.get("sound/Other/Electro button click.mp3", Sound.class).play(AudioManager.GlobalFXvolume); //plays the music
 
             }
         });
@@ -77,7 +82,9 @@ public abstract class Phase extends Stage {
         Table bottomBarLeftPart = genGameHUDBottomBarLeftPart();
         table.setDebug(false);
         table.top().center();
-        table.add(WidgetFactory.genGameHUDTopBar(turnPhase, gameScreen)).colspan(2).expandX().height(72).width(910).padTop(80);
+
+        topBarTextLabel = new Label("TOP BAR TEXT", DialogFactory.skin);
+        table.add(WidgetFactory.genGameHUDTopBar(this, topBarTextLabel, gameScreen)).colspan(2).expandX().height(72).width(910).padTop(80);
 
         table.row();
         table.add(new Table()).expand();
@@ -94,9 +101,29 @@ public abstract class Phase extends Stage {
         table.add(endPhaseButton).fill().height(60).width(170).padRight(95).padTop(80);
 
         setBottomBarText(null);
+        updateTopBarText();
     }
 
+    private void updateTopBarText() {
+        String text = "";
 
+        if (getPunishmentCardSelected() == PunishmentCardType.NO_CARD) {
+            switch (turnPhase) {
+                case REINFORCEMENT:
+                    text = "REINFORCEMENT  -  Attack  -  Movement";
+                    break;
+                case ATTACK:
+                    text = "Reinforcement  -  ATTACK  -  Movement";
+                    break;
+                case MOVEMENT:
+                    text = "Reinforcement  -  Attack  -  MOVEMENT";
+                    break;
+            }
+        } else {
+            text = "Select a sector to apply the " + getPunishmentCardSelected().toString() + " to";
+        }
+        topBarTextLabel.setText(text);
+    }
 
     /**
      * generates the UI widget to be displayed at the bottom left of the HUD
@@ -171,6 +198,15 @@ public abstract class Phase extends Stage {
         turnTimerLabel.setText(new StringBuilder("Turn Timer: " + timeRemaining));
     }
 
+    public PunishmentCardType getPunishmentCardSelected() {
+        return punishmentCardSelected;
+    }
+
+    public void setPunishmentCardSelected(PunishmentCardType punishmentCardSelected) {
+        this.punishmentCardSelected = punishmentCardSelected;
+        updateTopBarText();
+    }
+
     /**
      * updates the display of the number of troops the current player will have in their next reinforcement phase
      */
@@ -220,6 +256,39 @@ public abstract class Phase extends Stage {
                 return "PHASE_REINFORCEMENT";
             default:
                 return "PHASE_BLANK";
+        }
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        if (super.touchUp(screenX, screenY, pointer, button)) {
+            return true;
+        }
+
+        if (getPunishmentCardSelected() == PunishmentCardType.NO_CARD) {
+            return false;
+        }
+        Vector2 worldCoords = gameScreen.screenToWorldCoords(Gdx.input.getX(), Gdx.input.getY());
+        int sectorClicked = gameScreen.getMap().detectSectorContainsPoint((int)worldCoords.x, (int)worldCoords.y);
+        if (sectorClicked == -1) {
+            // no sector pressed
+            return true;
+        } else {
+            gameScreen.getMap().getSectorById(sectorClicked).addPunishmentEffect(punishmentCardSelected);
+            switch (punishmentCardSelected) {
+                case COLLUSION_CARD:
+                    currentPlayer.addCollusionCards(-1);
+                    break;
+                case POOPY_PATH_CARD:
+                    currentPlayer.addPoopyPathCards(-1);
+                    break;
+                case ASBESTOS_CARD:
+                    currentPlayer.addAsbestosCards(-1);
+                    break;
+            }
+            punishmentCardSelected = PunishmentCardType.NO_CARD;
+            updateTopBarText();
+            return true;
         }
     }
 }

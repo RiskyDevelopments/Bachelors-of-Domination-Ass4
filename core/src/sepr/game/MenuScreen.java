@@ -1,6 +1,5 @@
 package sepr.game;
 
-import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -46,9 +45,6 @@ public class MenuScreen implements Screen {
         this.backgroundTable.setFillParent(true); // make ui table fill the entire screen
         this.stage.addActor(backgroundTable);
         this.backgroundTable.setDebug(false); // enable table drawing for ui debug
-
-
-
     }
 
     /**
@@ -88,8 +84,8 @@ public class MenuScreen implements Screen {
         loadGameBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(main.HasLoadedSaves()) {
-                    main.LoadGame();
+                if(main.hasLoadedSaves()) {
+                    main.loadGame();
                 }
             }
         });

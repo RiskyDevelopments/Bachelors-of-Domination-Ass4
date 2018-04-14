@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Pixmap;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.lwjgl.Sys;
 import sepr.game.GameScreen;
 import sepr.game.Main;
 import sepr.game.Map;
@@ -15,7 +14,6 @@ import sepr.game.Sector;
 
 import java.io.*;
 import java.util.HashMap;
-import java.util.*;
 
 /**
  * Class to manage saving and loading from files
@@ -138,7 +136,7 @@ public class SaveLoadManager {
         HashMap<Integer, Player> players = new HashMap<Integer, Player>();
 
         for (GameState.PlayerState player : playerStates){
-            players.put(player.hashMapPosition, new Player(player.id, player.collegeName, new Color(player.sectorColour.r, player.sectorColour.g, player.sectorColour.b, player.sectorColour.a), player.playerType, player.playerName, player.troopsToAllocate, player.ownsPVC));
+            players.put(player.hashMapPosition, new Player(player.id, player.collegeName, new Color(player.sectorColour.r, player.sectorColour.g, player.sectorColour.b, player.sectorColour.a), player.playerType, player.playerName, player.troopsToAllocate, player.collusionCards, player.poopyPathCards, player.asbestosCards, player.ownsPVC));
         }
 
         return players;
@@ -165,9 +163,9 @@ public class SaveLoadManager {
             }
 
             if (test) {
-                sectors.put(sector.hashMapPosition, new Sector(sector.id, sector.ownerId, sector.fileName, sector.texturePath, map, sector.displayName, sector.unitsInSector, sector.reinforcementsProvided, sector.college, sector.neutral, sector.adjacentSectorIds, sector.sectorCentreX, sector.sectorCentreY, sector.decor, sector.allocated, color, test));
+                sectors.put(sector.hashMapPosition, new Sector(sector.id, sector.ownerId, sector.fileName, sector.texturePath, map, sector.displayName, sector.unitsInSector, sector.postgradsInSector, sector.reinforcementsProvided, sector.college, sector.neutral, sector.adjacentSectorIds, sector.sectorCentreX, sector.sectorCentreY, sector.decor, sector.allocated, color, test, sector.asbestosCount, sector.poopCount, sector.map));
             }else{
-                sectors.put(sector.hashMapPosition, new Sector(sector.id, sector.ownerId, sector.fileName, sector.texturePath, map, sector.displayName, sector.unitsInSector, sector.reinforcementsProvided, sector.college, sector.neutral, sector.adjacentSectorIds, sector.sectorCentreX, sector.sectorCentreY, sector.decor, sector.allocated, color));
+                sectors.put(sector.hashMapPosition, new Sector(sector.id, sector.ownerId, sector.fileName, sector.texturePath, map, sector.displayName, sector.unitsInSector, sector.postgradsInSector, sector.reinforcementsProvided, sector.college, sector.neutral, sector.adjacentSectorIds, sector.sectorCentreX, sector.sectorCentreY, sector.decor, sector.allocated, color, sector.asbestosCount, sector.poopCount, sector.map));
             }
         }
 
@@ -216,7 +214,7 @@ public class SaveLoadManager {
      */
     public boolean SaveByID(int id){
         GameState gameState = new GameState(); // GameState to store data in
-        gameState.currentPhase = this.gameScreen.getCurrentPhase(); // Store current phase
+        gameState.currentPhase = this.gameScreen.getCurrentPhaseType(); // Store current phase
         gameState.map = this.gameScreen.getMap(); // Store map
         gameState.players = this.gameScreen.getPlayers(); // Store players
         gameState.turnTimerEnabled = this.gameScreen.isTurnTimerEnabled(); // Store whether the turn timer is enabled
@@ -241,7 +239,7 @@ public class SaveLoadManager {
             sectorState.id = value.getId(); // Store the Sector's ID
             sectorState.ownerId = value.getOwnerId(); // Store the Sector's owner's ID
             sectorState.displayName = value.getDisplayName(); // Store the Sector's display name
-            sectorState.unitsInSector = value.getUnitsInSector(); // Store the number of units in the Sector
+            sectorState.unitsInSector = value.getUnderGradsInSector(); // Store the number of units in the Sector
             sectorState.reinforcementsProvided = value.getReinforcementsProvided(); // Store the number of reinforcements provided to the Sector
             sectorState.college = value.getCollege(); // Store the college of the Sector
             sectorState.texturePath = value.getTexturePath(); // Store the path to the Sector's texture
