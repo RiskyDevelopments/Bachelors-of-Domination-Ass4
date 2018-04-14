@@ -495,7 +495,7 @@ public class GameSetupScreen implements Screen{
      */
     private Table setupUi() {
         Table uiComponentsTable =  new Table();
-        uiComponentsTable.setDebug(false);
+        uiComponentsTable.setDebug(true);
 
         uiComponentsTable.background(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/Scanline.png"))));
         uiComponentsTable.pad(80).padLeft(85).padRight(95);
