@@ -125,6 +125,9 @@ public class MenuScreen implements Screen {
         uiComponentsTable.add(setupMenuTable()).expand();
 
         uiComponentsTable.right();
+
+        float SCALE_RATIO = 811 / Gdx.graphics.getWidth();
+
         uiComponentsTable.add(WidgetFactory.genMapGraphic()).height(657).width(811).pad(30);
 
         uiComponentsTable.row();

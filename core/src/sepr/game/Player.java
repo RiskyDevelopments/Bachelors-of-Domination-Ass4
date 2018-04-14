@@ -55,7 +55,7 @@ public class Player {
      * @param id player's unique identifier
      */
     public static Player createNeutralPlayer(int id) {
-        return new Player(id, GameSetupScreen.CollegeName.UNI_OF_YORK, Color.GRAY, PlayerType.NEUTRAL_AI, "THE NEUTRAL PLAYER");
+        return new Player(id, GameSetupScreen.CollegeName.UNI_OF_YORK, Color.GRAY, PlayerType.NEUTRAL_AI, "NEUTRAL");
     }
 
 
