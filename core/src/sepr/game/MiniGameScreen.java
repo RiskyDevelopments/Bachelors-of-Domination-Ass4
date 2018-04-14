@@ -33,7 +33,7 @@ public class MiniGameScreen implements Screen {
     private Main main;
     private Stage stage;
     private GameScreen gameScreen;
-    private Table table; // table for inserting ui widgets into
+    private Table backgroundTable; // table for inserting ui widgets into
     private Player player; // player to allocate gang members to at the end of the minigame
 
     private PunishmentCardType[][] locations; // array containing card type locations
@@ -49,10 +49,10 @@ public class MiniGameScreen implements Screen {
         this.stage = new Stage();
         this.stage.setViewport(new ScreenViewport());
 
-        this.table = new Table();
-        this.table.setFillParent(true); // make ui table fill the entire screen
-        this.stage.addActor(table);
-        this.table.setDebug(false); // enable table drawing for ui debug
+        this.backgroundTable = setupBackground();
+        this.backgroundTable.setFillParent(true); // make ui table fill the entire screen
+        this.stage.addActor(backgroundTable);
+        this.backgroundTable.setDebug(false); // enable table drawing for ui debug
     }
 
     /**
@@ -102,7 +102,6 @@ public class MiniGameScreen implements Screen {
         cardList.add(PunishmentCardType.POOPY_PATH_CARD);
         cardList.add(PunishmentCardType.ASBESTOS_CARD);
         cardList.add(PunishmentCardType.ASBESTOS_CARD);
-
         // select 2 fake cards to add
         Random random = new Random();
         switch (random.nextInt(3)) {
@@ -140,6 +139,43 @@ public class MiniGameScreen implements Screen {
         revealedStyle.over = btnImage;
         revealedStyle.down = btnImage;
         cardButtons[coord.getKey()][coord.getValue()].setStyle(revealedStyle);
+    }
+
+    /**
+     * Sets up the user interface
+     */
+    private Table setupUi() {
+        Table uiComponentsTable =  new Table();
+        uiComponentsTable.background(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/Scanline-Purple.png"))));
+        uiComponentsTable.pad(80).padLeft(85).padRight(95);
+
+        uiComponentsTable.center();
+        uiComponentsTable.add(WidgetFactory.genMenusTopBar("MINIGAME - MATCH THE PAIRS")).colspan(2);
+
+        uiComponentsTable.row();
+        uiComponentsTable.left();
+        uiComponentsTable.add(setupMenuTable()).expand();
+
+        uiComponentsTable.row();
+        uiComponentsTable.center();
+        uiComponentsTable.add(WidgetFactory.genBottomBar("QUIT", new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                DialogFactory.exitProgramDialogBox(stage);
+            }
+
+        })).colspan(2).fillX();
+
+        return uiComponentsTable;
+    }
+
+
+    private Table setupBackground(){
+        Table backgroundTable = new Table();
+        backgroundTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/miniGameBackground.png"))));
+        backgroundTable.pad(0);
+        backgroundTable.add(setupUi());
+        return backgroundTable;
     }
 
     /**
