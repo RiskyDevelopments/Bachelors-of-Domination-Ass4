@@ -117,7 +117,7 @@ public class GameSetupScreen implements Screen{
         this.backgroundTable.setDebug(false); // enable table drawing for ui debug
 
 
-        this.Audio.loadMusic("sound/IntroMusic/introMusic.mp3"); //load the introMusic
+        this.Audio.loadMusic("sound/IntroMusic/Tron style music - Original track.mp3"); //load the introMusic
     }
 
     /**
@@ -485,8 +485,8 @@ public class GameSetupScreen implements Screen{
         HashMap<Integer, Player> x = generatePlayerHashmaps();
 
         int MAX_TURN_TIME = 120;
-        Audio.disposeMusic("sound/IntroMusic/introMusic.mp3");
-        Audio.loadMusic("sound/Gameplay Music/wind.mp3"); //loads and plays the gamePlay music
+        Audio.disposeMusic("sound/IntroMusic/Tron style music - Original track.mp3");
+        Audio.loadMusic("sound/Gameplay Music/80's Retro Synthwave Intro Music.mp3"); //loads and plays the gamePlay music
         main.setGameScreen(x, turnTimerSwitch.isChecked(), MAX_TURN_TIME, neutralPlayerSwitch.isChecked());
     }
 

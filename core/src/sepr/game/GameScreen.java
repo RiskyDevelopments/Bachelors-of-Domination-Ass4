@@ -362,8 +362,8 @@ public class GameScreen implements Screen, InputProcessor{
      * changes the screen currently being displayed to the menu
      */
     public void openMenu() {
-        Audio.disposeMusic("sound/Gameplay Music/wind.mp3"); //remove game play sounds from memory to save space
-        Audio.loadMusic("sound/IntroMusic/introMusic.mp3"); //load and play main menu music
+        Audio.disposeMusic("sound/Gameplay Music/80's Retro Synthwave Intro Music.mp3"); //remove game play sounds from memory to save space
+        Audio.loadMusic("sound/IntroMusic/Tron style music - Original track.mp3"); //load and play main menu music
         main.setMenuScreen();
     }
     /**
