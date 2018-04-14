@@ -58,7 +58,7 @@ public class AudioManager extends AssetManager {
      */
     public void loadSounds() {
 
-        this.load("sound/Other/click.mp3", Sound.class);
+        this.load("sound/Other/Electro button click.mp3", Sound.class);
 
         this.load("sound/Allocation/Colin_Insuffiecient_Gangmembers.wav", Sound.class);
         this.load("sound/Allocation/Colin_EmptySet.wav", Sound.class);
