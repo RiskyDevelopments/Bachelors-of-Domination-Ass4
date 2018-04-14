@@ -93,15 +93,16 @@ public class PhaseReinforce extends Phase {
                     invalidMove();
                     DialogFactory.basicDialogBox("Allocation Problem", "Cannot allocate units to a sector you do not own", this);
                 } else {
-                    // setup allocation form
-                    allocateUnits = new int[3];
-                    allocateUnits[0] = -1;
-                    allocateUnits[1] = -1;
-                    allocateUnits[2] = sectorId;
-                    DialogFactory.allocateUnitsDialog(currentPlayer.getTroopsToAllocate(), allocateUnits, this);
+                        // setup allocation form
+                        allocateUnits = new int[3];
+                        allocateUnits[0] = -1;
+                        allocateUnits[1] = -1;
+                        allocateUnits[2] = sectorId;
+                        DialogFactory.allocateUnitsDialog(currentPlayer.getTroopsToAllocate(), allocateUnits, this);
                 }
             } else {
                 invalidMove();
+                DialogFactory.basicDialogBox("Cannot Reinforce", "Sorry, this sector currently cannot accept reinforcements", this);
             }
         }
         return false;
