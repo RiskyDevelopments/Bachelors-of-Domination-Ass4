@@ -20,6 +20,20 @@ public class PhaseMovement extends PhaseAttackMove {
      * @throws RuntimeException if the attacking sector or defending sector are set to null
      */
     private void getNumberOfAttackers() throws RuntimeException {
+        if (!sourceSector.canChangeUnits()) {
+            DialogFactory.basicDialogBox("Cannot Move", "Sorry, you cannot move units from this sector currently", this);
+            sourceSector = null;
+            targetSector = null;
+            return;
+        }
+
+        if (!targetSector.canChangeUnits()) {
+            DialogFactory.basicDialogBox("Cannot Move", "Sorry, you cannot move units to this sector currently", this);
+            sourceSector = null;
+            targetSector = null;
+            return;
+        }
+
         if (sourceSector == null || targetSector == null) {
             throw new RuntimeException("Cannot execute attack unless both an attacking and defending sector have been selected");
         }

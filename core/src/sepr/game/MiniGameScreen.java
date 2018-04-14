@@ -33,7 +33,6 @@ public class MiniGameScreen implements Screen {
     private Main main;
     private Stage stage;
     private GameScreen gameScreen;
-    private Table backgroundTable; // table for inserting ui widgets into
     private Player player; // player to allocate gang members to at the end of the minigame
 
     private PunishmentCardType[][] locations; // array containing card type locations
@@ -49,10 +48,10 @@ public class MiniGameScreen implements Screen {
         this.stage = new Stage();
         this.stage.setViewport(new ScreenViewport());
 
-        this.backgroundTable = setupBackground();
-        this.backgroundTable.setFillParent(true); // make ui table fill the entire screen
+        Table backgroundTable = setupBackground();
+        backgroundTable.setFillParent(true); // make ui table fill the entire screen
         this.stage.addActor(backgroundTable);
-        this.backgroundTable.setDebug(false); // enable table drawing for ui debug
+        backgroundTable.setDebug(false); // enable table drawing for ui debug
     }
 
     /**
@@ -70,12 +69,29 @@ public class MiniGameScreen implements Screen {
                     }
                 }
             }
-            btnTable.row();
-        }
+
         }, DELAY_TIME);
 
-        /* Sub-table complete */
-        return btnTable;
+    }
+
+    /**
+     * Sets up the game by mapping values to locations and calling the function to set up the UI
+     *
+     * @param player player to be given additional troops at the end of the minigame
+     */
+    public void setupGame(Player player) {
+        pairSelected = new Pair<Integer, Integer>(-1, -1);
+        rewards = new ArrayList<PunishmentCardType>();
+        this.player = player; // sets the player to the one that is playing this game
+        resetGameTable();
+    }
+
+    private Table setupBackground(){
+        Table backgroundTable = new Table();
+        backgroundTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/miniGameBackground.png"))));
+        backgroundTable.pad(0);
+        backgroundTable.add(setupUi());
+        return backgroundTable;
     }
 
     /**
@@ -91,14 +107,14 @@ public class MiniGameScreen implements Screen {
 
         uiComponentsTable.row();
         uiComponentsTable.left();
-        uiComponentsTable.add(setupMenuTable()).expand();
+        uiComponentsTable.add(setupGameTable()).expand();
 
         uiComponentsTable.row();
         uiComponentsTable.center();
-        uiComponentsTable.add(WidgetFactory.genBottomBar("QUIT", new ChangeListener() {
+        uiComponentsTable.add(WidgetFactory.genBottomBar("END MINI-GAME", new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                DialogFactory.exitProgramDialogBox(stage);
+                endGame(true); // player choosing to quit the game early counts as win and keeps cards collected so far
             }
 
         })).colspan(2).fillX();
@@ -106,31 +122,43 @@ public class MiniGameScreen implements Screen {
         return uiComponentsTable;
     }
 
-    private Table setupBackground(){
-        Table backgroundTable = new Table();
-        backgroundTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/miniGameBackground.png"))));
-        backgroundTable.pad(0);
-        backgroundTable.add(setupUi());
-        return backgroundTable;
-    }
-
-    /**
-     * Sets up the game by mapping values to locations and calling the function to set up the UI
-     *
-     * @param player player to be given additional troops at the end of the minigame
-     */
-    public void setupGame(Player player) {
-        pairSelected = new Pair<Integer, Integer>(-1, -1);
-        rewards = new ArrayList<PunishmentCardType>();
-        this.player = player; // sets the player to the one that is playing this game
+    private Table setupGameTable() {
+        /* Listener for the buttons, passes the value of the clicked button to the buttonClicked method */
+        InputListener listener = new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                ImageButton buttonUsed = (ImageButton) event.getListenerActor();
+                String location = buttonUsed.getName(); // name of button equal to its location in cardButtons
+                buttonClicked(location);
+                return true;
+            }
+        };
+        // generate each of the image buttons and set their name and listener
+        cardButtons = new ImageButton[ROWS][COLS];
         setupCardLocations();
-        setupUi();
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                cardButtons[i][j] = WidgetFactory.genPunishmentCardButton(locations[i][j]);
+                cardButtons[i][j].addListener(listener);
+            }
+        }
+
+        Table gameTable = new Table();
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                gameTable.add(cardButtons[i][j]).pad(30);
+                gameTable.right();
+            }
+            gameTable.row();
+        }
+
+        return gameTable;
     }
 
     /**
      * Added by Dom (18/03/2018)
      *
-     * sets up the locations array as a 3x3 2D array containing 2 of each real card type and one of each fake card type spread randomly
+     * sets up the locations array as a 2x4 2D array containing 2 of each real card type and 2 fake cards spread randomly
      */
     private void setupCardLocations() {
         locations = new PunishmentCardType[ROWS][COLS];
@@ -141,7 +169,6 @@ public class MiniGameScreen implements Screen {
         cardList.add(PunishmentCardType.POOPY_PATH_CARD);
         cardList.add(PunishmentCardType.ASBESTOS_CARD);
         cardList.add(PunishmentCardType.ASBESTOS_CARD);
-
         // select 2 fake cards to add
         Random random = new Random();
         switch (random.nextInt(3)) {
@@ -164,6 +191,21 @@ public class MiniGameScreen implements Screen {
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLS; j++) {
                 locations[i][j] = cardList.remove(0);
+            }
+        }
+    }
+
+    /**
+     * sets up the table containing the game i.e. a 3x3 grid of cards
+     */
+    private void resetGameTable() {
+        // generate each of the image buttons and set their name and listener
+        setupCardLocations();
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                Drawable btnImage = WidgetFactory.genPunishmentCardDrawable(locations[i][j]);
+                cardButtons[i][j].setStyle(new ImageButton.ImageButtonStyle(btnImage, btnImage, btnImage, btnImage, btnImage, btnImage));
+                cardButtons[i][j].setName("-1");
             }
         }
     }
@@ -249,67 +291,6 @@ public class MiniGameScreen implements Screen {
                 endGame(false);
             }
         }
-    }
-
-    /**
-     * sets up the table containing the game i.e. a 3x3 grid of cards
-     */
-    private Table setupGameTable() {
-        /* Listener for the buttons, passes the value of the clicked button to the buttonClicked method */
-        InputListener listener = new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                ImageButton buttonUsed = (ImageButton) event.getListenerActor();
-                String location = buttonUsed.getName(); // name of button equal to its location in cardButtons
-                buttonClicked(location);
-                return true;
-            }
-        };
-
-        // generate each of the image buttons and set their name and listener
-        cardButtons = new ImageButton[ROWS][COLS];
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < COLS; j++) {
-                cardButtons[i][j] = WidgetFactory.genPunishmentCardButton(locations[i][j]);
-                cardButtons[i][j].setName("-1");
-                cardButtons[i][j].addListener(listener);
-            }
-        }
-
-        Table gameTable = new Table();
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < COLS; j++) {
-                gameTable.add(cardButtons[i][j]).pad(30);
-                gameTable.right();
-            }
-            gameTable.row();
-        }
-
-        return gameTable;
-    }
-
-    /**
-     * sets up the UI for this screen when a new game is started
-     */
-    private void setupUi() {
-        table.background(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/menuBackground.png"))));
-
-        table.center();
-        table.add(WidgetFactory.genMenusTopBar("MINIGAME - MATCH THE PAIRS")).colspan(2);
-
-        table.row();
-        table.left();
-        table.add(setupGameTable()).expand();
-
-        table.row();
-        table.center();
-        table.add(WidgetFactory.genBottomBar("END MINI-GAME", new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                endGame(true); // player choosing to quit the game early counts as win and keeps cards collected so far
-            }
-
-        })).colspan(2);
     }
 
     @Override
