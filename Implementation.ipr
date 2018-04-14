@@ -10,6 +10,8 @@
       <entry name="!?*.groovy" />
     </wildcardResourcePatterns>
     <bytecodeTargetLevel>
+      <module name="Bachelors-of-Domination-Ass(4)_main" target="1.8" />
+      <module name="Bachelors-of-Domination-Ass(4)_test" target="1.8" />
       <module name="Bachelors-of-Domination-Ass4_main" target="1.8" />
       <module name="Bachelors-of-Domination-Ass4_test" target="1.8" />
       <module name="Bachelors-of-Domination_main" target="1.8" />
@@ -207,11 +209,11 @@
   </component>
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Bachelors-of-Domination-Ass4.iml" filepath="$PROJECT_DIR$/Bachelors-of-Domination-Ass4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Bachelors-of-Domination-Ass(4).iml" filepath="$PROJECT_DIR$/Bachelors-of-Domination-Ass(4).iml" />
+      <module fileurl="file://$PROJECT_DIR$/Bachelors-of-Domination-Ass(4)_main.iml" filepath="$PROJECT_DIR$/Bachelors-of-Domination-Ass(4)_main.iml" group="Bachelors-of-Domination-Ass(4)" />
+      <module fileurl="file://$PROJECT_DIR$/Bachelors-of-Domination-Ass(4)_test.iml" filepath="$PROJECT_DIR$/Bachelors-of-Domination-Ass(4)_test.iml" group="Bachelors-of-Domination-Ass(4)" />
       <module fileurl="file://$PROJECT_DIR$/Bachelors-of-Domination-Ass4.iml" filepath="$PROJECT_DIR$/Bachelors-of-Domination-Ass4.iml" />
       <module fileurl="file://$PROJECT_DIR$/Bachelors-of-Domination-Ass4_main.iml" filepath="$PROJECT_DIR$/Bachelors-of-Domination-Ass4_main.iml" group="Bachelors-of-Domination-Ass4" />
-      <module fileurl="file://$PROJECT_DIR$/Bachelors-of-Domination-Ass4_main.iml" filepath="$PROJECT_DIR$/Bachelors-of-Domination-Ass4_main.iml" group="Bachelors-of-Domination-Ass4" />
-      <module fileurl="file://$PROJECT_DIR$/Bachelors-of-Domination-Ass4_test.iml" filepath="$PROJECT_DIR$/Bachelors-of-Domination-Ass4_test.iml" group="Bachelors-of-Domination-Ass4" />
       <module fileurl="file://$PROJECT_DIR$/Bachelors-of-Domination-Ass4_test.iml" filepath="$PROJECT_DIR$/Bachelors-of-Domination-Ass4_test.iml" group="Bachelors-of-Domination-Ass4" />
       <module fileurl="file://$PROJECT_DIR$/Bachelors-of-Domination_main.iml" filepath="$PROJECT_DIR$/Bachelors-of-Domination_main.iml" group="Bachelors-of-Domination" />
       <module fileurl="file://$PROJECT_DIR$/Bachelors-of-Domination_test.iml" filepath="$PROJECT_DIR$/Bachelors-of-Domination_test.iml" group="Bachelors-of-Domination" />

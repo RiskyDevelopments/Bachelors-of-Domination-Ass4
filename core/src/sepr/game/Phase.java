@@ -74,7 +74,7 @@ public abstract class Phase extends Stage {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 gameScreen.nextPhase();
-                Audio.get("sound/Other/click.mp3", Sound.class).play(AudioManager.GlobalFXvolume); //plays the music
+                Audio.get("sound/Other/Electro button click.mp3", Sound.class).play(AudioManager.GlobalFXvolume); //plays the music
 
             }
         });
