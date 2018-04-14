@@ -25,7 +25,7 @@ public class UnitChangeParticle {
     public UnitChangeParticle(int amount, Vector2 centrePosition) {
         this.centrePosition = centrePosition;
         this.startTime = System.currentTimeMillis();
-        overlay = new Texture("uiComponents/troopCountOverlay.png");
+        overlay = new Texture("icons/troopCountOverlay.png");
 
         font = WidgetFactory.getFontSmall();
 

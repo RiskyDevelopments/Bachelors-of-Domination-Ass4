@@ -38,10 +38,10 @@ public class Sector implements ApplicationListener {
     private boolean isPVCTile;
     private Map map;
 
-    private static Texture troopCountOverlay = new Texture("uiComponents/troopCountOverlay.png");
-    private static Texture pooStatus = new Texture("pooStatus.png");
-    private static Texture asbestosStatus = new Texture("asbestosStatus.png");
-    private static Texture postgradIcon = new Texture("postgradIcon.png");
+    private static Texture troopCountOverlay = new Texture("icons/troopCountOverlay.png");
+    private static Texture pooStatus = new Texture("icons/poopStatus.png");
+    private static Texture asbestosStatus = new Texture("icons/asbestosStatus.png");
+    private static Texture postgradIcon = new Texture("icons/postgradCountOverlay.png");
     private static BitmapFont font = WidgetFactory.getFontSmall(); // font for rendering sector unit data
     private static GlyphLayout layout = new GlyphLayout();
 
@@ -398,18 +398,18 @@ public class Sector implements ApplicationListener {
             layout.setText(font, this.getUnderGradsInSector() + "");
             font.draw(batch, layout, this.getSectorCentreX() - layout.width / 2, this.getSectorCentreY() + layout.height / 2);
 
-            batch.draw(postgradIcon, this.getSectorCentreX() + 20, this.getSectorCentreY() - overlaySize / 2);
+            batch.draw(postgradIcon, this.getSectorCentreX() + 20, this.getSectorCentreY() - overlaySize / 2, overlaySize, overlaySize);
             layout.setText(font, this.getPostGradsInSector() + "");
             font.draw(batch, layout, this.getSectorCentreX() - layout.width / 2 + 40, this.getSectorCentreY() + layout.height / 2);
 
             if (this.getAsbestosCount() != 0) {
-                batch.draw(asbestosStatus, this.getSectorCentreX(), this.getSectorCentreY() + 10);
+                batch.draw(asbestosStatus, this.getSectorCentreX(), this.getSectorCentreY() + 10, overlaySize, overlaySize);
                 layout.setText(font, this.getAsbestosCount() + "");
                 font.draw(batch, layout, this.getSectorCentreX() + layout.width + 2, this.getSectorCentreY() + layout.height + 18);
             }
 
             if (this.getPoopCount() != 0) {
-                batch.draw(pooStatus, this.getSectorCentreX(), this.getSectorCentreY() - 50);
+                batch.draw(pooStatus, this.getSectorCentreX(), this.getSectorCentreY() - 50, overlaySize, overlaySize);
                 layout.setText(font, this.getPoopCount() + "");
                 font.draw(batch, layout, this.getSectorCentreX() + layout.width + 2, this.getSectorCentreY() + layout.height - 40);
             }
