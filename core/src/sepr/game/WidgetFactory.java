@@ -240,7 +240,7 @@ public class WidgetFactory {
         bottomBar.setDebug(false);
         bottomBar.left();
         bottomBar.add(leftPart).height(72).width(54).bottom();
-        bottomBar.add(escButton).height((float) 64.5).width(210).bottom();
+        bottomBar.add(escButton).height((float) 64.5).width(250).bottom();
         bottomBar.add(centerPart).height(72).expandX().fillX().bottom();
         bottomBar.add(endCenterPart).height(89).width(73).bottom();
         bottomBar.add(textLabel).height(144).width(260);

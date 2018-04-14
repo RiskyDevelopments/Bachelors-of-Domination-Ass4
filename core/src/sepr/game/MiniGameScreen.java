@@ -111,7 +111,7 @@ public class MiniGameScreen implements Screen {
 
         uiComponentsTable.row();
         uiComponentsTable.center();
-        uiComponentsTable.add(WidgetFactory.genBottomBar("END MINI-GAME", new ChangeListener() {
+        uiComponentsTable.add(WidgetFactory.genBottomBar("END MINIGAME", new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 endGame(true); // player choosing to quit the game early counts as win and keeps cards collected so far
@@ -144,9 +144,10 @@ public class MiniGameScreen implements Screen {
         }
 
         Table gameTable = new Table();
+        gameTable.setDebug(false);
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLS; j++) {
-                gameTable.add(cardButtons[i][j]).pad(30);
+                gameTable.add(cardButtons[i][j]).height(350).width(250).pad(40);
                 gameTable.right();
             }
             gameTable.row();
