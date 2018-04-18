@@ -288,11 +288,21 @@ public class Map {
         addUnitsToSectorAnimated(targetSecotId, amount, 0); // add units to target
     }
 
+    /**
+     * Executes an attack
+     *
+     * @param attacker Player attacking
+     * @param neutral Neutral player
+     * @param source Source sector
+     * @param target Target sector
+     * @param attackers Number of troops attacking
+     */
     public void completeAttack(Player attacker, Player neutral, Sector source, Sector target, int attackers) {
         int startAttackers = attackers;
         int underGrads = target.getUnderGradsInSector();
         int postGrads = target.getPostGradsInSector();
 
+        // ATTACK BALANCING SETTINGS
         float winChance = 0.55f; // Chance of a 1v1 being a win for the attacker - stored as float between 0.0 and 1.0
         int postGradStrength = 3; // Number of undergrads killed by a defending postgrad
 
