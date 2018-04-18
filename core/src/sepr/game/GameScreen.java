@@ -44,6 +44,10 @@ public class GameScreen implements Screen, InputProcessor{
     private boolean turnTimerEnabled;
     private int maxTurnTime;
     private long turnTimeStart;
+    private long pausedFrom;
+    private boolean paused = false;
+    private long totalPaused = 0;
+    private long timeElapsed = 0;
 
     private List<Integer> turnOrder; // array of player ids in order of players' turns;
     private int currentPlayerPointer; // index of current player in turnOrder list
@@ -170,7 +174,31 @@ public class GameScreen implements Screen, InputProcessor{
      * @return time remaining in turn in seconds
      */
     private int getTurnTimeRemaining(){
-        return maxTurnTime - (int)((System.currentTimeMillis() - turnTimeStart) / 1000);
+        this.maxTurnTime = 10;
+        if (!paused) {
+            timeElapsed = maxTurnTime - (int)(((System.currentTimeMillis() - turnTimeStart) - totalPaused) / 1000);
+        }
+        return (int)timeElapsed;
+    }
+
+    /**
+     * Stores the time of pausing the game
+     */
+    public void pauseGame() {
+        if (!paused) {
+            pausedFrom = System.currentTimeMillis();
+            paused = true;
+        }
+    }
+
+    /**
+     * Calculates the time the game has been paused for
+     */
+    public void resumeGame() {
+        if (paused) {
+            totalPaused += System.currentTimeMillis() - pausedFrom;
+            paused = false;
+        }
     }
 
     /**
@@ -411,6 +439,8 @@ public class GameScreen implements Screen, InputProcessor{
         this.phases.get(currentPhase).draw(); // draw the phase UI
 
         if (this.turnTimerEnabled && (getTurnTimeRemaining() <= 0)) { // goto the next player's turn if the timer is enabled and they have run out of time
+            this.totalPaused = 0;
+            this.pausedFrom = 0;
             nextPlayer();
         }
     }
@@ -459,7 +489,13 @@ public class GameScreen implements Screen, InputProcessor{
     public boolean keyDown(int keycode) { return false; }
 
     @Override
-    public boolean keyUp(int keycode) { return false; }
+    public boolean keyUp(int keycode) {
+        if (keycode == Input.Keys.ESCAPE) {
+            DialogFactory.pauseGameDialogBox(this, phases.get(currentPhase)); // confirm if the player wants to leave if escape is pressed
+        }
+
+        return false;
+    }
 
     @Override
     public boolean keyTyped(char character) {
