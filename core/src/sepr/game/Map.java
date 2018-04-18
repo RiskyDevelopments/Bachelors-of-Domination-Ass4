@@ -288,21 +288,41 @@ public class Map {
         addUnitsToSectorAnimated(targetSecotId, amount, 0); // add units to target
     }
 
+    /**
+     * Executes an attack
+     *
+     * @param attacker Player attacking
+     * @param neutral Neutral player
+     * @param source Source sector
+     * @param target Target sector
+     * @param attackers Number of troops attacking
+     */
     public void completeAttack(Player attacker, Player neutral, Sector source, Sector target, int attackers) {
-        int defenders = target.getUnderGradsInSector();
+        int startAttackers = attackers;
+        int underGrads = target.getUnderGradsInSector();
+        int postGrads = target.getPostGradsInSector();
 
-        int attackersLost = 0;
-        int defendersLost = 0;
+        // ATTACK BALANCING SETTINGS
+        float winChance = 0.55f; // Chance of a 1v1 being a win for the attacker - stored as float between 0.0 and 1.0
+        int postGradStrength = 3; // Number of undergrads killed by a defending postgrad
 
-        while (attackers != attackersLost && defenders != defendersLost) {
-            if (random.nextFloat() > 0.55f) {
-                attackersLost++;
-            } else {
-                defendersLost++;
+        while (attackers > 0 && (underGrads > 0 || postGrads > 0)) { // While there are troops to attack and defend
+            if (underGrads > 0) { // Attack undergraduates first
+                if (random.nextFloat() > winChance) { // win
+                    underGrads --;
+                } else { // loss
+                    attackers --;
+                }
+            } else if (postGrads > 0) { // All undergrads are dead but postgrads remain
+                if (random.nextFloat() > winChance) { // win
+                    postGrads --;
+                } else { // loss
+                    attackers =- attackers <= postGradStrength ? 0 : postGradStrength;
+                }
             }
         }
 
-        if(attackersLost > defendersLost){
+        if(attackers <= 0){
             // Poor Move
             int voice = random.nextInt(3);
 
@@ -342,8 +362,9 @@ public class Map {
         }
 
         // apply the attack to the map
-        addUnitsToSectorAnimated(source.getId(), -attackersLost, 0);
-        addUnitsToSectorAnimated(target.getId(), -defendersLost, 0);
+        addUnitsToSectorAnimated(source.getId(), -(startAttackers - attackers), 0);
+        addUnitsToSectorAnimated(target.getId(), -(target.getUnderGradsInSector() - underGrads), 0);
+        addUnitsToSectorAnimated(target.getId(), 0, -(target.getPostGradsInSector() - postGrads));
 
         if (source.getUnderGradsInSector() == 0) { // defender won
             source.setOwner(neutral);
