@@ -95,6 +95,7 @@ public class DialogFactory {
                 if (object.toString().equals("1")){ // yes pressed therefore quit the game
                     gameScreen.openMenu(); // change screen to menu screen
                 }
+                gameScreen.resumeGame();
             }
         };
         basicStyle(dialog, 60);
@@ -102,6 +103,7 @@ public class DialogFactory {
         dialog.button("Yes", "1");
         dialog.button("No", "0");
         dialog.show(stage);
+        gameScreen.pauseGame();
     }
 
     /**
@@ -110,16 +112,19 @@ public class DialogFactory {
      * @param gameScreen for changing the screen
      * @param stage the stage to draw the box onto
      */
-    public static void pauseGameDialogBox(final GameScreen gameScreen, Stage stage) {
+    public static void pauseGameDialogBox(final GameScreen gameScreen, final Stage stage) {
         Dialog dialog = new Dialog("Paused", DialogFactory.skin) {
             protected void result(Object object) {
                 if (object.equals("save")) {
                     gameScreen.getMain().saveGame();
+                    gameScreen.resumeGame();
                 } else if (object.equals("saveExit")) {
                     gameScreen.getMain().saveGame();
-                    gameScreen.openMenu(); // change screen to menu screen
+                    DialogFactory.leaveGameDialogBox(gameScreen, stage);
                 } else if (object.equals("exit")) {
-                    gameScreen.openMenu(); // change screen to menu screen
+                    DialogFactory.leaveGameDialogBox(gameScreen, stage);
+                } else {
+                    gameScreen.resumeGame();
                 }
             }
         };
@@ -133,6 +138,7 @@ public class DialogFactory {
         dialog.getButtonTable().row().padBottom(10);
         dialog.button("Exit", "exit");
         dialog.show(stage);
+        gameScreen.pauseGame();
     }
 
     /**
