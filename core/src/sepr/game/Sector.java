@@ -35,7 +35,6 @@ public class Sector implements ApplicationListener {
     private boolean decor; // is this sector for visual purposes only, i.e. lakes are decor
     private String fileName;
     private boolean allocated; // becomes true once the sector has been allocated
-    private boolean isPVCTile;
     private Map map;
 
     private static Texture troopCountOverlay = new Texture("icons/troopCountOverlay.png");
@@ -145,9 +144,7 @@ public class Sector implements ApplicationListener {
      */
     public void setOwner(Player player) {
         this.ownerId = player.getId();
-        if(!this.isPVCTile){
-            this.changeSectorColor(player.getSectorColour());
-        }
+        this.changeSectorColor(player.getSectorColour());
         this.allocated = true;
     }
 
@@ -162,19 +159,6 @@ public class Sector implements ApplicationListener {
     public boolean canChangeUnits() {
         return poopCount == 0;
     }
-
-    /**
-     *
-     * @return if sector is PVC sector
-     */
-    public boolean getIsPVCTile() { return isPVCTile; }
-
-    /**
-     *
-     * @return if sector is PVC sector
-     */
-    public void setIsPVCTile(boolean value) { this.isPVCTile = value; }
-
 
     /**
      *
@@ -305,7 +289,7 @@ public class Sector implements ApplicationListener {
      * @param undergrad number of units to change by, (can be negative to subtract units
      * @throws IllegalArgumentException if units in sector is below 0
      */
-    public void addUnits(int undergrad, int postgrad) throws IllegalArgumentException {
+    public void addUnits(int undergrad, int postgrad, Player neutralPlayer) throws IllegalArgumentException {
         this.underGradsInSector += undergrad;
         this.postGradsInSector += postgrad;
 
@@ -318,6 +302,8 @@ public class Sector implements ApplicationListener {
             this.postGradsInSector = 0;
             throw new IllegalArgumentException("Cannot have less than 0 postgrad units on a sector");
         }
+
+        if (this.underGradsInSector == 0 && this.underGradsInSector == 0) this.setOwner(neutralPlayer);
     }
 
     /**
@@ -381,11 +367,11 @@ public class Sector implements ApplicationListener {
         }
     }
 
-    private int getAsbestosCount() {
+    public int getAsbestosCount() {
         return asbestosCount;
     }
 
-    private int getPoopCount() {
+    public int getPoopCount() {
         return poopCount;
     }
 

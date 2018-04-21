@@ -1,6 +1,7 @@
 package sepr.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -45,7 +46,14 @@ public class MiniGameScreen implements Screen {
     public MiniGameScreen(final Main main, final GameScreen gameScreen) {
         this.main = main;
         this.gameScreen = gameScreen;
-        this.stage = new Stage();
+        this.stage = new Stage(){
+            @Override
+            public boolean keyUp(int keyCode) {
+                if (super.keyUp(keyCode)) return true;
+                if (keyCode == Input.Keys.ESCAPE) endGame(true);
+                return true;
+            }
+        };
         this.stage.setViewport(new ScreenViewport());
 
         Table backgroundTable = setupBackground();

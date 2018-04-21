@@ -231,8 +231,8 @@ public class OptionsScreen implements Screen {
     private void readPreferences() {
         Preferences prefs = Gdx.app.getPreferences(OptionsScreen.PREFERENCES_NAME);
 
-        musicSlider.setValue(prefs.getFloat(MUSIC_VOL_PREF, 1f));
-        fxSlider.setValue(prefs.getFloat(FX_VOL_PREF, 1f));
+        musicSlider.setValue(prefs.getFloat(MUSIC_VOL_PREF, 0.5f));
+        fxSlider.setValue(prefs.getFloat(FX_VOL_PREF, 0.5f));
 
         if (prefs.getInteger(OptionsScreen.RESOLUTION_WIDTH_PREF, -1) == -1 || prefs.getInteger(OptionsScreen.RESOLUTION_HEIGHT_PREF, -1) == -1) {
             resolutionSelector.setSelected(Gdx.graphics.getWidth() + " x " + Gdx.graphics.getHeight());

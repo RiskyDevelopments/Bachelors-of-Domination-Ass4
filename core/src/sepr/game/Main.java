@@ -4,10 +4,8 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import sepr.game.saveandload.SaveLoadManager;
-import sepr.game.utils.PlayerType;
 
 import java.util.HashMap;
 
@@ -24,7 +22,7 @@ public class Main extends Game implements ApplicationListener {
 	private MiniGameScreen miniGameScreen;
 
 	private SaveLoadManager saveLoadManager;
-	private AudioManager Audio = AudioManager.getInstance();
+	private AudioManager audio = AudioManager.getInstance();
 
 
 	/**
@@ -40,7 +38,6 @@ public class Main extends Game implements ApplicationListener {
 		this.optionsScreen = new OptionsScreen(this);
 		this.gameScreen = new GameScreen(this);
 		this.miniGameScreen = new MiniGameScreen( this, gameScreen);
-
 		this.saveLoadManager = new SaveLoadManager(this, gameScreen);
 
 		applyPreferences();
@@ -65,11 +62,10 @@ public class Main extends Game implements ApplicationListener {
 	 *
 	 * @param players hashmap of players who should be present in the game
 	 * @param turnTimerEnabled whether or not this game should have a turn timer on
-	 * @param maxTurnTime the maximum time of a turn, in seconds, if the turn tumer is enabled
 	 * @param allocateNeutralPlayer should the neutral player be given sectors to start with
 	 */
-	public void setGameScreen(HashMap<Integer, Player> players, boolean turnTimerEnabled, int maxTurnTime, boolean allocateNeutralPlayer) {
-		gameScreen.setupGame(players, turnTimerEnabled, maxTurnTime, allocateNeutralPlayer);
+	public void setGameScreen(HashMap<Integer, Player> players, boolean turnTimerEnabled, boolean allocateNeutralPlayer) {
+		gameScreen.setupGame(players, turnTimerEnabled, allocateNeutralPlayer);
 		this.setScreen(gameScreen);
 		gameScreen.startGame();
 	}
@@ -107,9 +103,9 @@ public class Main extends Game implements ApplicationListener {
 	public void applyPreferences() {
 		Preferences prefs = Gdx.app.getPreferences(OptionsScreen.PREFERENCES_NAME);
 
-		AudioManager.GlobalFXvolume = prefs.getFloat(OptionsScreen.FX_VOL_PREF);
-		AudioManager.GlobalMusicVolume = prefs.getFloat(OptionsScreen.MUSIC_VOL_PREF);
-		Audio.setMusicVolume();
+		AudioManager.GlobalFXvolume = prefs.getFloat(OptionsScreen.FX_VOL_PREF, 0.5f);
+		AudioManager.GlobalMusicVolume = prefs.getFloat(OptionsScreen.MUSIC_VOL_PREF, 0.5f);
+		audio.setMusicVolume();
 
 		int screenWidth = prefs.getInteger(OptionsScreen.RESOLUTION_WIDTH_PREF, 1920);
 		int screenHeight = prefs.getInteger(OptionsScreen.RESOLUTION_HEIGHT_PREF, 1080);
@@ -123,17 +119,18 @@ public class Main extends Game implements ApplicationListener {
 
 	//Dom modified method name to fit rest of program's convention
 	public void saveGame(){
-        this.saveLoadManager.SaveByID(this.saveLoadManager.GetCurrentSaveID()); // TODO get next id/current id
+        this.saveLoadManager.SaveByID(this.saveLoadManager.GetCurrentSaveID());
     }
 
 	//Dom modified method name to fit rest of program's convention
     public void loadGame(){
 	    this.saveLoadManager.LoadFromFile();
-		this.saveLoadManager.LoadSaveByID(0);
+		this.saveLoadManager.LoadSaveByID();
 	}
 
 	//Dom modified method name to fit rest of program's convention
 	public boolean hasLoadedSaves(){
+		this.saveLoadManager = new SaveLoadManager(this, gameScreen);
 		return this.saveLoadManager.savesToLoad;
 	}
 

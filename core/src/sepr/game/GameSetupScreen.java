@@ -1,11 +1,8 @@
 package sepr.game;
 
-import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -17,10 +14,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import javafx.util.Pair;
-import org.lwjgl.Sys;
+import sepr.game.utils.CollegeName;
 import sepr.game.utils.PlayerType;
 
-import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -52,44 +48,7 @@ public class GameSetupScreen implements Screen{
 
     private Texture collegeTableBackground;
 
-    /**
-     * the colleges available to play as
-     */
-    public enum CollegeName {
-        ALCUIN("ALCUIN"),
-        DERWENT("DERWENT"),
-        HALIFAX("HALIFAX"),
-        HES_EAST("HESLINGTON EAST"),
-        JAMES("JAMES"),
-        UNI_OF_YORK("UNIVERSITY OF YORK"),
-        VANBRUGH("VANBRUGH"),
-        WENTWORTH("WENTWORTH");
 
-        private final String shortCode;
-
-        CollegeName(String code){
-            this.shortCode = code;
-        }
-
-        public String getCollegeName(){
-            return this.shortCode;
-        }
-
-        /**
-         * converts the string representation of the enum to the enum value
-         *
-         * @param text string representation of the enum
-         * @return the enum value of the provided text
-         * @throws IllegalArgumentException if the text does not match any of the enum's string values
-         */
-        public static CollegeName fromString(String text) throws IllegalArgumentException {
-            for (CollegeName collegeName : CollegeName.values()) {
-                if (collegeName.getCollegeName().equals(text)) return collegeName;
-            }
-
-            throw new IllegalArgumentException("Text parameter must match one of the enums");
-        }
-    }
 
     /**
      *
@@ -346,34 +305,6 @@ public class GameSetupScreen implements Screen{
     }
 
     /**
-     * gets the colour associated with the passed college name
-     *
-     * @param collegeName name of college to get colour for
-     * @return Color corresponding to the given college
-     */
-    public static Color getCollegeColor (CollegeName collegeName) {
-        switch (collegeName) {
-            case ALCUIN:
-                return Color.RED;
-            case DERWENT:
-                return Color.BLUE;
-            case HALIFAX:
-                return Color.CYAN;
-            case HES_EAST:
-                return Color.GREEN;
-            case JAMES:
-                return Color.GRAY;
-            case UNI_OF_YORK:
-                return Color.WHITE;
-            case VANBRUGH:
-                return Color.PURPLE;
-            case WENTWORTH:
-                return Color.ORANGE;
-        }
-        return Color.BLACK;
-    }
-
-    /**
      * using the information configured in the setup screen generate a hashmap of players to be used in the game
      *
      * @return HashMap of Players derived from the Setup Screen
@@ -385,7 +316,7 @@ public class GameSetupScreen implements Screen{
         for (int i = 0; i < MAX_NUMBER_OF_PLAYERS; i++) {
             if (playerTypes[i].getText().toString().equals(PlayerType.HUMAN.getPlayerType())) {
                 // create human player
-                players.put(i, Player.createHumanPlayer(i, CollegeName.fromString(playerColleges[i].getKey().getText().toString()), getCollegeColor(CollegeName.fromString(playerColleges[i].getKey().getText().toString())), playerNames[i].getText()));
+                players.put(i, Player.createHumanPlayer(i, CollegeName.fromString(playerColleges[i].getKey().getText().toString()), 5, playerNames[i].getText()));
             }
         }
 
@@ -479,15 +410,14 @@ public class GameSetupScreen implements Screen{
             validateCollegeSelection();
             validatePlayerConfiguration();
         } catch (GameSetupException e) {
-            DialogFactory.basicDialogBox("Game Setup Error", e.getExceptionType().getErrorMessage(), stage);
+            DialogFactory.basicDialogBox(null, "Game Setup Error", e.getExceptionType().getErrorMessage(), stage);
             return;
         }
         HashMap<Integer, Player> x = generatePlayerHashmaps();
 
-        int MAX_TURN_TIME = 120;
         Audio.disposeMusic("sound/IntroMusic/Tron style music - Original track.mp3");
         Audio.loadMusic("sound/Gameplay Music/80's Retro Synthwave Intro Music.mp3"); //loads and plays the gamePlay music
-        main.setGameScreen(x, turnTimerSwitch.isChecked(), MAX_TURN_TIME, neutralPlayerSwitch.isChecked());
+        main.setGameScreen(x, turnTimerSwitch.isChecked(), neutralPlayerSwitch.isChecked());
     }
 
     /**

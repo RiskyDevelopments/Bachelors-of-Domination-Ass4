@@ -49,11 +49,9 @@ public class SaveLoadManager {
         String path = home + File.separator + "Bachelors-of-Domination" + File.separator + "saves" + File.separator + "saves.json"; // Generate the path to the saves.json file
         boolean directoryExists = new File(path).exists();
 
-        this.SAVE_FILE_PATH = path;
+        SAVE_FILE_PATH = path;
 
-        if(directoryExists) { // Check that the directory exists
-            LoadFromFile(); // Load the file if it exists
-        } else { // Create a blank saves file
+        if(!directoryExists) { // Create a blank saves file
             File file = new File(path);
             try {
                 file.getParentFile().mkdirs();
@@ -74,13 +72,13 @@ public class SaveLoadManager {
                 e.printStackTrace();
             }
         }
+        LoadFromFile();
     }
 
     /**
      * Load GameState JSON from file
-     * @return true if loading is successful
      */
-    public boolean LoadFromFile(){
+    public void LoadFromFile(){
 
         JSONParser parser = new JSONParser(); // Create JSON parser
 
@@ -91,8 +89,7 @@ public class SaveLoadManager {
             this.numberOfSaves = Integer.parseInt(loadProperties.get("Saves").toString()); // Get number of saves
 
             if(this.numberOfSaves > 0){ // If saves exist, read the first save into the loaded state
-                JSONObject gameStateJSON = (JSONObject)loadProperties.get("GameState"); // TODO Allow for more than one save
-
+                JSONObject gameStateJSON = (JSONObject)loadProperties.get("GameState");
 
                 JSONifier jifier = new JSONifier();
                 jifier.SetStateJSON(gameStateJSON);
@@ -110,8 +107,6 @@ public class SaveLoadManager {
         } catch (ParseException e){
             e.printStackTrace();
         }
-
-        return true;
     }
 
     /**
@@ -121,8 +116,8 @@ public class SaveLoadManager {
      * @param sectors
      * @return A Map object
      */
-    public Map MapFromMapState(GameState.MapState mapState, HashMap<Integer, Player> players, HashMap<Integer, Sector> sectors){
-        Map map = new Map(players, false, sectors);
+    public Map MapFromMapState(GameState.MapState mapState, HashMap<Integer, Player> players, HashMap<Integer, Sector> sectors, GameScreen gameScreen){
+        Map map = new Map(players, false, sectors, gameScreen);
 
         return map;
     }
@@ -136,7 +131,7 @@ public class SaveLoadManager {
         HashMap<Integer, Player> players = new HashMap<Integer, Player>();
 
         for (GameState.PlayerState player : playerStates){
-            players.put(player.hashMapPosition, new Player(player.id, player.collegeName, new Color(player.sectorColour.r, player.sectorColour.g, player.sectorColour.b, player.sectorColour.a), player.playerType, player.playerName, player.troopsToAllocate, player.collusionCards, player.poopyPathCards, player.asbestosCards, player.ownsPVC));
+            players.put(player.hashMapPosition, new Player(player.id, player.collegeName, player.troopsToAllocate, player.playerType, player.playerName, player.collusionCards, player.poopyPathCards, player.asbestosCards));
         }
 
         return players;
@@ -163,9 +158,9 @@ public class SaveLoadManager {
             }
 
             if (test) {
-                sectors.put(sector.hashMapPosition, new Sector(sector.id, sector.ownerId, sector.fileName, sector.texturePath, map, sector.displayName, sector.unitsInSector, sector.postgradsInSector, sector.reinforcementsProvided, sector.college, sector.neutral, sector.adjacentSectorIds, sector.sectorCentreX, sector.sectorCentreY, sector.decor, sector.allocated, color, test, sector.asbestosCount, sector.poopCount, sector.map));
+                sectors.put(sector.hashMapPosition, new Sector(sector.id, sector.ownerId, sector.fileName, sector.texturePath, map, sector.displayName, sector.undergradsInSector, sector.postgradsInSector, sector.reinforcementsProvided, sector.college, sector.neutral, sector.adjacentSectorIds, sector.sectorCentreX, sector.sectorCentreY, sector.decor, sector.allocated, color, test, sector.asbestosCount, sector.poopCount, sector.map));
             }else{
-                sectors.put(sector.hashMapPosition, new Sector(sector.id, sector.ownerId, sector.fileName, sector.texturePath, map, sector.displayName, sector.unitsInSector, sector.postgradsInSector, sector.reinforcementsProvided, sector.college, sector.neutral, sector.adjacentSectorIds, sector.sectorCentreX, sector.sectorCentreY, sector.decor, sector.allocated, color, sector.asbestosCount, sector.poopCount, sector.map));
+                sectors.put(sector.hashMapPosition, new Sector(sector.id, sector.ownerId, sector.fileName, sector.texturePath, map, sector.displayName, sector.undergradsInSector, sector.postgradsInSector, sector.reinforcementsProvided, sector.college, sector.neutral, sector.adjacentSectorIds, sector.sectorCentreX, sector.sectorCentreY, sector.decor, sector.allocated, color, sector.asbestosCount, sector.poopCount, sector.map));
             }
         }
 
@@ -174,20 +169,19 @@ public class SaveLoadManager {
 
     /**
      * Loads a save file with a given ID
-     * @param id
+     *
      * @return true if loading is successful
      */
-    public boolean LoadSaveByID(int id){
+    public void LoadSaveByID(){
         HashMap<Integer, Player> players = PlayersFromPlayerState(loadedState.playerStates);
         HashMap<Integer, Sector> sectors = SectorsFromSectorState(loadedState.mapState.sectorStates, players, false);
 
-        Map loadedMap = MapFromMapState(loadedState.mapState, players, sectors);
+        Map loadedMap = MapFromMapState(loadedState.mapState, players, sectors, gameScreen);
 
-        this.gameScreen = new GameScreen(this.main, loadedState.currentPhase, loadedMap, players, loadedState.turnTimerEnabled, loadedState.maxTurnTime, loadedState.turnTimeStart, loadedState.turnOrder, loadedState.currentPlayerPointer);
+        this.gameScreen = new GameScreen(this.main, loadedState.currentPhase, loadedMap, players, loadedState.turnTimerEnabled, loadedState.turnTimeElapsed, loadedState.turnOrder, loadedState.currentPlayerPointer);
+        loadedMap.setGameScreen(gameScreen);
 
         this.main.setGameScreenFromLoad(this.gameScreen);
-
-        return true;
     }
 
     /**
@@ -197,7 +191,7 @@ public class SaveLoadManager {
      */
     public boolean SaveToFile(JSONObject newSave){
         try {
-            FileWriter fileWriter = new FileWriter(this.SAVE_FILE_PATH);
+            FileWriter fileWriter = new FileWriter(SAVE_FILE_PATH);
             fileWriter.write(newSave.toJSONString());
             fileWriter.flush();
         } catch (Exception e) {
@@ -218,8 +212,7 @@ public class SaveLoadManager {
         gameState.map = this.gameScreen.getMap(); // Store map
         gameState.players = this.gameScreen.getPlayers(); // Store players
         gameState.turnTimerEnabled = this.gameScreen.isTurnTimerEnabled(); // Store whether the turn timer is enabled
-        gameState.maxTurnTime = this.gameScreen.getMaxTurnTime(); // Store the maximum turn time
-        gameState.turnTimeStart = this.gameScreen.getTurnTimeStart(); // Store the start time of the current turn
+        gameState.turnTimeElapsed = (int)this.gameScreen.getTurnTimeElapsed(); // Seconds since player's turn began
         gameState.turnOrder = this.gameScreen.getTurnOrder(); // Store the turn order
         gameState.currentPlayerPointer = this.gameScreen.getCurrentPlayerPointer(); // Store the pointer to the current player
 
@@ -239,7 +232,8 @@ public class SaveLoadManager {
             sectorState.id = value.getId(); // Store the Sector's ID
             sectorState.ownerId = value.getOwnerId(); // Store the Sector's owner's ID
             sectorState.displayName = value.getDisplayName(); // Store the Sector's display name
-            sectorState.unitsInSector = value.getUnderGradsInSector(); // Store the number of units in the Sector
+            sectorState.undergradsInSector = value.getUnderGradsInSector(); // Store the number of units in the Sector
+            sectorState.postgradsInSector = value.getPostGradsInSector();
             sectorState.reinforcementsProvided = value.getReinforcementsProvided(); // Store the number of reinforcements provided to the Sector
             sectorState.college = value.getCollege(); // Store the college of the Sector
             sectorState.texturePath = value.getTexturePath(); // Store the path to the Sector's texture
@@ -250,6 +244,8 @@ public class SaveLoadManager {
             sectorState.decor = value.isDecor(); // Store whether the Sector is for decoration
             sectorState.fileName = value.getFileName(); // Store the filename of the Sector file
             sectorState.allocated = value.isAllocated(); // Store whether the Sector has been allocated
+            sectorState.poopCount = value.getPoopCount();
+            sectorState.asbestosCount = value.getAsbestosCount();
 
             mapState.sectorStates[i] = sectorState;
 
@@ -274,9 +270,7 @@ public class SaveLoadManager {
             playerState.collegeName = value.getCollegeName(); // Store the Player's college
             playerState.playerName = value.getPlayerName(); // Store the Player's name
             playerState.troopsToAllocate = value.getTroopsToAllocate(); // Store the number of troops left to allocate
-            playerState.sectorColour = value.getSectorColour(); // Store the Player's Sector's colour
             playerState.playerType = value.getPlayerType(); // Store the Player's type
-            playerState.ownsPVC = value.getOwnsPVC(); // Store whether the Player owns the PVC
 
             gameState.playerStates[i] = playerState;
             i++;

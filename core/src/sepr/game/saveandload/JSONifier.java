@@ -1,12 +1,10 @@
 package sepr.game.saveandload;
 
 import com.badlogic.gdx.graphics.Color;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.lwjgl.Sys;
 import sepr.game.GameSetupScreen;
-import sepr.game.Phase;
+import sepr.game.utils.CollegeName;
 import sepr.game.utils.PlayerType;
 import sepr.game.utils.TurnPhaseType;
 
@@ -59,11 +57,15 @@ public class JSONifier {
             gameState.mapState.sectorStates[i].id = (int)(long)(Long)sector.get("ID"); // Get Sector's ID
             gameState.mapState.sectorStates[i].ownerId = (int)(long)(Long)sector.get("OwnerID"); // Get Sector's Owner's ID
             gameState.mapState.sectorStates[i].displayName = (String)sector.get("DisplayName"); // Get Sector's display name
-            gameState.mapState.sectorStates[i].unitsInSector = (int)(long)(Long)sector.get("UnitsInSector"); // Get the number of units in the Sector
+            gameState.mapState.sectorStates[i].undergradsInSector = (int)(long)(Long)sector.get("UndergradsInSector"); // Get the number of undergrads in the Sector
+            gameState.mapState.sectorStates[i].postgradsInSector = (int)(long)(Long)sector.get("PostgradsInSector"); // Get the number of postgrads in the Sector
             gameState.mapState.sectorStates[i].reinforcementsProvided = (int)(long)(Long)sector.get("ReinforcementsProvided"); // Get the number of reinforcements provided
             gameState.mapState.sectorStates[i].college = (String)sector.get("College"); // Get the Sector's college
             gameState.mapState.sectorStates[i].texturePath = (String)sector.get("TexturePath"); // Get the Sector's texture filepath
-            gameState.mapState.sectorStates[i].neutral = (Boolean)sector.get("Neutral"); // Get whether the Sector is nneutral
+            gameState.mapState.sectorStates[i].neutral = (Boolean)sector.get("Neutral"); // Get whether the Sector is neutral
+            gameState.mapState.sectorStates[i].poopCount = (int)(long)(Long)sector.get("PoopCount"); // Get time left of poop effect
+            gameState.mapState.sectorStates[i].asbestosCount = (int)(long)(Long)sector.get("AsbestosCount"); // Get time left of asbestos effect
+
 
             JSONArray adjacentSectors = (JSONArray)sector.get("AdjacentSectorIDs"); // Get the JSONArray of adjacent Sectors
             gameState.mapState.sectorStates[i].adjacentSectorIds = new int[adjacentSectors.size()]; // Create a new array of adjacent Sectors
@@ -97,20 +99,16 @@ public class JSONifier {
 
             gameState.playerStates[k].hashMapPosition = (int)(long)(Long)player.get("HashMapPosition"); // Get Player's HashMap position
             gameState.playerStates[k].id = (int)(long)(Long)player.get("ID"); // Get Player's ID
-            gameState.playerStates[k].collegeName = GameSetupScreen.CollegeName.fromString((String)player.get("CollegeName")); // Get Player's college name
-            gameState.playerStates[k].playerName = (String)player.get("PlayerName"); // Get Player's name
+            gameState.playerStates[k].collegeName = CollegeName.fromString((String)player.get("CollegeName")); // Get Player's college name
             gameState.playerStates[k].troopsToAllocate = (int)(long)(Long)player.get("TroopsToAllocate"); // Get the troops that the Player has left to allocate
-            JSONObject colour = (JSONObject)player.get("SectorColour"); // Get the Player's Sector colour
-            gameState.playerStates[k].sectorColour = new Color((float)(double)(Double)colour.get("R"),(float)(double)(Double)colour.get("G"),(float)(double)(Double)colour.get("B"),(float)(double)(Double)colour.get("A")); // Read Sector colour into a new colour object
+            gameState.playerStates[k].playerName = (String)player.get("PlayerName"); // Get Player's name
             gameState.playerStates[k].playerType = PlayerType.fromString((String)player.get("PlayerType")); // Get the Player's type
-            gameState.playerStates[k].ownsPVC = (boolean)(Boolean)player.get("OwnsPVC"); // Get whether the Player owns the PVC
 
             k++;
         }
 
         gameState.turnTimerEnabled = (Boolean)this.saveState.get("TurnTimerEnabled"); // Get whether the turn timer is enabled
-        gameState.maxTurnTime = (int)(long)(Long)this.saveState.get("MaxTurnTime"); // Get the maximum turn time
-        gameState.turnTimeStart = (Long)this.saveState.get("TurnTimeStart"); // Get the start time of the turn
+        gameState.turnTimeElapsed = (int)(long)(Long)this.saveState.get("TurnTimeElapsed"); // Get the maximum turn time
 
         gameState.turnOrder = new ArrayList<Integer>(); // Turn order
         JSONArray turnOrderJSON = (JSONArray)this.saveState.get("TurnOrder"); // Get the turn order JSONArray
@@ -144,11 +142,14 @@ public class JSONifier {
             sectorState.put("ID", sector.id); // Store the Sector's ID
             sectorState.put("OwnerID", sector.ownerId); // Store the Sector's Owner's ID
             sectorState.put("DisplayName", sector.displayName); // Store the Sector's display name
-            sectorState.put("UnitsInSector", sector.unitsInSector); // Store the number of units in the Sector
+            sectorState.put("UndergradsInSector", sector.undergradsInSector); // Store the number of undergrads in the Sector
+            sectorState.put("PostgradsInSector", sector.postgradsInSector); // Store the number of postgrads in the Sector
             sectorState.put("ReinforcementsProvided", sector.reinforcementsProvided); // Store the number of reinforcements provided to the sector
             sectorState.put("College", sector.college); // Store the college that the Sector belongs to
             sectorState.put("TexturePath", sector.texturePath); // Store the path to the Sector's texture
             sectorState.put("Neutral", sector.neutral); // Store whether the Sector is neutral
+            sectorState.put("PoopCount", sector.poopCount);
+            sectorState.put("AsbestosCount", sector.asbestosCount);
 
             JSONArray adjSectors = new JSONArray(); // JSONArray of adjacent sectors
 
@@ -178,16 +179,8 @@ public class JSONifier {
             playerState.put("HashMapPosition", player.hashMapPosition); // Store Player HashMap position
             playerState.put("ID", player.id); // Store Player ID
             playerState.put("CollegeName", player.collegeName.getCollegeName()); // Store Player college name
-            playerState.put("PlayerName", player.playerName); // Store Player name
             playerState.put("TroopsToAllocate", player.troopsToAllocate); // Store the number of troops left to allocate
-            playerState.put("OwnsPVC", player.ownsPVC); // Store whether the Player owns the OVC
-
-            JSONObject colour = new JSONObject(); // Store the Player's colour
-            colour.put("R", player.sectorColour.r);
-            colour.put("G", player.sectorColour.g);
-            colour.put("B", player.sectorColour.b);
-            colour.put("A", player.sectorColour.a);
-            playerState.put("SectorColour", colour);
+            playerState.put("PlayerName", player.playerName); // Store Player name
 
             playerState.put("PlayerType", player.playerType.toString()); // Store the Player's type
 
@@ -197,8 +190,7 @@ public class JSONifier {
         gameStateObject.put("PlayerState", playerStates); // Store the Player's state
 
         gameStateObject.put("TurnTimerEnabled", this.state.turnTimerEnabled); // Store whether the turn timer is enabled
-        gameStateObject.put("MaxTurnTime", this.state.maxTurnTime); // Store the max turn time
-        gameStateObject.put("TurnTimeStart", this.state.turnTimeStart); // Store the start time of the turn
+        gameStateObject.put("TurnTimeElapsed", this.state.turnTimeElapsed); // Store the max turn time
 
         JSONArray turnOrder = new JSONArray(); // Store the order of player turns
         for (int i = 0; i < this.state.turnOrder.size(); i++){

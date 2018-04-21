@@ -15,20 +15,20 @@ public class PhaseMovement extends PhaseAttackMove {
     }
 
     /**
-     * creates a dialog asking the player how many units they want to attack with
+     * creates a dialog asking the player how many units they want to move
      *
-     * @throws RuntimeException if the attacking sector or defending sector are set to null
+     * @throws RuntimeException if the source sector or target sector are set to null
      */
-    private void getNumberOfAttackers() throws RuntimeException {
+    private void getNumberOfUnitsToMove(final GameScreen gameScreen) throws RuntimeException {
         if (!sourceSector.canChangeUnits()) {
-            DialogFactory.basicDialogBox("Cannot Move", "Sorry, you cannot move units from this sector currently", this);
+            DialogFactory.basicDialogBox(gameScreen, "Cannot Move", "Sorry, you cannot move units from this sector currently", this);
             sourceSector = null;
             targetSector = null;
             return;
         }
 
         if (!targetSector.canChangeUnits()) {
-            DialogFactory.basicDialogBox("Cannot Move", "Sorry, you cannot move units to this sector currently", this);
+            DialogFactory.basicDialogBox(gameScreen, "Cannot Move", "Sorry, you cannot move units to this sector currently", this);
             sourceSector = null;
             targetSector = null;
             return;
@@ -39,7 +39,7 @@ public class PhaseMovement extends PhaseAttackMove {
         }
         numOfUnits = new int[1];
         numOfUnits[0] = -1;
-        DialogFactory.moveDialog(sourceSector.getUnderGradsInSector(), numOfUnits, this);
+        DialogFactory.moveDialog(gameScreen, sourceSector.getUnderGradsInSector(), numOfUnits, this);
     }
 
     /**
@@ -94,7 +94,7 @@ public class PhaseMovement extends PhaseAttackMove {
                     this.arrowHeadPosition.set(worldCoord.x, worldCoord.y); // Finalise the end position of the arrow
                     this.targetSector = selected;
 
-                    getNumberOfAttackers(); // attacking and defending sector selected so find out how many units the player wants to move with
+                    getNumberOfUnitsToMove(gameScreen); // attacking and defending sector selected so find out how many units the player wants to move with
                 } else { // cancel the movement as selected defending sector cannot be moved to: may not be adjacent or may be owned by the attacker
                     this.sourceSector = null;
                 }
