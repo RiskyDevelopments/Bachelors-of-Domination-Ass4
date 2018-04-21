@@ -25,7 +25,8 @@ import java.util.Random;
  */
 public class GameScreen implements Screen, InputProcessor{
     public static final int NEUTRAL_PLAYER_ID = 4;
-    private static final float SPAWN_CHANCE = 0.1f;
+    private static final float PVC_SPAWN_CHANCE = 0.1f;
+    private static final int MAX_TURN_TIME = 60;
 
     private AudioManager Audio = AudioManager.getInstance(); // Access to the AudioManager
     private Main main; // main stored for switching between screens
@@ -41,7 +42,6 @@ public class GameScreen implements Screen, InputProcessor{
     private HashMap<Integer, Player> players; // player id mapping to the relevant player
 
     // timer settings
-    private static final int MAX_TURN_TIME = 20;
     private boolean turnTimerEnabled;
 
     private boolean paused = false;
@@ -268,6 +268,7 @@ public class GameScreen implements Screen, InputProcessor{
      * removes all players who have 0 sectors from the turn order
      */
     private void removeEliminatedPlayers() {
+        System.out.println("Elinination?");
         List<Integer> playerIdsToRemove = new ArrayList<Integer>(); // list of players in the turn order who have 0 sectors
         for (Integer i : turnOrder) {
             boolean hasSector = false; // has a sector belonging to player i been found
@@ -279,6 +280,7 @@ public class GameScreen implements Screen, InputProcessor{
             }
             if (!hasSector) { // player has no sectors so remove them from the game
                 playerIdsToRemove.add(i);
+                System.out.println("ELIMINIATION" + getPlayerById(i).getCollegeName().getCollegeName());
             }
         }
 
@@ -329,8 +331,6 @@ public class GameScreen implements Screen, InputProcessor{
                     break;
             }
 
-            Audio.get("", Sound.class).play(AudioManager.GlobalFXvolume);
-
             int winnerId = turnOrder.get(0); // winner will be the only player in the turn order list
             DialogFactory.gameOverDialog(players.get(winnerId).getPlayerName(), players.get(winnerId).getCollegeName().getCollegeName(), main, phases.get(currentPhase));
 
@@ -345,7 +345,7 @@ public class GameScreen implements Screen, InputProcessor{
     public boolean PVCSpawn() {
         Random rand = new Random();
         Float randomValue = rand.nextFloat();
-        if (randomValue <= SPAWN_CHANCE) {
+        if (randomValue <= PVC_SPAWN_CHANCE) {
 
             return true;
         }
@@ -360,7 +360,6 @@ public class GameScreen implements Screen, InputProcessor{
     public void resetCameraPosition() {
         this.gameplayCamera.position.x = 1920/2;
         this.gameplayCamera.position.y = 1080/2;
-        this.gameplayCamera.zoom = 1;
     }
 
     /**
@@ -426,13 +425,13 @@ public class GameScreen implements Screen, InputProcessor{
 
         gameplayBatch.begin(); // begin rendering
 
-        renderBackground(); // draw the background of the game
-        map.draw(gameplayBatch); // draw the map
+        renderBackground(); // drawSectorImage the background of the game
+        map.draw(gameplayBatch); // drawSectorImage the map
 
         gameplayBatch.end(); // stop rendering
 
         this.phases.get(currentPhase).act(delta); // update the stage of the current phase
-        this.phases.get(currentPhase).draw(); // draw the phase UI
+        this.phases.get(currentPhase).draw(); // drawSectorImage the phase UI
 
         if (this.turnTimerEnabled) {
             this.phases.get(currentPhase).setTimerValue((int)getTurnTimeRemaining()); // update time remaining display
@@ -459,6 +458,17 @@ public class GameScreen implements Screen, InputProcessor{
         this.gameplayCamera.viewportWidth = width;
         this.gameplayCamera.viewportHeight = height;
         this.gameplayCamera.translate(1920/2, 1080/2, 0);
+
+        float ar = width / height;
+
+        if (ar > 16/9) {
+            // height limited
+            this.gameplayCamera.zoom = 1080f/((float) height - 400);
+        } else {
+            // width limited
+            this.gameplayCamera.zoom = 1920f/((float) width - 400);
+        }
+
         this.gameplayCamera.update();
 
         resetCameraPosition();

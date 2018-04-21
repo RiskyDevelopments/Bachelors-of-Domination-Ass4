@@ -29,7 +29,7 @@ public class DialogFactory {
      * @param  gameScreen gamescreen to pause timer of dialog, if null then timer won't be paused
      * @param title String to be used at the top of the dialog box
      * @param message String to be used as the content of the dialog
-     * @param stage to draw the box onto
+     * @param stage to drawSectorImage the box onto
      */
     public static void basicDialogBox(final GameScreen gameScreen, String title, String message, Stage stage) {
         Dialog dialog = new Dialog(title, DialogFactory.skin) {
@@ -64,7 +64,7 @@ public class DialogFactory {
      *
      * @param nextPlayer String to be used to display the name of the next player
      * @param troopsToAllocate Integer to be used to display number of troops the player has to allocate
-     * @param stage to draw the box onto
+     * @param stage to drawSectorImage the box onto
      */
     public static void nextTurnDialogBox(final GameScreen gameScreen, String nextPlayer, Integer troopsToAllocate, Stage stage) {
         basicDialogBox(gameScreen, "Next Turn", "Next Player: " + nextPlayer + "\nTroops to Allocate: " + troopsToAllocate, stage);
@@ -73,7 +73,7 @@ public class DialogFactory {
     /**
      * creates a dialog where the player can confirm if they want to exit the program
      *
-     * @param stage The stage to draw the box onto
+     * @param stage The stage to drawSectorImage the box onto
      */
     public static void exitProgramDialogBox(Stage stage) {
         Dialog dialog = new Dialog("Quit", DialogFactory.skin) {
@@ -96,7 +96,7 @@ public class DialogFactory {
      * if no pressed then the screen stays the same and the dialog closes
      *
      * @param gameScreen for changing the screen
-     * @param stage the stage to draw the box onto
+     * @param stage the stage to drawSectorImage the box onto
      */
     public static void leaveGameDialogBox(final GameScreen gameScreen, Stage stage) {
         Dialog dialog = new Dialog("Quit", DialogFactory.skin) {
@@ -120,7 +120,7 @@ public class DialogFactory {
      * Dialog box for the pause menu
      *
      * @param gameScreen for changing the screen
-     * @param stage the stage to draw the box onto
+     * @param stage the stage to drawSectorImage the box onto
      */
     public static void pauseGameDialogBox(final GameScreen gameScreen, final Stage stage) {
         Dialog dialog = new Dialog("Paused", DialogFactory.skin) {
@@ -158,7 +158,7 @@ public class DialogFactory {
      * @param prevOwner name of the player who used to own the sector
      * @param newOwner name of the player who now controls the sector
      * @param sectorName name of the sector being taken
-     * @param stage to draw the box onto
+     * @param stage to drawSectorImage the box onto
      */
     public static void sectorOwnerChangeDialog(final GameScreen gameScreen, String prevOwner, String newOwner, String sectorName, Stage stage) {
         basicDialogBox(gameScreen, "Sector Owner Change", newOwner + " gained " + sectorName + " from " + prevOwner, stage);
@@ -173,12 +173,15 @@ public class DialogFactory {
      * @param prevOwner name of the player who used to own the sector
      * @param newOwner name of the player who now controls the sector
      * @param sectorName name of the sector being taken
-     * @param stage The stage to draw the box onto
+     * @param stage The stage to drawSectorImage the box onto
      */
     public static void attackSuccessDialogBox(final GameScreen gameScreen, Integer bonusTroops, Integer maxTroops, final int[] troopsMoved, String prevOwner, String newOwner, String sectorName, Stage stage) {
         if (maxTroops == 2) {
             DialogFactory.basicDialogBox(gameScreen, "Success! ", newOwner + " gained " + sectorName + " from " + prevOwner + "\nYou have earned " + bonusTroops + " bonus troops!\nOne troop will move to the new sector.", stage);
             troopsMoved[0] = 1;
+        } else if (maxTroops < 2) {
+            DialogFactory.basicDialogBox(gameScreen, "Success! ","NEUTRAL gained " + sectorName + " from " + prevOwner + "\nYou have earned " + bonusTroops + " bonus troops!\nThere are no troops to move to the new sector.", stage);
+            troopsMoved[0] = 0;
         } else {
 
             final Slider slider = new Slider(1, (maxTroops - 1), 1, false, DialogFactory.skin); // slider max value is (maxTroops - 1) as must leave at least one troop on attacking sector
@@ -221,7 +224,7 @@ public class DialogFactory {
      *
      * @param allocationPoints maximum amount of troops that can be assigned
      * @param allocation 3 index array storing : [0] number of undergraduate; [1] number of postgraduates; [2] id of sector to allocate to
-     * @param stage to draw the box onto
+     * @param stage to drawSectorImage the box onto
      */
     public static void allocateUnitsDialog(final GameScreen gameScreen, final Integer allocationPoints, final int[] allocation, Stage stage) {
         int undergradMax = allocationPoints;
@@ -407,7 +410,7 @@ public class DialogFactory {
      * dialog that displays a list of players that have been eliminated
      *
      * @param playerNames array of eliminated player names
-     * @param stage to draw the box to
+     * @param stage to drawSectorImage the box to
      */
     public static void playersOutDialog(String[] playerNames, Stage stage) {
         Dialog dialog = new Dialog("Elimination!", DialogFactory.skin);
@@ -430,7 +433,7 @@ public class DialogFactory {
      * @param playerName name of player who has won
      * @param collegeName name of the winning player's college
      * @param main for changing back to the menu screen
-     * @param stage to draw the dialog to
+     * @param stage to drawSectorImage the dialog to
      */
     public static void gameOverDialog(String playerName, String collegeName, final Main main, Stage stage) {
         Dialog dialog = new Dialog("Game Over!", DialogFactory.skin) {
@@ -448,7 +451,7 @@ public class DialogFactory {
      * creates a dialog box asking if the player wants to exit the mini game
      *
      * @param main  for changing back to the map
-     * @param stage to draw the box onto
+     * @param stage to drawSectorImage the box onto
      * @param gameScreen the map screen
      * @param rewards list of cards the player has won
      */

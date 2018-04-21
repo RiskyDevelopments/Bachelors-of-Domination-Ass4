@@ -132,8 +132,12 @@ public class WidgetFactory {
     private void setupFont() {
         FileHandle alteDinBig = new FileHandle("font/Alte-DIN-Big.fnt");
         FileHandle alteDinSmall = new FileHandle("font/Alte-DIN-Small.fnt");
+
         fontBig = new BitmapFont(alteDinBig);
+        fontBig.setUseIntegerPositions(false);
+
         fontSmall = new BitmapFont(alteDinSmall);
+        fontSmall.setUseIntegerPositions(false);
     }
 
     /**

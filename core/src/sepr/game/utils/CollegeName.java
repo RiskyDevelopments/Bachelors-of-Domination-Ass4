@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.Color;
  */
 public enum CollegeName {
 
-    ALCUIN("ALCUIN", new Color(0.8f, 0.2f, 0.2f, 0.7f)),
+    ALCUIN("ALCUIN", Color.RED),
     DERWENT("DERWENT", Color.BLUE),
     HALIFAX("HALIFAX", Color.CYAN),
     HES_EAST("HESLINGTON EAST", Color.GREEN),

@@ -303,7 +303,7 @@ public class Sector implements ApplicationListener {
             throw new IllegalArgumentException("Cannot have less than 0 postgrad units on a sector");
         }
 
-        if (this.underGradsInSector == 0 && this.underGradsInSector == 0) this.setOwner(neutralPlayer);
+        if (this.underGradsInSector == 0 && this.postGradsInSector == 0) this.setOwner(neutralPlayer);
     }
 
     /**
@@ -323,11 +323,11 @@ public class Sector implements ApplicationListener {
                     Color tempColor = new Color(0,0,0,0);
                     Color.rgba8888ToColor(tempColor, newPix.getPixel(x, y)); // get the pixels current color
                     tempColor.sub(new Color(Color.WHITE).sub(newColor)); // calculate the new color of the pixel
-                    newPix.drawPixel(x, y, Color.rgba8888(tempColor));  // draw the modified pixel value to the new pixmap
+                    newPix.drawPixel(x, y, Color.rgba8888(tempColor));  // drawSectorImage the modified pixel value to the new pixmap
                 }
             }
         }
-        this.setNewSectorTexture(newPix); // draw the generated pixmap to the new texture
+        this.setNewSectorTexture(newPix); // drawSectorImage the generated pixmap to the new texture
         newPix.dispose();
     }
 
@@ -375,31 +375,34 @@ public class Sector implements ApplicationListener {
         return poopCount;
     }
 
-    public void draw (SpriteBatch batch) {
+    public void drawSectorImage(SpriteBatch batch) {
         batch.draw(this.getSectorTexture(), 0, 0);
-        if (!this.isDecor()) { // don't need to draw the amount of units on a decor sector
+    }
 
-            float overlaySize = 40.0f;
-            batch.draw(troopCountOverlay, this.getSectorCentreX() - overlaySize / 2, this.getSectorCentreY() - overlaySize / 2, overlaySize, overlaySize);
-            layout.setText(font, this.getUnderGradsInSector() + "");
-            font.draw(batch, layout, this.getSectorCentreX() - layout.width / 2, this.getSectorCentreY() + layout.height / 2);
+    public void drawSectorUi(SpriteBatch batch) {if (!this.isDecor()) { // don't need to drawSectorImage the amount of units on a decor sector
 
-            batch.draw(postgradIcon, this.getSectorCentreX() + 20, this.getSectorCentreY() - overlaySize / 2, overlaySize, overlaySize);
-            layout.setText(font, this.getPostGradsInSector() + "");
-            font.draw(batch, layout, this.getSectorCentreX() - layout.width / 2 + 40, this.getSectorCentreY() + layout.height / 2);
+        float overlaySize = 40.0f;
+        batch.draw(troopCountOverlay, this.getSectorCentreX() - overlaySize - 5, this.getSectorCentreY() - overlaySize / 2, overlaySize, overlaySize);
+        layout.setText(font, this.getUnderGradsInSector() + "");
+        font.draw(batch, layout, this.getSectorCentreX() - overlaySize / 2 - layout.width / 2 - 5, this.getSectorCentreY() + layout.height / 2);
 
-            if (this.getAsbestosCount() != 0) {
-                batch.draw(asbestosStatus, this.getSectorCentreX(), this.getSectorCentreY() + 10, overlaySize, overlaySize);
-                layout.setText(font, this.getAsbestosCount() + "");
-                font.draw(batch, layout, this.getSectorCentreX() + layout.width + 2, this.getSectorCentreY() + layout.height + 18);
-            }
+        batch.draw(postgradIcon, this.getSectorCentreX() + 5, this.getSectorCentreY() - overlaySize / 2, overlaySize, overlaySize);
+        layout.setText(font, this.getPostGradsInSector() + "");
+        font.draw(batch, layout, this.getSectorCentreX() + overlaySize / 2 - layout.width / 2 + 5, this.getSectorCentreY() + layout.height / 2);
 
-            if (this.getPoopCount() != 0) {
-                batch.draw(pooStatus, this.getSectorCentreX(), this.getSectorCentreY() - 50, overlaySize, overlaySize);
-                layout.setText(font, this.getPoopCount() + "");
-                font.draw(batch, layout, this.getSectorCentreX() + layout.width + 2, this.getSectorCentreY() + layout.height - 40);
-            }
+        if (this.getAsbestosCount() != 0) {
+            batch.draw(asbestosStatus, this.getSectorCentreX() - overlaySize / 2, this.getSectorCentreY() + 5, overlaySize, overlaySize);
+            layout.setText(font, this.getAsbestosCount() + "");
+            font.draw(batch, layout, this.getSectorCentreX() - layout.width / 2, this.getSectorCentreY() + layout.height + 18);
         }
+
+        if (this.getPoopCount() != 0) {
+            batch.draw(pooStatus, this.getSectorCentreX() - overlaySize / 2, this.getSectorCentreY() - 42, overlaySize, overlaySize);
+            layout.setText(font, this.getPoopCount() + "");
+            font.draw(batch, layout, this.getSectorCentreX() - layout.width / 2, this.getSectorCentreY() + layout.height - 34);
+        }
+    }
+
     }
 
     @Override

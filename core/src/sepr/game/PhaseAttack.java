@@ -69,9 +69,24 @@ public class PhaseAttack extends PhaseAttackMove{
                     targetSector.getDisplayName(),
                     this);
 
+        } else if (sourceSector.getOwnerId() == sourceSectorOwner) {
+            // all attackers wiped out, but units remain on source sector
+            DialogFactory.basicDialogBox(gameScreen,"Unsuccessful!", "You failed to conquer the target", this);
+
+            sourceSector = null;
+            targetSector = null;
+            numOfUnits = null;
+            unitsToMove = null;
         } else { // defender wiped out attacking units and attacker sector is now neutral
             DialogFactory.sectorOwnerChangeDialog(gameScreen, gameScreen.getPlayerById(sourceSectorOwner).getPlayerName(), gameScreen.getPlayerById(GameScreen.NEUTRAL_PLAYER_ID).getPlayerName(), sourceSector.getDisplayName(), this);
+
+            sourceSector = null;
+            targetSector = null;
+            numOfUnits = null;
+            unitsToMove = null;
         }
+
+        updateTroopReinforcementLabel();
     }
 
     /**

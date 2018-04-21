@@ -54,13 +54,13 @@ public class UnitChangeParticle {
     /**
      * draws the particle to the passed spritebatch
      *
-     * @param batch sprite batch to draw the particle to
+     * @param batch sprite batch to drawSectorImage the particle to
      */
     public void draw(SpriteBatch batch) {
         int yOffset = (int)Math.pow((double)((System.currentTimeMillis() - startTime) / 8), 0.75); // calculate how far to offset the Y-Coord of the particle
 
         float overlaySize = 40.0f;
-        batch.draw(overlay, centrePosition.x - overlaySize / 2 , centrePosition.y - overlaySize / 2 + yOffset, overlaySize, overlaySize); // draw overlay
-        font.draw(batch, glyphLayout, centrePosition.x - glyphLayout.width / 2, centrePosition.y + glyphLayout.height / 2 + yOffset); // draw text
+        batch.draw(overlay, centrePosition.x - overlaySize / 2 , centrePosition.y - overlaySize / 2 + yOffset, overlaySize, overlaySize); // drawSectorImage overlay
+        font.draw(batch, glyphLayout, centrePosition.x - glyphLayout.width / 2, centrePosition.y + glyphLayout.height / 2 + yOffset); // drawSectorImage text
     }
 }

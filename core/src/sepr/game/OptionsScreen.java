@@ -13,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -87,12 +89,13 @@ public class OptionsScreen implements Screen {
         Set<String> resolutions = new HashSet<String>();
 
         for (DisplayMode displayMode : displayModes) {
-            if (displayMode.width > 1000 && displayMode.height > 1000) { // window must be more than 1000 x 1000 resolution
+            if (displayMode.width > 1300 && displayMode.height > 700) { // window must be more than 1000 x 1000 resolution
                 resolutions.add(displayMode.width + " x " + displayMode.height);
             }
         }
         String[] resStrings = new String[resolutions.size()];
         resolutions.toArray(resStrings);
+        Arrays.sort(resStrings);
         return resStrings;
     }
 
