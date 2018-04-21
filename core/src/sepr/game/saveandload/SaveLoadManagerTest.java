@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import org.junit.*;
 import org.junit.runners.model.InitializationError;
 import sepr.game.*;
+import sepr.game.utils.CollegeName;
 import sepr.game.utils.PlayerType;
 import sepr.game.utils.TurnPhaseType;
 
@@ -21,7 +22,7 @@ public class SaveLoadManagerTest implements ApplicationListener {
 
     private static HeadlessApplicationConfiguration application;
 
-    public SaveLoadManagerTest() throws InitializationError {
+    public SaveLoadManagerTest() {
         HeadlessApplicationConfiguration conf = new HeadlessApplicationConfiguration();
 
         new HeadlessApplication(this, conf);
@@ -33,7 +34,7 @@ public class SaveLoadManagerTest implements ApplicationListener {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         this.saveLoadManager = new SaveLoadManager();
 
         this.gameState = new GameState();
@@ -49,7 +50,7 @@ public class SaveLoadManagerTest implements ApplicationListener {
             sectorState.id = i;
             sectorState.ownerId = i;
             sectorState.displayName = Integer.toString(i);
-            sectorState.unitsInSector = i;
+            sectorState.undergradsInSector = i;
             sectorState.reinforcementsProvided = i;
             sectorState.college = "DERWENT";
             sectorState.texturePath = "assets/uiComponents/menuBackground.png";
@@ -74,20 +75,17 @@ public class SaveLoadManagerTest implements ApplicationListener {
 
             playerState.hashMapPosition = i;
             playerState.id = i;
-            playerState.collegeName = GameSetupScreen.CollegeName.DERWENT;
+            playerState.collegeName = CollegeName.DERWENT;
             playerState.playerName = Integer.toString(i);
             playerState.troopsToAllocate = i;
-            playerState.sectorColour = new Color(0, 0, 0, 0);
             playerState.playerType = PlayerType.HUMAN;
-            playerState.ownsPVC = false;
 
             gameState.playerStates[i] = playerState;
         }
 
         gameState.currentPhase = TurnPhaseType.MOVEMENT;
         gameState.turnTimerEnabled = true;
-        gameState.maxTurnTime = 10;
-        gameState.turnTimeStart = 1;
+        gameState.turnTimeElapsed = 10;
 
         gameState.turnOrder = new ArrayList<Integer>();
         gameState.turnOrder.add(0);
@@ -99,7 +97,7 @@ public class SaveLoadManagerTest implements ApplicationListener {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         saveLoadManager = null;
         gameState = null;
     }
@@ -126,12 +124,11 @@ public class SaveLoadManagerTest implements ApplicationListener {
             Player value = playerEntry.getValue();
 
             assertTrue("Player ID", value.getId() == index);
-            assertTrue("Player College", value.getCollegeName() == GameSetupScreen.CollegeName.DERWENT);
+            assertTrue("Player College", value.getCollegeName() == CollegeName.DERWENT);
             assertTrue("Player Name", value.getPlayerName().equalsIgnoreCase(Integer.toString(index)));
             assertTrue("Player Troops To Allocate", value.getTroopsToAllocate() == index);
             assertTrue("Player Sector Colour", value.getSectorColour().equals(new Color(0, 0, 0, 0)));
             assertTrue("Player Type",value.getPlayerType() == PlayerType.HUMAN);
-            assertTrue("Player Owns PVC",value.getOwnsPVC() == false);
 
             index++;
         }

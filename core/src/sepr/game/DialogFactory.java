@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.StringBuilder;
-import sepr.game.saveandload.SaveLoadManager;
 import sepr.game.utils.PunishmentCardType;
 
 import java.util.List;
@@ -27,16 +26,26 @@ public class DialogFactory {
      * creates a dialog in the given stage with an ok button and the given title and message
      * the dialog displays until the okay button is pressed then it quickly fades away
      *
+     * @param  gameScreen gamescreen to pause timer of dialog, if null then timer won't be paused
      * @param title String to be used at the top of the dialog box
      * @param message String to be used as the content of the dialog
-     * @param stage to draw the box onto
+     * @param stage to drawSectorImage the box onto
      */
-    public static void basicDialogBox(String title, String message, Stage stage) {
-        Dialog dialog = new Dialog(title, DialogFactory.skin);
+    public static void basicDialogBox(final GameScreen gameScreen, String title, String message, Stage stage) {
+        Dialog dialog = new Dialog(title, DialogFactory.skin) {
+            @Override
+            protected void result(Object object) {
+                super.result(object);
+                if (gameScreen != null) {
+                    gameScreen.unpauseTimer();
+                }
+            }
+        };
         dialog.text(message);
         basicStyle(dialog, 60);
         dialog.button("Ok", "0");
         dialog.show(stage);
+        if (gameScreen != null) gameScreen.pauseTimer();
     }
 
     /**
@@ -55,16 +64,16 @@ public class DialogFactory {
      *
      * @param nextPlayer String to be used to display the name of the next player
      * @param troopsToAllocate Integer to be used to display number of troops the player has to allocate
-     * @param stage to draw the box onto
+     * @param stage to drawSectorImage the box onto
      */
-    public static void nextTurnDialogBox(String nextPlayer, Integer troopsToAllocate, Stage stage) {
-        basicDialogBox("Next Turn", "Next Player: " + nextPlayer + "\nTroops to Allocate: " + troopsToAllocate, stage);
+    public static void nextTurnDialogBox(final GameScreen gameScreen, String nextPlayer, Integer troopsToAllocate, Stage stage) {
+        basicDialogBox(gameScreen, "Next Turn", "Next Player: " + nextPlayer + "\nTroops to Allocate: " + troopsToAllocate, stage);
     }
 
     /**
      * creates a dialog where the player can confirm if they want to exit the program
      *
-     * @param stage The stage to draw the box onto
+     * @param stage The stage to drawSectorImage the box onto
      */
     public static void exitProgramDialogBox(Stage stage) {
         Dialog dialog = new Dialog("Quit", DialogFactory.skin) {
@@ -87,7 +96,7 @@ public class DialogFactory {
      * if no pressed then the screen stays the same and the dialog closes
      *
      * @param gameScreen for changing the screen
-     * @param stage the stage to draw the box onto
+     * @param stage the stage to drawSectorImage the box onto
      */
     public static void leaveGameDialogBox(final GameScreen gameScreen, Stage stage) {
         Dialog dialog = new Dialog("Quit", DialogFactory.skin) {
@@ -95,7 +104,7 @@ public class DialogFactory {
                 if (object.toString().equals("1")){ // yes pressed therefore quit the game
                     gameScreen.openMenu(); // change screen to menu screen
                 }
-                gameScreen.resumeGame();
+                gameScreen.unpauseTimer();
             }
         };
         basicStyle(dialog, 60);
@@ -103,28 +112,29 @@ public class DialogFactory {
         dialog.button("Yes", "1");
         dialog.button("No", "0");
         dialog.show(stage);
-        gameScreen.pauseGame();
+
+        gameScreen.pauseTimer();
     }
 
     /**
      * Dialog box for the pause menu
      *
      * @param gameScreen for changing the screen
-     * @param stage the stage to draw the box onto
+     * @param stage the stage to drawSectorImage the box onto
      */
     public static void pauseGameDialogBox(final GameScreen gameScreen, final Stage stage) {
         Dialog dialog = new Dialog("Paused", DialogFactory.skin) {
             protected void result(Object object) {
                 if (object.equals("save")) {
                     gameScreen.getMain().saveGame();
-                    gameScreen.resumeGame();
+                    gameScreen.unpauseTimer();
                 } else if (object.equals("saveExit")) {
                     gameScreen.getMain().saveGame();
                     DialogFactory.leaveGameDialogBox(gameScreen, stage);
                 } else if (object.equals("exit")) {
                     DialogFactory.leaveGameDialogBox(gameScreen, stage);
                 } else {
-                    gameScreen.resumeGame();
+                    gameScreen.unpauseTimer();
                 }
             }
         };
@@ -138,7 +148,8 @@ public class DialogFactory {
         dialog.getButtonTable().row().padBottom(10);
         dialog.button("Exit", "exit");
         dialog.show(stage);
-        gameScreen.pauseGame();
+
+        gameScreen.pauseTimer();
     }
 
     /**
@@ -147,10 +158,10 @@ public class DialogFactory {
      * @param prevOwner name of the player who used to own the sector
      * @param newOwner name of the player who now controls the sector
      * @param sectorName name of the sector being taken
-     * @param stage to draw the box onto
+     * @param stage to drawSectorImage the box onto
      */
-    public static void sectorOwnerChangeDialog(String prevOwner, String newOwner, String sectorName, Stage stage) {
-        basicDialogBox("Sector Owner Change", newOwner + " gained " + sectorName + " from " + prevOwner, stage);
+    public static void sectorOwnerChangeDialog(final GameScreen gameScreen, String prevOwner, String newOwner, String sectorName, Stage stage) {
+        basicDialogBox(gameScreen, "Sector Owner Change", newOwner + " gained " + sectorName + " from " + prevOwner, stage);
     }
 
     /**
@@ -162,38 +173,50 @@ public class DialogFactory {
      * @param prevOwner name of the player who used to own the sector
      * @param newOwner name of the player who now controls the sector
      * @param sectorName name of the sector being taken
-     * @param stage The stage to draw the box onto
+     * @param stage The stage to drawSectorImage the box onto
      */
-    public static void attackSuccessDialogBox(Integer bonusTroops, Integer maxTroops, final int[] troopsMoved, String prevOwner, String newOwner, String sectorName, Stage stage) {
-        final Slider slider = new Slider(1, (maxTroops - 1), 1, false, DialogFactory.skin); // slider max value is (maxTroops - 1) as must leave at least one troop on attacking sector
-        slider.setValue(1); // must move at least one troop so set initial value to 1
-        final Label sliderValue = new Label("1", DialogFactory.skin); // label to display the slider value
+    public static void attackSuccessDialogBox(final GameScreen gameScreen, Integer bonusTroops, Integer maxTroops, final int[] troopsMoved, String prevOwner, String newOwner, String sectorName, Stage stage) {
+        if (maxTroops == 2) {
+            DialogFactory.basicDialogBox(gameScreen, "Success! ", newOwner + " gained " + sectorName + " from " + prevOwner + "\nYou have earned " + bonusTroops + " bonus troops!\nOne troop will move to the new sector.", stage);
+            troopsMoved[0] = 1;
+        } else if (maxTroops < 2) {
+            DialogFactory.basicDialogBox(gameScreen, "Success! ","NEUTRAL gained " + sectorName + " from " + prevOwner + "\nYou have earned " + bonusTroops + " bonus troops!\nThere are no troops to move to the new sector.", stage);
+            troopsMoved[0] = 0;
+        } else {
 
-        slider.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                sliderValue.setText(new StringBuilder((int)slider.getValue() + "")); // update slider value label when slider moved
-            }
-        });
+            final Slider slider = new Slider(1, (maxTroops - 1), 1, false, DialogFactory.skin); // slider max value is (maxTroops - 1) as must leave at least one troop on attacking sector
+            slider.setValue(1); // must move at least one troop so set initial value to 1
+            final Label sliderValue = new Label("1", DialogFactory.skin); // label to display the slider value
 
-        Dialog dialog = new Dialog("Success!", DialogFactory.skin) {
-            protected void result(Object object) {
-                // set number of troops to move to the value of the slider when the dialog is closed
-                troopsMoved[0] = (int)slider.getValue();
-            }
-        };
+            slider.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    sliderValue.setText(new StringBuilder((int) slider.getValue() + "")); // update slider value label when slider moved
+                }
+            });
 
-        dialog.text(newOwner + " gained " + sectorName + " from " + prevOwner + "\nYou have earned " + bonusTroops + " bonus troops!\nHow many troops would you like to move to the new sector?");
-        dialog.getContentTable().row();
+            Dialog dialog = new Dialog("Success!", DialogFactory.skin) {
+                protected void result(Object object) {
+                    // set number of troops to move to the value of the slider when the dialog is closed
+                    troopsMoved[0] = (int) slider.getValue();
+                    gameScreen.unpauseTimer();
+                }
+            };
 
-        dialog.getContentTable().add(slider).padLeft(20).padRight(20).align(Align.left).expandX();
-        dialog.getContentTable().add(sliderValue).padLeft(20).padRight(20).align(Align.right);
+            dialog.text(newOwner + " gained " + sectorName + " from " + prevOwner + "\nYou have earned " + bonusTroops + " bonus troops!\nHow many troops would you like to move to the new sector?");
+            dialog.getContentTable().row();
 
-        dialog.getContentTable().row();
+            dialog.getContentTable().add(slider).padLeft(20).padRight(20).align(Align.left).expandX();
+            dialog.getContentTable().add(sliderValue).padLeft(20).padRight(20).align(Align.right);
 
-        basicStyle(dialog, 60);
-        dialog.button("Ok", "0");
-        dialog.show(stage);
+            dialog.getContentTable().row();
+
+            basicStyle(dialog, 60);
+            dialog.button("Ok", "0");
+            dialog.show(stage);
+
+            gameScreen.pauseTimer();
+        }
     }
 
     /**
@@ -201,9 +224,9 @@ public class DialogFactory {
      *
      * @param allocationPoints maximum amount of troops that can be assigned
      * @param allocation 3 index array storing : [0] number of undergraduate; [1] number of postgraduates; [2] id of sector to allocate to
-     * @param stage to draw the box onto
+     * @param stage to drawSectorImage the box onto
      */
-    public static void allocateUnitsDialog(final Integer allocationPoints, final int[] allocation, Stage stage) {
+    public static void allocateUnitsDialog(final GameScreen gameScreen, final Integer allocationPoints, final int[] allocation, Stage stage) {
         int undergradMax = allocationPoints;
         int postgradMax = (int)Math.floor((double)allocationPoints/2);
         final Slider undergradSlider = new Slider(0, undergradMax, 1, false, DialogFactory.skin);
@@ -245,6 +268,8 @@ public class DialogFactory {
                     allocation[0] = (int)undergradSlider.getValue(); // set the number of troops to allocate to the value of the slider
                     allocation[1] = (int)postgradSlider.getValue();
                 }
+
+                gameScreen.unpauseTimer();
             }
         };
         dialog.getContentTable().add("Unspent allocation points").padLeft(20).padRight(20).align(Align.left).expandX();
@@ -268,6 +293,8 @@ public class DialogFactory {
         dialog.button("Cancel", "0");
         dialog.button("Ok", "1");
         dialog.show(stage);
+
+        gameScreen.pauseTimer();
     }
 
     /**
@@ -280,7 +307,7 @@ public class DialogFactory {
      * @param stage to display the dialog on
      * @return the number of troops chosen to attack with or 0 if the attack is canceled
      */
-    public static void attackDialog(int maxAttackers, int defenders, final int[] attackers, Stage stage) {
+    public static void attackDialog(final GameScreen gameScreen, int maxAttackers, int defenders, final int[] attackers, Stage stage) {
         final Slider slider = new Slider(0, maxAttackers, 1, false, DialogFactory.skin);
         slider.setValue(maxAttackers);
         final Label sliderValue = new Label(maxAttackers + "", DialogFactory.skin); // label showing the value of the slider
@@ -298,6 +325,8 @@ public class DialogFactory {
                 } else if (object.equals("1")){ // ok button pressed
                     attackers[0] = (int)slider.getValue(); // set number of attackers to the value of the slider
                 }
+
+                gameScreen.unpauseTimer();
             }
         };
 
@@ -319,6 +348,8 @@ public class DialogFactory {
         dialog.button("Ok", "1").padLeft(40).padRight(20).align(Align.center);
 
         dialog.show(stage);
+
+        gameScreen.pauseTimer();
     }
 
     /**
@@ -330,7 +361,7 @@ public class DialogFactory {
      * @param stage to display the dialog on
      * @return the number of troops chosen to attack with or 0 if the attack is canceled
      */
-    public static void moveDialog(int maxAttackers, final int[] attackers, Stage stage) {
+    public static void moveDialog(final GameScreen gameScreen, int maxAttackers, final int[] attackers, Stage stage) {
         maxAttackers --; // leave at least one troop on the tile
         final Slider slider = new Slider(0, maxAttackers, 1, false, DialogFactory.skin);
         slider.setValue(maxAttackers);
@@ -349,6 +380,7 @@ public class DialogFactory {
                 } else if (object.equals("1")){ // ok button pressed
                     attackers[0] = (int)slider.getValue(); // set number of attackers to the value of the slider
                 }
+                gameScreen.unpauseTimer();
             }
         };
 
@@ -368,6 +400,8 @@ public class DialogFactory {
         dialog.button("Ok", "1").padLeft(40).padRight(20).align(Align.center);
 
         dialog.show(stage);
+
+        gameScreen.pauseTimer();
     }
 
 
@@ -376,7 +410,7 @@ public class DialogFactory {
      * dialog that displays a list of players that have been eliminated
      *
      * @param playerNames array of eliminated player names
-     * @param stage to draw the box to
+     * @param stage to drawSectorImage the box to
      */
     public static void playersOutDialog(String[] playerNames, Stage stage) {
         Dialog dialog = new Dialog("Elimination!", DialogFactory.skin);
@@ -399,7 +433,7 @@ public class DialogFactory {
      * @param playerName name of player who has won
      * @param collegeName name of the winning player's college
      * @param main for changing back to the menu screen
-     * @param stage to draw the dialog to
+     * @param stage to drawSectorImage the dialog to
      */
     public static void gameOverDialog(String playerName, String collegeName, final Main main, Stage stage) {
         Dialog dialog = new Dialog("Game Over!", DialogFactory.skin) {
@@ -414,19 +448,10 @@ public class DialogFactory {
     }
 
     /**
-     * creates a dialog box displaying informing the player they have taken over the PVC tile
-     *
-     * @param stage to draw the box onto
-     */
-    public static void takenOverPVCDialogue(Stage stage) {
-        basicDialogBox("Pro Vice Chancellor tile captured","Well done you have found and captured the Pro Vice Chancellor tile. You now get extra 1 bonus troop per turn from this sector",stage);
-    }
-
-    /**
      * creates a dialog box asking if the player wants to exit the mini game
      *
      * @param main  for changing back to the map
-     * @param stage to draw the box onto
+     * @param stage to drawSectorImage the box onto
      * @param gameScreen the map screen
      * @param rewards list of cards the player has won
      */
@@ -436,6 +461,7 @@ public class DialogFactory {
                 main.setScreen(gameScreen);  // change to menu screen when ok button is pressed
                 gameScreen.resetCameraPosition();
 
+                gameScreen.unpauseTimer();
             }
         };
         String rewardText = "";
@@ -459,9 +485,11 @@ public class DialogFactory {
         basicStyle(dialog, 60);
         dialog.button("Ok", "0");
         dialog.show(stage);
+
+        gameScreen.pauseTimer();
     }
 
-    public static void selectPunishmentCardDialog(final int collusionCards, final int poopyPathCards, final int asbestosCards, final Phase phase, final Stage stage) {
+    public static void selectPunishmentCardDialog(final GameScreen gameScreen, final int collusionCards, final int poopyPathCards, final int asbestosCards, final Phase phase, final Stage stage) {
         final Dialog dialog = new Dialog("Select Punishment Card", DialogFactory.skin);
 
         final PunishmentCardType[] cardSelected = {PunishmentCardType.NO_CARD};
@@ -503,6 +531,7 @@ public class DialogFactory {
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 phase.setPunishmentCardSelected(PunishmentCardType.NO_CARD);
                 dialog.hide();
+                gameScreen.unpauseTimer();
             }
         });
 
@@ -512,33 +541,34 @@ public class DialogFactory {
                 switch (cardSelected[0]) {
                     case COLLUSION_CARD:
                         if (collusionCards == 0) {
-                            DialogFactory.basicDialogBox("Not enough cards!", "Please select a card with at least 1 available", stage);
+                            DialogFactory.basicDialogBox(null, "Not enough cards!", "Please select a card with at least 1 available", stage);
                             return;
                         }
                         break;
 
                     case POOPY_PATH_CARD:
                         if (poopyPathCards == 0) {
-                            DialogFactory.basicDialogBox("Not enough cards!", "Please select a card with at least 1 available", stage);
+                            DialogFactory.basicDialogBox(null, "Not enough cards!", "Please select a card with at least 1 available", stage);
                             return;
                         }
                         break;
 
                     case ASBESTOS_CARD:
                         if (asbestosCards == 0) {
-                            DialogFactory.basicDialogBox("Not enough cards!", "Please select a card with at least 1 available", stage);
+                            DialogFactory.basicDialogBox(null, "Not enough cards!", "Please select a card with at least 1 available", stage);
                             return;
                         }
                         break;
 
                     default:
-                        DialogFactory.basicDialogBox("Select a card to play", "Please select a card, or choose cancel", stage);
+                        DialogFactory.basicDialogBox(null, "Select a card to play", "Please select a card, or choose cancel", stage);
                         return;
 
                 }
 
                 phase.setPunishmentCardSelected(cardSelected[0]);
                 dialog.hide();
+                gameScreen.unpauseTimer();
             }
         });
 
@@ -570,7 +600,7 @@ public class DialogFactory {
         dialog.add(dialogTable);
 
         dialog.show(stage);
+
+        gameScreen.pauseTimer();
     }
-
-
 }

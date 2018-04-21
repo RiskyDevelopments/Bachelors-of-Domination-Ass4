@@ -86,6 +86,8 @@ public class MenuScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 if(main.hasLoadedSaves()) {
                     main.loadGame();
+                } else {
+                    DialogFactory.basicDialogBox(null, "No saved game found", "No save game was found. Please start a new game", stage);
                 }
             }
         });

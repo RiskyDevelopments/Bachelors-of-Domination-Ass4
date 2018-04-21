@@ -26,19 +26,13 @@ public class PhaseReinforce extends Phase {
     void enterPhase(Player player) {
         super.enterPhase(player);
 
-        currentPlayer.addTroopsToAllocate(5); // players get a basic reinforcement of 5 troops every turn
-        if (player.getOwnsPVC())  // assigns a bonus of two troops if they own the PVC tile
-        {
-            currentPlayer.addTroopsToAllocate(2);
-        }
-
         updateTroopReinforcementLabel();
-        DialogFactory.nextTurnDialogBox(currentPlayer.getPlayerName(), currentPlayer.getTroopsToAllocate(), this);
+        DialogFactory.nextTurnDialogBox(gameScreen, currentPlayer.getPlayerName(), currentPlayer.getTroopsToAllocate(), this);
     }
 
     @Override
     public void endPhase() {
-        currentPlayer.setTroopsToAllocate(0); // any unallocated units are removed
+        currentPlayer.setTroopsToAllocate(5); // any unallocated units are removed and 5 are set for next turn
         super.endPhase();
     }
 
@@ -88,21 +82,21 @@ public class PhaseReinforce extends Phase {
                         invalidMove();
                     }
 
-                    DialogFactory.basicDialogBox("Allocation Problem", "You have no more troops to allocate", this);
+                    DialogFactory.basicDialogBox(gameScreen,"Allocation Problem", "You have no more troops to allocate", this);
                 } else if (gameScreen.getMap().getSectorById(sectorId).getOwnerId() != currentPlayer.getId()) { // check the player has chosen to add units to their own sector
                     invalidMove();
-                    DialogFactory.basicDialogBox("Allocation Problem", "Cannot allocate units to a sector you do not own", this);
+                    DialogFactory.basicDialogBox(gameScreen, "Allocation Problem", "Cannot allocate units to a sector you do not own", this);
                 } else {
                         // setup allocation form
                         allocateUnits = new int[3];
                         allocateUnits[0] = -1;
                         allocateUnits[1] = -1;
                         allocateUnits[2] = sectorId;
-                        DialogFactory.allocateUnitsDialog(currentPlayer.getTroopsToAllocate(), allocateUnits, this);
+                        DialogFactory.allocateUnitsDialog(gameScreen, currentPlayer.getTroopsToAllocate(), allocateUnits, this);
                 }
             } else {
                 invalidMove();
-                DialogFactory.basicDialogBox("Cannot Reinforce", "Sorry, this sector currently cannot accept reinforcements", this);
+                DialogFactory.basicDialogBox(gameScreen, "Cannot Reinforce", "Sorry, this sector currently cannot accept reinforcements", this);
             }
         }
         return false;

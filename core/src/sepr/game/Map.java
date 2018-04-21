@@ -20,9 +20,10 @@ public class Map {
     private AudioManager Audio = AudioManager.getInstance(); // Access to the AudioManager
     private HashMap<Integer, Sector> sectors; // mapping of sector ID to the sector object
     private List<UnitChangeParticle> particles; // list of active particle effects displaying the changes to the amount of units on a sector
-    private PVC proViceChancellor;
 
     private Random random;
+    private Player neutralPlayer;
+    private GameScreen gameScreen;
 
     /**
      * Performs the maps initial setup
@@ -32,23 +33,24 @@ public class Map {
      * @param players               hashmap of players who are in the game
      * @param allocateNeutralPlayer if true then the neutral player should be allocated the default neutral sectors else they should be allocated no sectors
      */
-    public Map(HashMap<Integer, Player> players, boolean allocateNeutralPlayer) {
+    public Map(HashMap<Integer, Player> players, boolean allocateNeutralPlayer, GameScreen gameScreen) {
         random = new Random();
 
         this.loadSectors();
 
         particles = new ArrayList<UnitChangeParticle>();
         this.allocateSectors(players, allocateNeutralPlayer);
+        this.neutralPlayer = players.get(GameScreen.NEUTRAL_PLAYER_ID);
+        this.gameScreen = gameScreen;
     }
 
-    public Map(HashMap<Integer, Player> players, boolean allocateNeutralPlayer, HashMap<Integer, Sector> sectors) {
-        this(players, allocateNeutralPlayer);
+    public Map(HashMap<Integer, Player> players, boolean allocateNeutralPlayer, HashMap<Integer, Sector> sectors, GameScreen gameScreen) {
+        this(players, allocateNeutralPlayer, gameScreen);
         this.sectors = sectors;
     }
 
-    public Map(HashMap<Integer, Player> players, boolean allocateNeutralPlayer, PVC proViceChancellor) {
-        this(players, allocateNeutralPlayer);
-        this.proViceChancellor = proViceChancellor;
+    public void setGameScreen(GameScreen gameScreen) {
+        this.gameScreen = gameScreen;
     }
 
     /**
@@ -207,7 +209,7 @@ public class Map {
      * @param postgrad number of postgrads to add
      */
     public void addUnitsToSectorAnimated(int sectorId, int undergrad, int postgrad) {
-        this.sectors.get(sectorId).addUnits(undergrad, postgrad);
+        this.sectors.get(sectorId).addUnits(undergrad, postgrad, neutralPlayer);
         if (undergrad != 0){
             this.particles.add(new UnitChangeParticle(undergrad, new Vector2(sectors.get(sectorId).getSectorCentreX(), sectors.get(sectorId).getSectorCentreY())));
         }
@@ -298,31 +300,26 @@ public class Map {
      * @param attackers Number of troops attacking
      */
     public void completeAttack(Player attacker, Player neutral, Sector source, Sector target, int attackers) {
-        int startAttackers = attackers;
+        int attackersRemaining = attackers;
         int underGrads = target.getUnderGradsInSector();
         int postGrads = target.getPostGradsInSector();
 
         // ATTACK BALANCING SETTINGS
-        float winChance = 0.55f; // Chance of a 1v1 being a win for the attacker - stored as float between 0.0 and 1.0
-        int postGradStrength = 3; // Number of undergrads killed by a defending postgrad
+        float winChance = postGrads > 5 ? 0.4f : 0.55f - (postGrads * 0.03f); // Chance of a 1v1 being a win for the attacker - stored as float between 0.0 and 1.0
 
-        while (attackers > 0 && (underGrads > 0 || postGrads > 0)) { // While there are troops to attack and defend
-            if (underGrads > 0) { // Attack undergraduates first
-                if (random.nextFloat() > winChance) { // win
-                    underGrads --;
-                } else { // loss
-                    attackers --;
+        while (attackersRemaining > 0 && (underGrads > 0 || postGrads > 0)) { // While there are troops to attack and defend
+            if (random.nextFloat() < winChance) {
+                if (underGrads > 0) {
+                    underGrads--;
+                } else if (postGrads > 0) {
+                    postGrads--;
                 }
-            } else if (postGrads > 0) { // All undergrads are dead but postgrads remain
-                if (random.nextFloat() > winChance) { // win
-                    postGrads --;
-                } else { // loss
-                    attackers =- attackers <= postGradStrength ? 0 : postGradStrength;
-                }
+            } else {
+                attackersRemaining--;
             }
         }
 
-        if(attackers <= 0){
+        if(attackersRemaining == 0){
             // Poor Move
             int voice = random.nextInt(3);
 
@@ -338,6 +335,7 @@ public class Map {
             }
         } else {
             // Good move
+            attacker.addTroopsToAllocate(target.getReinforcementsProvided()); // give the player the appropriate amount of troops to allocate next turn for conquering the target sector
             int voice = random.nextInt(5);
 
             switch (voice){
@@ -362,15 +360,17 @@ public class Map {
         }
 
         // apply the attack to the map
-        addUnitsToSectorAnimated(source.getId(), -(startAttackers - attackers), 0);
-        addUnitsToSectorAnimated(target.getId(), -(target.getUnderGradsInSector() - underGrads), 0);
-        addUnitsToSectorAnimated(target.getId(), 0, -(target.getPostGradsInSector() - postGrads));
+        addUnitsToSectorAnimated(source.getId(), -(attackers - attackersRemaining), 0);
+        addUnitsToSectorAnimated(target.getId(), -(target.getUnderGradsInSector() - underGrads), -(target.getPostGradsInSector() - postGrads));
 
-        if (source.getUnderGradsInSector() == 0) { // defender won
-            source.setOwner(neutral);
-        } else { // attacker won
+        if (source.getUnderGradsInSector() == 0) {
+            if (source.getPostGradsInSector() == 0) source.setOwner(neutralPlayer);
+            if (target.getUnderGradsInSector() == 0 && target.getPostGradsInSector() == 0)  target.setOwner(neutralPlayer);
+        } if (source.getUnderGradsInSector()== 1 && target.getUnderGradsInSector() == 0 && target.getPostGradsInSector() == 0) {
+            target.setOwner(neutralPlayer);
+        } else if (target.getUnderGradsInSector() == 0 && target.getPostGradsInSector() == 0) {
             target.setOwner(attacker);
-            if (proViceChancellor.PVCSpawn()) proViceChancellor.startMiniGame();
+            if (gameScreen.PVCSpawn()) gameScreen.openMiniGame();
         }
     }
 
@@ -381,7 +381,11 @@ public class Map {
      */
     public void draw(SpriteBatch batch) {
         for (Sector sector : sectors.values()) {
-            sector.draw(batch);
+            sector.drawSectorImage(batch);
+        }
+
+        for (Sector sector : sectors.values()) {
+            sector.drawSectorUi(batch);
         }
 
         // render particles

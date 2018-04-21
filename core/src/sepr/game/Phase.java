@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import sepr.game.utils.CollegeName;
 import sepr.game.utils.PunishmentCardType;
 import sepr.game.utils.TurnPhaseType;
 
@@ -141,7 +142,7 @@ public abstract class Phase extends Stage {
         playerNameLabel = new Label("", playerNameStyle);
         reinforcementLabel = new Label("", style);
         turnTimerLabel = new Label("Timer: DISABLED", style);
-        collegeLogo = new Image(WidgetFactory.genCollegeLogoDrawable(GameSetupScreen.CollegeName.UNI_OF_YORK));
+        collegeLogo = new Image(WidgetFactory.genCollegeLogoDrawable(CollegeName.UNI_OF_YORK));
 
         Table table = new Table();
         table.background(new TextureRegionDrawable(new TextureRegion(gameHUDBottomBarLeftPartTexture)));
@@ -182,7 +183,7 @@ public abstract class Phase extends Stage {
         this.currentPlayer = player;
 
 
-        playerNameStyle.fontColor = GameSetupScreen.getCollegeColor(currentPlayer.getCollegeName()); // update colour of player name
+        playerNameStyle.fontColor = currentPlayer.getCollegeName().getCollegeColor(); // update colour of player name
 
         playerNameLabel.setText(new StringBuilder((CharSequence) currentPlayer.getPlayerName())); // change the bottom bar label to the players name
         collegeLogo.setDrawable(WidgetFactory.genCollegeLogoDrawable(player.getCollegeName()));

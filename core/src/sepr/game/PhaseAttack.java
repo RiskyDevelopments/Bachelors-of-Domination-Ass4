@@ -24,14 +24,14 @@ public class PhaseAttack extends PhaseAttackMove{
      */
     private void getNumberOfAttackers() throws RuntimeException {
         if (!sourceSector.canAttack()) {
-            DialogFactory.basicDialogBox("Cannot Attack", "Sorry, you cannot attack from this sector currently", this);
+            DialogFactory.basicDialogBox(gameScreen, "Cannot Attack", "Sorry, you cannot attack from this sector currently", this);
             sourceSector = null;
             targetSector = null;
             return;
         }
 
         if (!targetSector.canBeAttacked()) {
-            DialogFactory.basicDialogBox("Cannot Attack", "Sorry, you cannot attack this sector currently", this);
+            DialogFactory.basicDialogBox(gameScreen, "Cannot Attack", "Sorry, you cannot attack this sector currently", this);
             sourceSector = null;
             targetSector = null;
             return;
@@ -42,7 +42,7 @@ public class PhaseAttack extends PhaseAttackMove{
         }
         numOfUnits = new int[1];
         numOfUnits[0] = -1;
-        DialogFactory.attackDialog(sourceSector.getUnderGradsInSector(), targetSector.getUnderGradsInSector(), numOfUnits, this);
+        DialogFactory.attackDialog(gameScreen, sourceSector.getUnderGradsInSector(), targetSector.getUnderGradsInSector(), numOfUnits, this);
     }
 
     /**
@@ -60,7 +60,8 @@ public class PhaseAttack extends PhaseAttackMove{
         if (targetSector.getOwnerId() == sourceSectorOwner) { // attacker took over the target sector
             unitsToMove = new int[] {-1, sourceSector.getId(), targetSector.getId()};
 
-            DialogFactory.attackSuccessDialogBox(targetSector.getReinforcementsProvided(),
+            DialogFactory.attackSuccessDialogBox(gameScreen,
+                    targetSector.getReinforcementsProvided(),
                     sourceSector.getUnderGradsInSector(),
                     unitsToMove,
                     gameScreen.getPlayerById(targetSectorOwner).getPlayerName(),
@@ -68,9 +69,24 @@ public class PhaseAttack extends PhaseAttackMove{
                     targetSector.getDisplayName(),
                     this);
 
+        } else if (sourceSector.getOwnerId() == sourceSectorOwner) {
+            // all attackers wiped out, but units remain on source sector
+            DialogFactory.basicDialogBox(gameScreen,"Unsuccessful!", "You failed to conquer the target", this);
+
+            sourceSector = null;
+            targetSector = null;
+            numOfUnits = null;
+            unitsToMove = null;
         } else { // defender wiped out attacking units and attacker sector is now neutral
-            DialogFactory.sectorOwnerChangeDialog(gameScreen.getPlayerById(sourceSectorOwner).getPlayerName(), gameScreen.getPlayerById(GameScreen.NEUTRAL_PLAYER_ID).getPlayerName(), sourceSector.getDisplayName(), this);
+            DialogFactory.sectorOwnerChangeDialog(gameScreen, gameScreen.getPlayerById(sourceSectorOwner).getPlayerName(), gameScreen.getPlayerById(GameScreen.NEUTRAL_PLAYER_ID).getPlayerName(), sourceSector.getDisplayName(), this);
+
+            sourceSector = null;
+            targetSector = null;
+            numOfUnits = null;
+            unitsToMove = null;
         }
+
+        updateTroopReinforcementLabel();
     }
 
     /**

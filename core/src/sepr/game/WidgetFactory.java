@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import sepr.game.utils.CollegeName;
 import sepr.game.utils.PunishmentCardType;
 
 /**
@@ -131,8 +132,12 @@ public class WidgetFactory {
     private void setupFont() {
         FileHandle alteDinBig = new FileHandle("font/Alte-DIN-Big.fnt");
         FileHandle alteDinSmall = new FileHandle("font/Alte-DIN-Small.fnt");
+
         fontBig = new BitmapFont(alteDinBig);
+        fontBig.setUseIntegerPositions(false);
+
         fontSmall = new BitmapFont(alteDinSmall);
+        fontSmall.setUseIntegerPositions(false);
     }
 
     /**
@@ -270,7 +275,7 @@ public class WidgetFactory {
      * @param college the college to get the logo for
      * @return a Drawable of the college's logo
      */
-    public static Drawable genCollegeLogoDrawable(GameSetupScreen.CollegeName college) {
+    public static Drawable genCollegeLogoDrawable(CollegeName college) {
         switch (college) {
             case ALCUIN:
                 return new TextureRegionDrawable(new TextureRegion(alcuinLogoTexture));
@@ -297,7 +302,7 @@ public class WidgetFactory {
      * @param college college to get logo Image off
      * @return an Image of the college logo
      */
-    public static Image genCollegeLogoImage(GameSetupScreen.CollegeName college){
+    public static Image genCollegeLogoImage(CollegeName college){
         return new Image(genCollegeLogoDrawable(college));
     }
 
@@ -477,7 +482,7 @@ public class WidgetFactory {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 Player currentPlayer = gameScreen.getCurrentPlayer();
-                DialogFactory.selectPunishmentCardDialog(currentPlayer.getCollusionCards(), currentPlayer.getPoopyPathCards(), currentPlayer.getAsbestosCards(), gameScreen.getCurrentPhase(), stage);
+                DialogFactory.selectPunishmentCardDialog(gameScreen, currentPlayer.getCollusionCards(), currentPlayer.getPoopyPathCards(), currentPlayer.getAsbestosCards(), gameScreen.getCurrentPhase(), stage);
             }
         });
 
