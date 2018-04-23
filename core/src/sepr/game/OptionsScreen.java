@@ -181,7 +181,7 @@ public class OptionsScreen implements Screen {
         uiComponentsTable.row();
         uiComponentsTable.add(setupOptionsTable()).expand();
 
-        uiComponentsTable.add(WidgetFactory.genOptionsGraphic()).height(700).width(540).pad(30);
+        //uiComponentsTable.add(WidgetFactory.genOptionsGraphic()).height(700).width(540).pad(30);
 
         uiComponentsTable.row();
         uiComponentsTable.add(WidgetFactory.genBottomBar("MAIN MENU", new ChangeListener() {
