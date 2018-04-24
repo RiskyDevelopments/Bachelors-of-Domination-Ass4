@@ -10,9 +10,7 @@ import sepr.game.utils.TurnPhaseType;
 import java.util.Random;
 
 public abstract class PhaseAttackMove extends Phase {
-
-
-    protected TextureRegion arrow; // TextureRegion for rendering attack visualisation
+    private TextureRegion arrow; // TextureRegion for rendering attack visualisation
     protected Sector sourceSector; // Stores the sector being used to attack in the attack phase (could store as ID and lookup object each time to save memory)
     protected Sector targetSector; // Stores the sector being attacked in the attack phase (could store as ID and lookup object each time to save memory)
 
@@ -20,11 +18,9 @@ public abstract class PhaseAttackMove extends Phase {
     protected Vector2 arrowHeadPosition; // Vector x,y for the point of the arrow
     protected int[] numOfUnits; // number of units being used to attack/move
 
-
     protected Random random; // random object for adding some unpredictability to the outcome of attacks
 
     public PhaseAttackMove(GameScreen gameScreen, TurnPhaseType turnPhaseType){
-
         super(gameScreen, turnPhaseType);
         this.arrow = new TextureRegion(new Texture(Gdx.files.internal("uiComponents/arrow.png")));
         this.sourceSector = null;

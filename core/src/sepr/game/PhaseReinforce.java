@@ -1,6 +1,5 @@
 package sepr.game;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import sepr.game.utils.TurnPhaseType;
@@ -11,8 +10,6 @@ import java.util.Random;
  * handles input, updating and rendering for the reinforcement phase
  */
 public class PhaseReinforce extends Phase {
-    public AudioManager Audio = AudioManager.getInstance();
-
     private int[] allocateUnits; // 3 index array storing : [0] number of undergraduate; [1] number of postgraduates; [2] id of sector to allocate to
 
     private Random random;
@@ -77,7 +74,7 @@ public class PhaseReinforce extends Phase {
                     int voice = random.nextInt(2);
 
                     if (voice == 0) {
-                        Audio.get("sound/Allocation/Colin_Insuffiecient_Gangmembers.wav", Sound.class).play(AudioManager.GlobalFXvolume);
+                        AudioPlayer.playInsufficientGangMembersAudio();
                     } else {
                         invalidMove();
                     }
@@ -103,23 +100,6 @@ public class PhaseReinforce extends Phase {
     }
 
     private void invalidMove(){
-        int voice = random.nextInt(3);
-
-        switch (voice){
-            case 0:
-                Audio.get("sound/Invalid Move/Colin_Your_request_does_not_pass_easily_through_my_mind.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                break;
-            case 1:
-                Audio.get("sound/Invalid Move/Colin_You_would_find_more_success_trying_to_invert_a_singular_matrix.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                break;
-            case 2:
-                Audio.get("sound/Invalid Move/Colin_Your_actions_are_questionable.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                break;
-            case 3:
-                Audio.get("sound/Allocation/Colin_EmptySet.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                break;
-            case 4:
-                break;
-        }
+        AudioPlayer.playAllocationErrorAudio();
     }
 }

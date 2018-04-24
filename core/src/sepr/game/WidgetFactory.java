@@ -36,7 +36,6 @@ public class WidgetFactory {
 
     private static Texture gameHUDBottomBarRightPartTexture;
     private static Texture endPhaseBtnTexture;
-    private static Texture pauseBtnTexture;
 
     private static Texture playerLabelTexture;
     private static Texture playerLeftBtnTexture;
@@ -101,10 +100,8 @@ public class WidgetFactory {
         menusTopBarCenterTexture = new Texture("uiComponents/MenusTopBarCenter.png");
         menusTopBarRightTexture = new Texture("uiComponents/MenusTopBarRight.png");
 
-
         gameHUDBottomBarRightPartTexture = new Texture("uiComponents/HUD-Bottom-Bar-Right-Part.png");
         endPhaseBtnTexture = new Texture("uiComponents/End-Phase-Button.png");
-        //pauseBtnTexture = new Texture("uiComponents/Pause-Btn-Icon.png");
 
         // load college logos
         alcuinLogoTexture = new Texture("logos/alcuin-logo.png");
@@ -238,8 +235,6 @@ public class WidgetFactory {
         String text = "BACHELORS OF" + "\n" + "DOMINATION";
         Label textLabel = new Label(text, style);
         textLabel.setAlignment(0,40);
-        //textLabel.setAlignment(Align.right);
-
 
         Table bottomBar = new Table();
         bottomBar.setDebug(false);

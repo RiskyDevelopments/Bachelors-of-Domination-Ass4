@@ -12,8 +12,6 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import sepr.game.utils.PunishmentCardType;
 
-import java.util.Random;
-
 /**
  * class for specifying properties of a sector that is part of a map
  */

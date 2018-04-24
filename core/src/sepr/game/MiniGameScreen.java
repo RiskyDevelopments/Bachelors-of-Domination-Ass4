@@ -1,9 +1,6 @@
 package sepr.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -25,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class MiniGameScreen implements Screen {
+public class MiniGameScreen extends View {
 
     private static final int ROWS = 2;
     private static final int COLS = 4;
@@ -44,7 +41,8 @@ public class MiniGameScreen implements Screen {
     private Pair<Integer, Integer> pairSelected; // location of pair currently selected, (-1,-1) if no pair currently selected
 
     public MiniGameScreen(final Main main, final GameScreen gameScreen) {
-        this.main = main;
+        super(main);
+
         this.gameScreen = gameScreen;
         this.stage = new Stage(){
             @Override
@@ -94,7 +92,8 @@ public class MiniGameScreen implements Screen {
         resetGameTable();
     }
 
-    private Table setupBackground(){
+    @Override
+    protected Table setupBackground(){
         Table backgroundTable = new Table();
         backgroundTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/miniGameBackground.png"))));
         backgroundTable.pad(0);
@@ -105,7 +104,8 @@ public class MiniGameScreen implements Screen {
     /**
      * Sets up the user interface
      */
-    private Table setupUi() {
+    @Override
+    protected Table setupUi() {
         Table uiComponentsTable =  new Table();
         uiComponentsTable.background(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/Scanline-Purple.png"))));
         uiComponentsTable.pad(80).padLeft(85).padRight(95);
@@ -300,38 +300,5 @@ public class MiniGameScreen implements Screen {
                 endGame(false);
             }
         }
-    }
-
-    @Override
-    public void show() {
-        Gdx.input.setInputProcessor(stage);
-    }
-
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        this.stage.act(Gdx.graphics.getDeltaTime());
-        this.stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        this.stage.getViewport().update(width, height, true);
-    }
-
-    @Override
-    public void pause() {
-    }
-
-    @Override
-    public void resume() {
-    }
-
-    @Override
-    public void hide() {
-    }
-
-    @Override
-    public void dispose() {
     }
 }

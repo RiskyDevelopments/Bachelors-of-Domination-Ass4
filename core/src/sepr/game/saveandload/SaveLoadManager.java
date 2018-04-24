@@ -6,11 +6,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import sepr.game.GameScreen;
-import sepr.game.Main;
-import sepr.game.Map;
-import sepr.game.Player;
-import sepr.game.Sector;
+import sepr.game.*;
 
 import java.io.*;
 import java.util.HashMap;

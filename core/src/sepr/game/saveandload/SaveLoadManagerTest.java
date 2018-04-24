@@ -5,8 +5,8 @@ import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import org.junit.*;
-import org.junit.runners.model.InitializationError;
-import sepr.game.*;
+import sepr.game.Player;
+import sepr.game.Sector;
 import sepr.game.utils.CollegeName;
 import sepr.game.utils.PlayerType;
 import sepr.game.utils.TurnPhaseType;
@@ -14,7 +14,7 @@ import sepr.game.utils.TurnPhaseType;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 public class SaveLoadManagerTest implements ApplicationListener {
     public SaveLoadManager saveLoadManager;

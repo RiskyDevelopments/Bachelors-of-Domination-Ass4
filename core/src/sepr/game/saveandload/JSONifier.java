@@ -1,14 +1,12 @@
 package sepr.game.saveandload;
 
-import com.badlogic.gdx.graphics.Color;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import sepr.game.GameSetupScreen;
 import sepr.game.utils.CollegeName;
 import sepr.game.utils.PlayerType;
 import sepr.game.utils.TurnPhaseType;
 
-import java.util.*;
+import java.util.ArrayList;
 
 /**
  * Class to convert the game state to and from a JSON representation

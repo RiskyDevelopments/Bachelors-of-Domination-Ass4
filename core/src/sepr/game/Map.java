@@ -1,7 +1,6 @@
 package sepr.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -17,7 +16,6 @@ import java.util.*;
  * stores the game map and the sectors within it
  */
 public class Map {
-    private AudioManager Audio = AudioManager.getInstance(); // Access to the AudioManager
     private HashMap<Integer, Sector> sectors; // mapping of sector ID to the sector object
     private List<UnitChangeParticle> particles; // list of active particle effects displaying the changes to the amount of units on a sector
 
@@ -321,42 +319,11 @@ public class Map {
 
         if(attackersRemaining == 0){
             // Poor Move
-            int voice = random.nextInt(3);
-
-            switch (voice){
-                case 0:
-                    Audio.get("sound/Invalid Move/Colin_Your_actions_are_questionable.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                    break;
-                case 1:
-                    Audio.get("sound/Battle Phrases/Colin_Seems_Risky_To_Me.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                    break;
-                case 2:
-                    break;
-            }
+            AudioPlayer.playBadMoveAudio();
         } else {
             // Good move
+            AudioPlayer.playGoodMoveAudio();
             attacker.addTroopsToAllocate(target.getReinforcementsProvided()); // give the player the appropriate amount of troops to allocate next turn for conquering the target sector
-            int voice = random.nextInt(5);
-
-            switch (voice){
-                case 0:
-                    Audio.get("sound/Battle Phrases/Colin_An_Unlikely_Victory.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                    break;
-                case 1:
-                    Audio.get("sound/Battle Phrases/Colin_Far_better_than_I_expected.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                    break;
-                case 2:
-                    Audio.get("sound/Battle Phrases/Colin_I_couldnt_have_done_it_better_myself.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                    break;
-                case 3:
-                    Audio.get("sound/Battle Phrases/Colin_Multiplying_by_the_identity_matrix_is_more_fasinating_than_your_last_move.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                    break;
-                case 4:
-                    Audio.get("sound/Battle Phrases/Colin_Well_Done.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                    break;
-                case 5:
-                    break;
-            }
         }
 
         // apply the attack to the map

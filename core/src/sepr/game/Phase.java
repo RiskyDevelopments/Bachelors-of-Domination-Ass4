@@ -25,7 +25,6 @@ import sepr.game.utils.TurnPhaseType;
 public abstract class Phase extends Stage {
     GameScreen gameScreen;
     Player currentPlayer;
-    AudioManager Audio = AudioManager.getInstance();
 
     private PunishmentCardType punishmentCardSelected = PunishmentCardType.NO_CARD;
 
@@ -75,8 +74,7 @@ public abstract class Phase extends Stage {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 gameScreen.nextPhase();
-                Audio.get("sound/Other/Electro button click.mp3", Sound.class).play(AudioManager.GlobalFXvolume); //plays the music
-
+                AudioPlayer.playButtonClick();
             }
         });
         bottomBarRightPart = WidgetFactory.genGameHUDBottomBarRightPart("INIT");

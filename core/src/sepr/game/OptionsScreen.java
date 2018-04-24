@@ -1,8 +1,9 @@
 package sepr.game;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -14,7 +15,6 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,9 +24,8 @@ import java.util.Set;
  *      FX Volume
  *      Resolution Selector
  *      Fullscreen On/Off
- *      Colourblind mode On/Off
  */
-public class OptionsScreen implements Screen {
+public class OptionsScreen extends View {
     // names for accessing different preferences in the preferences file
     public static final String PREFERENCES_NAME = "Options";
     public static final String MUSIC_VOL_PREF = "musicVol";
@@ -34,19 +33,12 @@ public class OptionsScreen implements Screen {
     public static final String RESOLUTION_WIDTH_PREF = "screenWidth";
     public static final String RESOLUTION_HEIGHT_PREF = "screenHeight";
     public static final String FULLSCREEN_PREF = "fullscreen";
-    public static final String COLOURBLIND_PREF = "colourblind";
-
-
-    private Main main;
-    private Stage stage;
-    private Table backgroundTable;
 
     // screen UI widgets
     private Slider musicSlider;
     private Slider fxSlider;
     private SelectBox<String> resolutionSelector;
     private CheckBox fullscreenSwitch;
-    private CheckBox colourblindModeSwitch;
 
     /**
      * sets up the screen
@@ -54,7 +46,7 @@ public class OptionsScreen implements Screen {
      * @param main for changing back to the menu screen
      */
     public OptionsScreen(final Main main) {
-        this.main = main;
+        super(main);
 
         this.stage = new Stage(){
             @Override
@@ -69,13 +61,10 @@ public class OptionsScreen implements Screen {
         this.stage.setViewport(new ScreenViewport());
         this.backgroundTable = setupBackground();
 
-
         this.stage.addActor(backgroundTable);
         this.backgroundTable.setFillParent(true);
         this.backgroundTable.setDebug(false);
-
     }
-
 
     /**
      * Method generates a string array of possible resolutions the game could be displayed at on this monitor
@@ -105,7 +94,6 @@ public class OptionsScreen implements Screen {
         fxSlider = WidgetFactory.genStyledSlider();
         resolutionSelector = WidgetFactory.genStyledSelectBox(getPossibleResolutions());
         fullscreenSwitch = WidgetFactory.genOnOffSwitch();
-        colourblindModeSwitch = WidgetFactory.genOnOffSwitch();
 
         // setup labels
         Label musicVolumeLabel = WidgetFactory.genMenuLabel("MUSIC VOLUME");
@@ -116,8 +104,6 @@ public class OptionsScreen implements Screen {
         resolutionSelectorLabel.setAlignment(Align.center);
         Label fullscreenSwitchLabel = WidgetFactory.genMenuLabel("FULLSCREEN");
         fullscreenSwitchLabel.setAlignment(Align.center);
-        Label colourblindModeSwitchLabel = WidgetFactory.genMenuLabel("COLOURBLIND MODE");
-        colourblindModeSwitchLabel.setAlignment(Align.center);
 
         // add the setup widgets to a table
         Table table = new Table();
@@ -145,12 +131,6 @@ public class OptionsScreen implements Screen {
         table.right();
         table.add(fullscreenSwitch).padLeft(80);
 
-        table.row();
-        table.left();
-        table.add(colourblindModeSwitchLabel).height(72).width(439).pad(20);
-        table.right();
-        table.add(colourblindModeSwitch).padLeft(80);
-
         TextButton acceptButton = WidgetFactory.genBasicButton("CONFIRM CHANGES");
         acceptButton.addListener(new ChangeListener() {
             @Override
@@ -168,7 +148,8 @@ public class OptionsScreen implements Screen {
         return table;
     }
 
-    private Table setupUi() {
+    @Override
+    protected Table setupUi() {
         Table uiComponentsTable =  new Table();
         uiComponentsTable.setDebug(false);
 
@@ -194,22 +175,12 @@ public class OptionsScreen implements Screen {
         return uiComponentsTable;
     }
 
-
-    private Table setupBackground(){
-        Table backgroundTable = new Table();
-        backgroundTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/menuBackground.png"))));
-        backgroundTable.pad(0);
-        backgroundTable.add(setupUi());
-        return backgroundTable;
-    }
-
     /**
      * Called when accept button clicked in options menu
      * applies the changes to the game settings made by the player
      * saves the updated preferences to file
      */
     private void acceptChanges() {
-
         Preferences prefs = Gdx.app.getPreferences(PREFERENCES_NAME);
         prefs.putFloat(MUSIC_VOL_PREF, musicSlider.getPercent());
         prefs.putFloat(FX_VOL_PREF, fxSlider.getPercent());
@@ -222,7 +193,6 @@ public class OptionsScreen implements Screen {
         prefs.putInteger(RESOLUTION_HEIGHT_PREF, screenHeight);
 
         prefs.putBoolean(FULLSCREEN_PREF, fullscreenSwitch.isChecked());
-        prefs.putBoolean(COLOURBLIND_PREF, colourblindModeSwitch.isChecked());
 
         prefs.flush(); // save the updated preferences to file
         main.applyPreferences(); // apply the changes to the game
@@ -244,45 +214,11 @@ public class OptionsScreen implements Screen {
         }
 
         fullscreenSwitch.setChecked(prefs.getBoolean(OptionsScreen.FULLSCREEN_PREF, Gdx.graphics.isFullscreen()));
-        colourblindModeSwitch.setChecked(prefs.getBoolean(OptionsScreen.COLOURBLIND_PREF, false));
-
     }
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(stage);
+        super.show();
         readPreferences();
-    }
-
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        this.stage.act(Gdx.graphics.getDeltaTime());
-        this.stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        this.stage.getViewport().update(width, height, true);
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-
     }
 }
