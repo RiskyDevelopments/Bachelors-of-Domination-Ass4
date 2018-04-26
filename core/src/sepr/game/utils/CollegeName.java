@@ -11,7 +11,7 @@ public enum CollegeName {
     DERWENT("DERWENT", new Color(0.212f, 0.380f, 1, 0.4f)),
     HALIFAX("HALIFAX", new Color(0, 0.824f, 1, 0.4f)),
     HES_EAST("HESLINGTON EAST", new Color(0.392f, 0.855f, 0.271f, 0.4f)),
-    JAMES("JAMES", new Color(0.796f, 0.780f, 0.839f, 0.4f)),
+    JAMES("JAMES", new Color(0.101f, 0.101f, 0.101f, 0.4f)),
     UNI_OF_YORK("UNIVERSITY OF YORK", new Color(1,1,1,0.4f)),
     VANBRUGH("VANBRUGH", new Color(0.886f, 0.373f, 0.992f, 0.4f)),
     WENTWORTH("WENTWORTH", new Color(0.996f, 0.674f, 0.251f, 0.4f));
