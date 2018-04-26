@@ -5,7 +5,6 @@ import com.badlogic.gdx.audio.Sound;
 import java.util.Random;
 
 public class AudioPlayer {
-
     private static AudioManager Audio = AudioManager.getInstance(); // Access to the AudioManager
     private static Random random = new Random();
 
@@ -13,13 +12,25 @@ public class AudioPlayer {
         Audio.loadSounds(); //loads the sounds into memory
     }
 
+    /**
+     * plays a random audio file from the file paths specified in the audioFiles array
+     * noAudioChances specifies the chance no audio file is played
+     *
+     * @throws IllegalArgumentException if length of AudioFiles is 0
+     * @param audioFiles file paths of audio files that could be played
+     * @param noAudioChances chance no audio file is played
+     */
     private static void selectAudioToPlay(String[] audioFiles, int noAudioChances) {
+        if (audioFiles.length == 0) throw new IllegalArgumentException("must be at least one audio file to select from");
         int fileNum = random.nextInt(audioFiles.length + noAudioChances);
         if (fileNum < audioFiles.length) {
             Audio.get(audioFiles[fileNum], Sound.class).play(AudioManager.GLOBAL_FX_VOLUME);
         }
     }
 
+    /**
+     * plays an audio clip for when the game is over
+     */
     public static void playGameOverAudio() {
         selectAudioToPlay(new String[]{
                 "sound/Victory/Colin_Congratulations.wav",
@@ -29,10 +40,16 @@ public class AudioPlayer {
         }, 0);
     }
 
+    /**
+     * plays an audio clip for when a player has been eliminated
+     */
     public static void playPlayerEliminatedAudio() {
         Audio.get("sound/Minigame/Colin_That_was_a_poor_performance.wav", Sound.class).play(AudioManager.GLOBAL_FX_VOLUME);
     }
 
+    /**
+     * plays an audio clip for when the player has made a bad move
+     */
     public static void playBadMoveAudio() {
         selectAudioToPlay(new String[]{
                 "sound/Invalid Move/Colin_Your_actions_are_questionable.wav",
@@ -40,6 +57,9 @@ public class AudioPlayer {
         }, 2);
     }
 
+    /**
+     * plays an audio clip for when the player has made a good move
+     */
     public static void playGoodMoveAudio() {
         selectAudioToPlay(new String[]{
                 "sound/Battle Phrases/Colin_An_Unlikely_Victory.wav",
@@ -50,6 +70,9 @@ public class AudioPlayer {
         }, 0);
     }
 
+    /**
+     * plays an audio clip for when the player has made an invalid move
+     */
     public static void playInvalidMoveAudio() {
         selectAudioToPlay(new String[]{
                 "sound/Invalid Move/Colin_Your_request_does_not_pass_easily_through_my_mind.wav",
@@ -59,6 +82,9 @@ public class AudioPlayer {
         }, 2);
     }
 
+    /**
+     * plays an audio clip for when the player has tried to make an invalid troop allocation
+     */
     public static void playAllocationErrorAudio() {
         selectAudioToPlay(new String[]{
                 "sound/Allocation/Colin_EmptySet.wav",
@@ -70,18 +96,23 @@ public class AudioPlayer {
         }, 3);
     }
 
-    public static void playInsufficientGangMembersAudio() {
-        Audio.get("sound/Allocation/Colin_Insuffiecient_Gangmembers.wav", Sound.class).play(AudioManager.GLOBAL_FX_VOLUME);
-    }
-
+    /**
+     * plays the button click sound effect
+     */
     public static void playButtonClick() {
         Audio.get("sound/Other/Electro button click.mp3", Sound.class).play(AudioManager.GLOBAL_FX_VOLUME); //plays the music
     }
 
+    /**
+     * stops the current music, if any is playing, and plays the menu music
+     */
     public static void playMenuMusic() {
         Audio.loadMusic("sound/IntroMusic/Tron style music - Original track.mp3"); //load and play main menu music
     }
 
+    /**
+     * stops the current music, if any is playing, and plays the game music
+     */
     public static void playMainGameMusic() {
         Audio.loadMusic("sound/Gameplay Music/80's Retro Synthwave Intro Music.mp3"); //loads and plays the gamePlay music
     }

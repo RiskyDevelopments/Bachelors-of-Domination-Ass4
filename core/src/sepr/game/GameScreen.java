@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -27,9 +26,9 @@ import java.util.Random;
  * implements screen for swapping what is being displayed with other screens, i.e. menu screens
  * input processor implemented to parse user input
  */
-public class GameScreen extends View implements InputProcessor{
+public class GameScreen extends UiScreen implements InputProcessor{
     public static final int NEUTRAL_PLAYER_ID = 4;
-    private static final float PVC_SPAWN_CHANCE = 0.1f;
+    private static final float PVC_SPAWN_CHANCE = 1f;
     private static final int MAX_TURN_TIME = 60;
 
     private TurnPhaseType currentPhase = TurnPhaseType.REINFORCEMENT; // set initial phase to the reinforcement phase
@@ -55,8 +54,6 @@ public class GameScreen extends View implements InputProcessor{
 
     private boolean gameSetup = false; // true once setupGame has been called
 
-    private Random random;
-
     /**
      * sets up rendering objects and key input handling
      * setupGame then start game must be called before a game is ready to be played
@@ -71,15 +68,12 @@ public class GameScreen extends View implements InputProcessor{
         this.gameplayViewport = new ScreenViewport(gameplayCamera);
 
         this.mapBackground = new Texture("uiComponents/mapBackgroundBox.png");
-
-        this.random = new Random();
     }
 
     public GameScreen(Main main, TurnPhaseType currentPhase, Map map, HashMap<Integer, Player> players, boolean turnTimerEnabled, float turnTimeElapsed, List<Integer> turnOrder, int currentPlayerPointer){
         this(main);
 
         setUpPhases();
-
 
         this.currentPhase = currentPhase;
 
@@ -118,8 +112,10 @@ public class GameScreen extends View implements InputProcessor{
         gameSetup = true; // game is now setup
     }
 
+    /**
+     * Instantiates the phases hashmap and puts an instance of each phase type, mapping to the respective phase object, in the map
+     */
     private void setUpPhases() {
-        // create the game phases and add them to the phases hashmap
         this.phases = new HashMap<TurnPhaseType, Phase>();
         this.phases.put(TurnPhaseType.REINFORCEMENT, new PhaseReinforce(this));
         this.phases.put(TurnPhaseType.ATTACK, new PhaseAttack(this));
@@ -270,7 +266,6 @@ public class GameScreen extends View implements InputProcessor{
      * removes all players who have 0 sectors from the turn order
      */
     private void removeEliminatedPlayers() {
-        System.out.println("Elinination?");
         List<Integer> playerIdsToRemove = new ArrayList<Integer>(); // list of players in the turn order who have 0 sectors
         for (Integer i : turnOrder) {
             boolean hasSector = false; // has a sector belonging to player i been found
@@ -282,7 +277,6 @@ public class GameScreen extends View implements InputProcessor{
             }
             if (!hasSector) { // player has no sectors so remove them from the game
                 playerIdsToRemove.add(i);
-                System.out.println("ELIMINIATION" + getPlayerById(i).getCollegeName().getCollegeName());
             }
         }
 
@@ -430,6 +424,13 @@ public class GameScreen extends View implements InputProcessor{
         }
     }
 
+    /**
+     * resizes the window contents to ensure fits the new size
+     * scales the game map so that all of it is visible
+     *
+     * @param width window width
+     * @param height window height
+     */
     @Override
     public void resize(int width, int height) {
         for (Stage stage : phases.values()) { // update the rendering properties of each stage when the screen is resized

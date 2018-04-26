@@ -4,6 +4,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -14,7 +16,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 /**
  * controls the UI for the main menu screen
  */
-public class MenuScreen extends View {
+public class MenuScreen extends UiScreen {
 
     /**
      * sets up the menu screen
@@ -23,22 +25,16 @@ public class MenuScreen extends View {
      */
     public MenuScreen(final Main main) {
         super(main);
-
-        this.stage = new Stage() {
+        this.stage.addListener(new InputListener(){
             @Override
-            public boolean keyUp(int keyCode) {
+            public boolean keyUp(InputEvent event, int keyCode) {
                 if (keyCode == Input.Keys.ESCAPE) { // ask player if they would like to exit the game if they press escape
                     DialogFactory.exitProgramDialogBox(stage);
+                    return true;
                 }
-                return super.keyUp(keyCode);
+                return false;
             }
-        };
-        this.stage.setViewport(new ScreenViewport());
-
-        this.backgroundTable = setupBackground();
-        this.backgroundTable.setFillParent(true); // make ui table fill the entire screen
-        this.stage.addActor(backgroundTable);
-        this.backgroundTable.setDebug(false); // enable table drawing for ui debug
+        });
     }
 
     /**

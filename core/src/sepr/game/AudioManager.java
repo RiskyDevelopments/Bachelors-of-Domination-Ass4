@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 /**
  * Usage -- Audio.get('path to file', Sound.class).play(AudioManager.GLOBAL_FX_VOLUME) // this will play the sound
+ *
+ * AudioManager is a singleton class that is instantiated using getInstance therefore only one instance of a class is allowed at a time
  */
 public class AudioManager extends AssetManager {
 
@@ -16,13 +18,6 @@ public class AudioManager extends AssetManager {
     public static float GLOBAL_MUSIC_VOLUME = 0.5f; //Global volume for the music between 0 and 1
     private static String currentPlayingMusic; //list of playing music
     private static AudioManager instance = null; // set initial instance to be null
-
-    /**
-     * AudioManager is a singleton class that instantiated using getInstance therefore only one instance of a class is allowed at a time
-     */
-    private AudioManager() {
-        // Exists only to defeat instantiation.
-    }
 
     public static AudioManager getInstance() {
         if (instance == null) {
@@ -32,7 +27,7 @@ public class AudioManager extends AssetManager {
     }
 
     /**
-     * loads the music file specified by the filepath into memory and plays it and sets to looping
+     * disposes of the music currently playing, if any is and loads the music file specified by the filepath into memory and plays it and sets to looping
      *
      * @param filePath the filepath of the location of the sound
      */

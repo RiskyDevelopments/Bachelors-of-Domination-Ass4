@@ -8,14 +8,22 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-public abstract class View implements Screen {
+public abstract class UiScreen implements Screen {
     protected Main main;
     protected Stage stage;
-    protected Table backgroundTable;// table for inserting ui widgets into
+    private Table backgroundTable;// table for inserting ui widgets into
 
-    public View(Main main) {
+    public UiScreen(Main main) {
         this.main = main;
+        this.stage = new Stage();
+
+        this.backgroundTable = setupBackground();
+        this.stage.addActor(backgroundTable);
+        this.backgroundTable.setFillParent(true);
+        this.backgroundTable.setDebug(false);
+        this.stage.setViewport(new ScreenViewport());
     }
 
     protected abstract Table setupUi();
@@ -26,6 +34,10 @@ public abstract class View implements Screen {
         backgroundTable.pad(0);
         backgroundTable.add(setupUi());
         return backgroundTable;
+    }
+
+    public Stage getStage() {
+        return stage;
     }
 
     @Override

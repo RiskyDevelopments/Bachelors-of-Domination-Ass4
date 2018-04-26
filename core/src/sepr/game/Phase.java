@@ -273,7 +273,7 @@ public abstract class Phase extends Stage {
             // no sector pressed
             return true;
         } else {
-            gameScreen.getMap().getSectorById(sectorClicked).addPunishmentEffect(punishmentCardSelected);
+            gameScreen.getMap().addSectorPunishmentEffect(sectorClicked, punishmentCardSelected);
             switch (punishmentCardSelected) {
                 case COLLUSION_CARD:
                     currentPlayer.addCollusionCards(-1);

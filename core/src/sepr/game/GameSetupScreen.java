@@ -4,6 +4,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -28,7 +30,7 @@ import java.util.regex.Pattern;
  *  - Neutral player enabled
  *  - Turn timer enabled
  */
-public class GameSetupScreen extends View{
+public class GameSetupScreen extends UiScreen {
 
     private AudioManager Audio = AudioManager.getInstance();
     private final int MAX_NUMBER_OF_PLAYERS = 4; // maximum number of players that cna be in a game
@@ -47,26 +49,16 @@ public class GameSetupScreen extends View{
      */
     public GameSetupScreen (final Main main) {
         super(main);
-
-        this.stage = new Stage(){
+        this.stage.addListener(new InputListener() {
             @Override
-            public boolean keyUp(int keyCode) {
-                if (keyCode == Input.Keys.ESCAPE) { // change back to the menu screen if the player presses esc
+            public boolean keyUp(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.ESCAPE) { // change back to the menu screen if the player presses esc
                     main.setMenuScreen();
+                    return true;
                 }
-                return super.keyUp(keyCode);
+                return false;
             }
-        };
-        this.collegeTableBackground = new Texture("uiComponents/Game-Setup-Name-Box.png");
-
-        this.stage.setViewport(new ScreenViewport());
-
-        this.backgroundTable = setupBackground();
-        this.backgroundTable.setFillParent(true); // make ui table fill the entire screen
-        this.stage.addActor(backgroundTable);
-        this.backgroundTable.setDebug(false); // enable table drawing for ui debug
-
-
+        });
         this.Audio.loadMusic("sound/IntroMusic/Tron style music - Original track.mp3"); //load the introMusic
     }
 
@@ -277,6 +269,7 @@ public class GameSetupScreen extends View{
             logoTable.add(rightButton).height(60).width(35);
 
             Table temp = new Table();
+            this.collegeTableBackground = new Texture("uiComponents/Game-Setup-Name-Box.png");
             temp.background(new TextureRegionDrawable(new TextureRegion(collegeTableBackground)));
             temp.setDebug(false);
             temp.add(textTable).expand().left().padLeft(20);

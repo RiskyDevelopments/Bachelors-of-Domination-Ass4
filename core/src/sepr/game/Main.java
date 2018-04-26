@@ -10,7 +10,7 @@ import sepr.game.saveandload.SaveLoadManager;
 import java.util.HashMap;
 
 /**
- * executable http://www.riskydevelopments.co.uk/bod/BoD.zip
+ * executable http://www.riskydevelopments.co.uk/XXXXXXXXXXXXXXXXXX.zip
  *
  * main game class used for controlling what screen is currently being displayed
  */
@@ -55,10 +55,15 @@ public class Main extends Game implements ApplicationListener {
 	 * starts the game
 	 */
 	public void setMiniGameScreen() {
-		miniGameScreen = new MiniGameScreen(this,gameScreen);
+		System.out.println("Setting MG1");
+		miniGameScreen = new MiniGameScreen(this, gameScreen);
+		System.out.println("Setting MG2");
 		miniGameScreen.setupGame(gameScreen.getPlayerById(gameScreen.getCurrentPlayerPointer()));
+		System.out.println("Setting MG3");
 		this.setScreen(miniGameScreen);
+		System.out.println("Setting MG4");
 		miniGameScreen.startGame();
+		System.out.println("Setting MG4");
 	}
 
 	/**
@@ -107,19 +112,29 @@ public class Main extends Game implements ApplicationListener {
 		this.setScreen(gameSetupScreen);
 	}
 
-
+	/**
+	 * saves the game currently in play
+	 */
 	public void saveGame(){
-        this.saveLoadManager.SaveByID(this.saveLoadManager.GetCurrentSaveID());
+        this.saveLoadManager.saveCurrentGame();
     }
 
+	/**
+	 * checks to see if there is a save available to load
+	 *
+	 * @return true if there is a save available to load, else false
+	 */
 	public boolean hasLoadedSaves(){
 		this.saveLoadManager = new SaveLoadManager(this, gameScreen);
 		return this.saveLoadManager.savesToLoad;
 	}
 
+	/**
+	 * loads the save game from file
+	 */
     public void loadGame(){
 	    this.saveLoadManager.LoadFromFile();
-		this.saveLoadManager.LoadSaveByID();
+		this.saveLoadManager.loadSaveGame();
 	}
 
 	/**
@@ -129,7 +144,6 @@ public class Main extends Game implements ApplicationListener {
 	 *      FX Volume
 	 *      Screen Resolution
 	 *      Fullscreen
-	 *      Colourblind Mode
 	 * A default setting should be applied for any missing preferences
 	 */
 	public void applyPreferences() {
