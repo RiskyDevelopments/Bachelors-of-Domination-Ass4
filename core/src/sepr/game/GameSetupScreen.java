@@ -1,10 +1,6 @@
 package sepr.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -32,11 +28,8 @@ import java.util.regex.Pattern;
  *  - Neutral player enabled
  *  - Turn timer enabled
  */
-public class GameSetupScreen implements Screen{
+public class GameSetupScreen extends View{
 
-    private Main main; // main stored so that screen can be changed
-    private Stage stage; // stage for drawing the UI to
-    private Table backgroundTable; // table for laying out the UI components
     private AudioManager Audio = AudioManager.getInstance();
     private final int MAX_NUMBER_OF_PLAYERS = 4; // maximum number of players that cna be in a game
 
@@ -48,14 +41,12 @@ public class GameSetupScreen implements Screen{
 
     private Texture collegeTableBackground;
 
-
-
     /**
      *
      * @param main for changing to different screens
      */
     public GameSetupScreen (final Main main) {
-        this.main = main;
+        super(main);
 
         this.stage = new Stage(){
             @Override
@@ -91,7 +82,6 @@ public class GameSetupScreen implements Screen{
             playerLabel.setText(PlayerType.NONE.getPlayerType());
         }
     }
-
 
     /**
      * finds the name of the next college when the left UI button is pressed
@@ -415,15 +405,16 @@ public class GameSetupScreen implements Screen{
         }
         HashMap<Integer, Player> x = generatePlayerHashmaps();
 
-        Audio.disposeMusic("sound/IntroMusic/Tron style music - Original track.mp3");
-        Audio.loadMusic("sound/Gameplay Music/80's Retro Synthwave Intro Music.mp3"); //loads and plays the gamePlay music
+        AudioPlayer.playMainGameMusic();
+
         main.setGameScreen(x, turnTimerSwitch.isChecked(), neutralPlayerSwitch.isChecked());
     }
 
     /**
      * sets up the UI for the game setup screen
      */
-    private Table setupUi() {
+    @Override
+    protected Table setupUi() {
         Table uiComponentsTable =  new Table();
         uiComponentsTable.setDebug(false);
 
@@ -463,55 +454,5 @@ public class GameSetupScreen implements Screen{
         })).colspan(2).fillX();
 
         return uiComponentsTable;
-    }
-
-    private Table setupBackground(){
-        Table backgroundTable = new Table();
-        backgroundTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/menuBackground.png"))));
-        backgroundTable.pad(0);
-        backgroundTable.add(setupUi());
-        return backgroundTable;
-    }
-
-
-    /**
-     * change the input processing to be handled by this screen's stage
-     */
-    @Override
-    public void show() {
-        Gdx.input.setInputProcessor(stage);
-    }
-
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        this.stage.act(Gdx.graphics.getDeltaTime());
-        this.stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        this.stage.getViewport().update(width, height, true);
-    }
-
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-
     }
 }

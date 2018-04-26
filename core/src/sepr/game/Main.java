@@ -24,7 +24,6 @@ public class Main extends Game implements ApplicationListener {
 	private SaveLoadManager saveLoadManager;
 	private AudioManager audio = AudioManager.getInstance();
 
-
 	/**
 	 * Setup the screens and set the first screen as the menu
 	 */
@@ -32,6 +31,7 @@ public class Main extends Game implements ApplicationListener {
 	public void create () {
 		new WidgetFactory(); // setup widget factory for generating UI components
 		new DialogFactory(); // setup dialog factory for generating dialogs
+		new AudioPlayer();
 
 		this.menuScreen = new MenuScreen(this);
 		this.gameSetupScreen = new GameSetupScreen(this);
@@ -45,6 +45,15 @@ public class Main extends Game implements ApplicationListener {
 		this.setMenuScreen();
 	}
 
+	public GameScreen getGameScreen() {
+		return gameScreen;
+	}
+
+	/**
+	 * sets the current screen to the minigame
+	 * reset the game for the current player to play
+	 * starts the game
+	 */
 	public void setMiniGameScreen() {
 		miniGameScreen = new MiniGameScreen(this,gameScreen);
 		miniGameScreen.setupGame(gameScreen.getPlayerById(gameScreen.getCurrentPlayerPointer()));
@@ -52,7 +61,9 @@ public class Main extends Game implements ApplicationListener {
 		miniGameScreen.startGame();
 	}
 
-
+	/**
+	 * sets the current screen to the menu screen
+	 */
 	public void setMenuScreen() {
 		this.setScreen(menuScreen);
 	}
@@ -70,6 +81,12 @@ public class Main extends Game implements ApplicationListener {
 		gameScreen.startGame();
 	}
 
+	/**
+	 * sets the gamescreen to the passed one
+	 * to be used when loading a save game
+	 *
+	 * @param screen instance of gamescreen to be used for the game
+	 */
 	public void setGameScreenFromLoad(GameScreen screen){
 	    this.gameScreen = screen;
 	    this.setScreen(this.gameScreen);
@@ -90,6 +107,21 @@ public class Main extends Game implements ApplicationListener {
 		this.setScreen(gameSetupScreen);
 	}
 
+
+	public void saveGame(){
+        this.saveLoadManager.SaveByID(this.saveLoadManager.GetCurrentSaveID());
+    }
+
+	public boolean hasLoadedSaves(){
+		this.saveLoadManager = new SaveLoadManager(this, gameScreen);
+		return this.saveLoadManager.savesToLoad;
+	}
+
+    public void loadGame(){
+	    this.saveLoadManager.LoadFromFile();
+		this.saveLoadManager.LoadSaveByID();
+	}
+
 	/**
 	 * Applies the players options preferences
 	 * Sets the
@@ -103,8 +135,8 @@ public class Main extends Game implements ApplicationListener {
 	public void applyPreferences() {
 		Preferences prefs = Gdx.app.getPreferences(OptionsScreen.PREFERENCES_NAME);
 
-		AudioManager.GlobalFXvolume = prefs.getFloat(OptionsScreen.FX_VOL_PREF, 0.5f);
-		AudioManager.GlobalMusicVolume = prefs.getFloat(OptionsScreen.MUSIC_VOL_PREF, 0.5f);
+		AudioManager.GLOBAL_FX_VOLUME = prefs.getFloat(OptionsScreen.FX_VOL_PREF, 0.5f);
+		AudioManager.GLOBAL_MUSIC_VOLUME = prefs.getFloat(OptionsScreen.MUSIC_VOL_PREF, 0.5f);
 		audio.setMusicVolume();
 
 		int screenWidth = prefs.getInteger(OptionsScreen.RESOLUTION_WIDTH_PREF, 1920);
@@ -115,23 +147,6 @@ public class Main extends Game implements ApplicationListener {
 			// change game to fullscreen
 			Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 		}
-	}
-
-	//Dom modified method name to fit rest of program's convention
-	public void saveGame(){
-        this.saveLoadManager.SaveByID(this.saveLoadManager.GetCurrentSaveID());
-    }
-
-	//Dom modified method name to fit rest of program's convention
-    public void loadGame(){
-	    this.saveLoadManager.LoadFromFile();
-		this.saveLoadManager.LoadSaveByID();
-	}
-
-	//Dom modified method name to fit rest of program's convention
-	public boolean hasLoadedSaves(){
-		this.saveLoadManager = new SaveLoadManager(this, gameScreen);
-		return this.saveLoadManager.savesToLoad;
 	}
 
 	@Override
@@ -149,6 +164,5 @@ public class Main extends Game implements ApplicationListener {
 		gameSetupScreen.dispose();
 		gameScreen.dispose();
 	}
-
 }
 

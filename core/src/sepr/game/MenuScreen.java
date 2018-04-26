@@ -1,9 +1,6 @@
 package sepr.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -17,10 +14,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 /**
  * controls the UI for the main menu screen
  */
-public class MenuScreen implements Screen {
-    private Main main;
-    private Stage stage;
-    private Table backgroundTable;// table for inserting ui widgets into
+public class MenuScreen extends View {
 
     /**
      * sets up the menu screen
@@ -28,7 +22,7 @@ public class MenuScreen implements Screen {
      * @param main for changing which screen is currently being displayed
      */
     public MenuScreen(final Main main) {
-        this.main = main;
+        super(main);
 
         this.stage = new Stage() {
             @Override
@@ -108,7 +102,7 @@ public class MenuScreen implements Screen {
      * sets up the UI tables for the menu screen
      */
 
-    private Table setupUi() {
+    protected Table setupUi() {
         Table uiComponentsTable =  new Table();
         uiComponentsTable.setDebug(false);
 
@@ -124,8 +118,6 @@ public class MenuScreen implements Screen {
 
         uiComponentsTable.right();
 
-        float SCALE_RATIO = 811 / Gdx.graphics.getWidth();
-
         uiComponentsTable.add(WidgetFactory.genMapGraphic()).height(657).width(811).pad(30);
 
         uiComponentsTable.row();
@@ -136,51 +128,5 @@ public class MenuScreen implements Screen {
 
         })).colspan(2).fillX();
         return uiComponentsTable;
-    }
-
-    private Table setupBackground(){
-        Table backgroundTable = new Table();
-        backgroundTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/menuBackground.png"))));
-        backgroundTable.pad(0);
-        backgroundTable.add(setupUi());
-        return backgroundTable;
-    }
-
-
-    @Override
-    public void show() {
-        Gdx.input.setInputProcessor(stage);
-    }
-
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        this.stage.act(Gdx.graphics.getDeltaTime());
-        this.stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        this.stage.getViewport().update(width, height, true);
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-
     }
 }

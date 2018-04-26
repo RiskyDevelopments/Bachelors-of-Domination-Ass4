@@ -1,14 +1,10 @@
 package sepr.game.saveandload;
 
-import com.badlogic.gdx.graphics.Color;
-import javafx.util.Pair;
-import sepr.game.GameSetupScreen;
 import sepr.game.Map;
 import sepr.game.Player;
 import sepr.game.Sector;
 import sepr.game.utils.CollegeName;
 import sepr.game.utils.PlayerType;
-import sepr.game.utils.SectorStatusEffect;
 import sepr.game.utils.TurnPhaseType;
 
 import java.util.HashMap;

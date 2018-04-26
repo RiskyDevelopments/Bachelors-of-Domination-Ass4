@@ -1,6 +1,5 @@
 package sepr.game;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import sepr.game.utils.TurnPhaseType;
 
@@ -9,9 +8,7 @@ import sepr.game.utils.TurnPhaseType;
  */
 public class PhaseAttack extends PhaseAttackMove{
 
-    private AudioManager Audio = AudioManager.getInstance();
     private int[] unitsToMove;
-
 
     public PhaseAttack(GameScreen gameScreen) {
         super(gameScreen, TurnPhaseType.ATTACK);
@@ -110,22 +107,7 @@ public class PhaseAttack extends PhaseAttackMove{
 
             if (numOfUnits[0] == 0 || !sourceSector.canAttack() || !targetSector.canBeAttacked()) {
                 // cancel attack
-                int voice = random.nextInt(3);
-
-                switch (voice){
-                    case 0:
-                        Audio.get("sound/Invalid Move/Colin_Your_request_does_not_pass_easily_through_my_mind.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                        break;
-                    case 1:
-                        Audio.get("sound/Invalid Move/Colin_You_would_find_more_success_trying_to_invert_a_singular_matrix.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                        break;
-                    case 2:
-                        Audio.get("sound/Invalid Move/Colin_Your_actions_are_questionable.wav", Sound.class).play(AudioManager.GlobalFXvolume);
-                        break;
-                    case 3:
-                        // play no sound
-                        break;
-                }
+                AudioPlayer.playInvalidMoveAudio();
             } else {
                 executeAttack();
             }
