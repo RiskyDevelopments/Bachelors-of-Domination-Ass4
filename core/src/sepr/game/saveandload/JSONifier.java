@@ -101,6 +101,9 @@ public class JSONifier {
             gameState.playerStates[k].troopsToAllocate = (int)(long)(Long)player.get("TroopsToAllocate"); // Get the troops that the Player has left to allocate
             gameState.playerStates[k].playerName = (String)player.get("PlayerName"); // Get Player's name
             gameState.playerStates[k].playerType = PlayerType.fromString((String)player.get("PlayerType")); // Get the Player's type
+            gameState.playerStates[k].collusionCards = (int)(long)(Long)player.get("CollusionCards"); // Get num of collusion cards player has
+            gameState.playerStates[k].poopyPathCards = (int)(long)(Long)player.get("PoopyPathCards"); // Get num of poopy path cards player has
+            gameState.playerStates[k].asbestosCards = (int)(long)(Long)player.get("AsbestosCards"); // Get num of asbestos cards the player has
 
             k++;
         }
@@ -179,6 +182,9 @@ public class JSONifier {
             playerState.put("CollegeName", player.collegeName.getCollegeName()); // Store Player college name
             playerState.put("TroopsToAllocate", player.troopsToAllocate); // Store the number of troops left to allocate
             playerState.put("PlayerName", player.playerName); // Store Player name
+            playerState.put("CollusionCards", player.collusionCards); // Store num of collusion cards player has
+            playerState.put("PoopyPathCards", player.poopyPathCards); // Store num of poopy path cards player has
+            playerState.put("AsbestosCards", player.asbestosCards); // Store num of asbestos cards player has
 
             playerState.put("PlayerType", player.playerType.toString()); // Store the Player's type
 

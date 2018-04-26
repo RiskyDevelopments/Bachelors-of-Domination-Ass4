@@ -40,13 +40,10 @@ public class Main extends Game implements ApplicationListener {
 		this.miniGameScreen = new MiniGameScreen( this, gameScreen);
 		this.saveLoadManager = new SaveLoadManager(this, gameScreen);
 
+		AudioPlayer.playMenuMusic();
 		applyPreferences();
 
 		this.setMenuScreen();
-	}
-
-	public GameScreen getGameScreen() {
-		return gameScreen;
 	}
 
 	/**

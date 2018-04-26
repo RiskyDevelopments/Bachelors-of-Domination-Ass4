@@ -105,7 +105,7 @@ public class GameScreen extends UiScreen implements InputProcessor{
         this.currentPlayerPointer = 0; // set the current player to the player in the first position of the turnOrder list
 
         this.turnTimerEnabled = turnTimerEnabled;
-        this.map = new Map(this.players, allocateNeutralPlayer, this); // setup the game map and allocate the sectors
+        this.map = new Map(this.players, allocateNeutralPlayer); // setup the game map and allocate the sectors
 
         setUpPhases();
 
@@ -116,6 +116,7 @@ public class GameScreen extends UiScreen implements InputProcessor{
      * Instantiates the phases hashmap and puts an instance of each phase type, mapping to the respective phase object, in the map
      */
     private void setUpPhases() {
+        this.currentPhase = TurnPhaseType.REINFORCEMENT;
         this.phases = new HashMap<TurnPhaseType, Phase>();
         this.phases.put(TurnPhaseType.REINFORCEMENT, new PhaseReinforce(this));
         this.phases.put(TurnPhaseType.ATTACK, new PhaseAttack(this));
@@ -318,17 +319,12 @@ public class GameScreen extends UiScreen implements InputProcessor{
         }
     }
 
-    /**
-     * @return true or false depending if the random float value is less than the spawn chance
-     */
-    public boolean PVCSpawn() {
+    public void PVCSpawn() {
         Random rand = new Random();
         Float randomValue = rand.nextFloat();
         if (randomValue <= PVC_SPAWN_CHANCE) {
-
-            return true;
+            openMiniGame();
         }
-        return false;
     }
 
     /**
@@ -355,7 +351,7 @@ public class GameScreen extends UiScreen implements InputProcessor{
     /**
      * changes the screen currently being displayed to the miniGame
      */
-    public void openMiniGame() {
+    private void openMiniGame() {
         main.setMiniGameScreen();
     }
 
@@ -401,6 +397,7 @@ public class GameScreen extends UiScreen implements InputProcessor{
         if (!gameSetup) throw new RuntimeException("Game must be setup before attempting to play it"); // throw exception if attempt to run game before its setup
 
         if (turnTimerEnabled && !paused) turnTimeElapsed += delta; // update turn time elapsed
+        if (map.checkIfSuccessfulAttackOccurred()) PVCSpawn(); // check if the current player has made a successful attack, if so chance for PVC to spawn
 
         gameplayCamera.update();
         gameplayBatch.setProjectionMatrix(gameplayCamera.combined);

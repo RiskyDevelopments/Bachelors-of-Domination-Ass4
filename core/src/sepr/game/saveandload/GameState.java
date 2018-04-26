@@ -67,6 +67,7 @@ public class GameState {
         public boolean decor; // Is this sector for visual purposes only, i.e. lakes are decor
         public String fileName; // The filename of the sector
         public boolean allocated; // Becomes true once the sector has been allocated
+        public int collusionCount;
         public int asbestosCount;
         public int poopCount;
     }

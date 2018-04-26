@@ -22,7 +22,7 @@
 21,vanbrugh3.png,Vanbrugh West,21,10,Vanbrugh,FALSE,20 23,400,206,FALSE
 22,vanbrugh4.png,Vanbrugh South,22,10,Vanbrugh,FALSE,19 24 25,539,448,FALSE
 23,wentworth1.png,Wentworth North,23,10,Wentworth,FALSE,20 21 24,357,373,FALSE
-24,wentworth2.png,Wentworth South,24,10,Wentworth,FALSE,22 23 26,323,634,FALSE
+24,wentworth2.png,Wentworth South,24,10,Wentworth,FALSE,22 23 26 27,323,634,FALSE
 25,james3.png,James North,25,10,James,FALSE,22 26 31,547,529,FALSE
 26,james2.png,James Centre,26,10,James,FALSE,24 25 31 27,501,650,FALSE
 27,james1.png,Sports Centre,27,10,James,FALSE,26 28 29 31 24,559,794,FALSE
