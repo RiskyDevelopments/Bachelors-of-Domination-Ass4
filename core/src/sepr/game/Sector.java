@@ -313,6 +313,7 @@ public class Sector implements ApplicationListener {
         }
 
         Pixmap newPix = new Pixmap(Gdx.files.internal(this.getFileName())); // pixmap for drawing updated sector texture to
+        newPix.setBlending(Pixmap.Blending.None);
         for (int x = 0; x < this.getSectorPixmap().getWidth(); x++){
             for (int y = 0; y < this.getSectorPixmap().getHeight(); y++){
                 if(newPix.getPixel(x, y) != -256){

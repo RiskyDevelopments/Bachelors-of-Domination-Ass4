@@ -1,6 +1,8 @@
 package sepr.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -12,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import sepr.game.utils.CollegeName;
@@ -135,6 +138,8 @@ public abstract class Phase extends Stage {
         style.font = WidgetFactory.getFontSmall();
 
         playerNameStyle.font = WidgetFactory.getFontSmall();
+        playerNameStyle.background = new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/Name-Box.png")));
+
 
         playerNameLabel = new Label("", playerNameStyle);
         reinforcementLabel = new Label("", style);
@@ -147,7 +152,7 @@ public abstract class Phase extends Stage {
         Table subTable = new Table();
         subTable.setDebug(false);
         subTable.left().add(collegeLogo).height(80).width(100).pad(0);
-        subTable.right().add(playerNameLabel).pad(0);
+        subTable.right().add(playerNameLabel).pad(0).height(40).expandX();
         subTable.row();
         subTable.add(reinforcementLabel).colspan(2);
         subTable.row();
