@@ -22,14 +22,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class MiniGameScreen extends View {
+public class MiniGameScreen extends UiScreen {
 
     private static final int ROWS = 2;
     private static final int COLS = 4;
     private static final float DELAY_TIME = 3; // time in seconds before cards are hidden
 
-    private Main main;
-    private Stage stage;
     private GameScreen gameScreen;
     private Player player; // player to allocate gang members to at the end of the minigame
 
@@ -42,22 +40,18 @@ public class MiniGameScreen extends View {
 
     public MiniGameScreen(final Main main, final GameScreen gameScreen) {
         super(main);
+        this.stage.addListener(new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.ESCAPE){
+                    endGame(true);
+                    return true;
+                }
+                return false;
+            }
+        });
 
         this.gameScreen = gameScreen;
-        this.stage = new Stage(){
-            @Override
-            public boolean keyUp(int keyCode) {
-                if (super.keyUp(keyCode)) return true;
-                if (keyCode == Input.Keys.ESCAPE) endGame(true);
-                return true;
-            }
-        };
-        this.stage.setViewport(new ScreenViewport());
-
-        Table backgroundTable = setupBackground();
-        backgroundTable.setFillParent(true); // make ui table fill the entire screen
-        this.stage.addActor(backgroundTable);
-        backgroundTable.setDebug(false); // enable table drawing for ui debug
     }
 
     /**
@@ -77,7 +71,6 @@ public class MiniGameScreen extends View {
             }
 
         }, DELAY_TIME);
-
     }
 
     /**

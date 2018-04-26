@@ -74,7 +74,7 @@ public class PhaseReinforce extends Phase {
                     int voice = random.nextInt(2);
 
                     if (voice == 0) {
-                        AudioPlayer.playInsufficientGangMembersAudio();
+                        AudioPlayer.playAllocationErrorAudio();
                     } else {
                         invalidMove();
                     }

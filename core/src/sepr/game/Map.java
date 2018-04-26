@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import sepr.game.utils.PunishmentCardType;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -115,7 +116,7 @@ public class Map {
         int sectorY = Integer.parseInt(sectorData[9]);
         boolean decor = Boolean.parseBoolean(sectorData[10]);
 
-        return new Sector(sectorId, ownerId, filename, sectorTexture, texturePath, sectorPixmap, displayName, unitsInSector, postgradsInSector, reinforcementsProvided, college, neutral, adjacentSectors, sectorX, sectorY, decor, 0, 0, this);
+        return new Sector(sectorId, ownerId, filename, texturePath, sectorPixmap, displayName, unitsInSector, postgradsInSector, reinforcementsProvided, college, neutral, adjacentSectors, sectorX, sectorY, decor, 0, 0);
     }
 
     /**
@@ -209,10 +210,10 @@ public class Map {
     public void addUnitsToSectorAnimated(int sectorId, int undergrad, int postgrad) {
         this.sectors.get(sectorId).addUnits(undergrad, postgrad, neutralPlayer);
         if (undergrad != 0){
-            this.particles.add(new UnitChangeParticle(undergrad, new Vector2(sectors.get(sectorId).getSectorCentreX(), sectors.get(sectorId).getSectorCentreY())));
+            this.particles.add(new UnitChangeParticle(undergrad, new Vector2(sectors.get(sectorId).getSectorCentreX() - 45, sectors.get(sectorId).getSectorCentreY())));
         }
         if (postgrad != 0){
-            this.particles.add(new UnitChangeParticle(postgrad, new Vector2(sectors.get(sectorId).getSectorCentreX() + 40, sectors.get(sectorId).getSectorCentreY())));
+            this.particles.add(new UnitChangeParticle(postgrad, new Vector2(sectors.get(sectorId).getSectorCentreX() + 5, sectors.get(sectorId).getSectorCentreY())));
         }
     }
 
@@ -292,12 +293,11 @@ public class Map {
      * Executes an attack
      *
      * @param attacker Player attacking
-     * @param neutral Neutral player
      * @param source Source sector
      * @param target Target sector
      * @param attackers Number of troops attacking
      */
-    public void completeAttack(Player attacker, Player neutral, Sector source, Sector target, int attackers) {
+    public void completeAttack(Player attacker, Sector source, Sector target, int attackers) {
         int attackersRemaining = attackers;
         int underGrads = target.getUnderGradsInSector();
         int postGrads = target.getPostGradsInSector();
@@ -370,9 +370,27 @@ public class Map {
         return sectors;
     }
 
+    public void addSectorPunishmentEffect(int sectorId, PunishmentCardType punishmentCardType) {
+        Sector sector = this.getSectorById(sectorId);
+        switch (punishmentCardType) {
+            case COLLUSION_CARD:
+                this.addUnitsToSectorAnimated(sectorId, sector.getPostGradsInSector(), -sector.getPostGradsInSector());
+                break;
+            case POOPY_PATH_CARD:
+            case ASBESTOS_CARD:
+                sector.incrementStatusEffect(punishmentCardType);
+                break;
+        }
+    }
+
     public void updateSectorStatusEffects(int currentPlayerId) {
         for (Sector sector : sectors.values()) {
-            sector.updateStatusEffects(currentPlayerId);
+            if (sector.getOwnerId() != currentPlayerId) return;
+
+            if (sector.getPoopCount() > 0) {
+                addUnitsToSectorAnimated(sector.getId(), -(int)Math.ceil(sector.getUnderGradsInSector() * 0.1), 0);
+            }
+            sector.decrementStatusEffects();
         }
     }
 }
