@@ -463,8 +463,36 @@ public class GameScreen extends UiScreen implements InputProcessor{
         resetCameraPosition();
     }
 
-    /* Input Processor implementation */
+    public TurnPhaseType getCurrentPhaseType(){
+        return this.currentPhase;
+    }
 
+    public Phase getCurrentPhase() {
+        return phases.get(getCurrentPhaseType());
+    }
+
+    public HashMap<Integer, Player> getPlayers() {
+        return players;
+    }
+
+    public boolean isTurnTimerEnabled(){
+        return this.turnTimerEnabled;
+    }
+
+    public List<Integer> getTurnOrder(){
+        return this.turnOrder;
+    }
+
+    public int getCurrentPlayerPointer(){
+        return this.currentPlayerPointer;
+    }
+
+    public Main getMain(){
+        return this.main;
+    }
+
+
+    /* Input Processor implementation */
     @Override
     public boolean keyDown(int keycode) { return false; }
 
@@ -512,32 +540,4 @@ public class GameScreen extends UiScreen implements InputProcessor{
 
     @Override
     public boolean scrolled(int amount) { return false; }
-
-    public TurnPhaseType getCurrentPhaseType(){
-        return this.currentPhase;
-    }
-
-    public Phase getCurrentPhase() {
-        return phases.get(getCurrentPhaseType());
-    }
-
-    public HashMap<Integer, Player> getPlayers() {
-        return players;
-    }
-
-    public boolean isTurnTimerEnabled(){
-        return this.turnTimerEnabled;
-    }
-
-    public List<Integer> getTurnOrder(){
-        return this.turnOrder;
-    }
-
-    public int getCurrentPlayerPointer(){
-        return this.currentPlayerPointer;
-    }
-
-    public Main getMain(){
-        return this.main;
-    }
 }

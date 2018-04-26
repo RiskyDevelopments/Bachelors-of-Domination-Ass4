@@ -6,11 +6,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import javafx.util.Pair;
 import sepr.game.utils.CollegeName;
 import sepr.game.utils.PlayerType;
@@ -40,8 +38,6 @@ public class GameSetupScreen extends UiScreen {
     private Pair<Label, Image>[] playerColleges; // array of pairs of college name and college logo, index n -> player n's college
     private CheckBox neutralPlayerSwitch; // switch for enabling the neutral player
     private CheckBox turnTimerSwitch; // switch for enabling the turn timer
-
-    private Texture collegeTableBackground;
 
     /**
      *
@@ -269,8 +265,7 @@ public class GameSetupScreen extends UiScreen {
             logoTable.add(rightButton).height(60).width(35);
 
             Table temp = new Table();
-            this.collegeTableBackground = new Texture("uiComponents/Game-Setup-Name-Box.png");
-            temp.background(new TextureRegionDrawable(new TextureRegion(collegeTableBackground)));
+            temp.background(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/Game-Setup-Name-Box.png"))));
             temp.setDebug(false);
             temp.add(textTable).expand().left().padLeft(20);
             temp.add(logoTable).padRight(60);
@@ -318,7 +313,7 @@ public class GameSetupScreen extends UiScreen {
      * @throws GameSetupException if name conditions are not met
      */
     private void validatePlayerNames() throws GameSetupException{
-        Set<String> appeared = new HashSet();
+        Set<String> appeared = new HashSet<String>();
         for (int i = 0; i < playerNames.length; i++) {
             if (PlayerType.fromString(playerTypes[i].getText().toString()) == PlayerType.NONE) {
                 continue;

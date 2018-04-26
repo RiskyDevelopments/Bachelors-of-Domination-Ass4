@@ -2,7 +2,6 @@ package sepr.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import sepr.game.utils.PunishmentCardType;
@@ -77,8 +76,7 @@ public class Map {
         this.sectors = new HashMap<Integer, Sector>();
 
         String csvFile = "mapData/sectorProperties.csv";
-        String line = "";
-        Integer ID = 0;
+        String line;
         try {
             BufferedReader br = new BufferedReader(new FileReader(csvFile));
             while ((line = br.readLine()) != null) {
@@ -103,7 +101,6 @@ public class Map {
         int ownerId = -1;
         String filename = "mapData/" + sectorData[1];
         String texturePath = "mapData/" + sectorData[1];
-        Texture sectorTexture = new Texture(texturePath);
         Pixmap sectorPixmap = new Pixmap(Gdx.files.internal("mapData/" + sectorData[1]));
         String displayName = sectorData[2];
         int unitsInSector = 10 + random.nextInt(15);
@@ -275,7 +272,6 @@ public class Map {
      * @throws IllegalArgumentException if the sectors are not connected
      */
     public void moveUnits(int sourceSectorId, int targetSecotId, int amount) throws IllegalArgumentException {
-        System.out.println(sourceSectorId + "  " + targetSecotId + "  " + amount);
         if (sectors.get(sourceSectorId).getOwnerId() != sectors.get(targetSecotId).getOwnerId()) {
             throw new IllegalArgumentException("Source and target sectors must have the same owners");
         }

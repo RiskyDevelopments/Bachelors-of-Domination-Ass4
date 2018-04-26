@@ -55,15 +55,10 @@ public class Main extends Game implements ApplicationListener {
 	 * starts the game
 	 */
 	public void setMiniGameScreen() {
-		System.out.println("Setting MG1");
 		miniGameScreen = new MiniGameScreen(this, gameScreen);
-		System.out.println("Setting MG2");
 		miniGameScreen.setupGame(gameScreen.getPlayerById(gameScreen.getCurrentPlayerPointer()));
-		System.out.println("Setting MG3");
 		this.setScreen(miniGameScreen);
-		System.out.println("Setting MG4");
 		miniGameScreen.startGame();
-		System.out.println("Setting MG4");
 	}
 
 	/**
