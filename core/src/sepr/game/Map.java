@@ -21,7 +21,15 @@ public class Map {
 
     private Random random;
     private Player neutralPlayer;
-    private GameScreen gameScreen;
+
+    private boolean successfulAttackOccurred = false;
+
+    private Map(HashMap<Integer, Player> players) {
+        random = new Random();
+
+        this.neutralPlayer = players.get(GameScreen.NEUTRAL_PLAYER_ID);
+        particles = new ArrayList<UnitChangeParticle>();
+    }
 
     /**
      * Performs the maps initial setup
@@ -31,24 +39,21 @@ public class Map {
      * @param players               hashmap of players who are in the game
      * @param allocateNeutralPlayer if true then the neutral player should be allocated the default neutral sectors else they should be allocated no sectors
      */
-    public Map(HashMap<Integer, Player> players, boolean allocateNeutralPlayer, GameScreen gameScreen) {
-        random = new Random();
+    public Map(HashMap<Integer, Player> players, boolean allocateNeutralPlayer) {
+        this(players);
 
         this.loadSectors();
-
-        particles = new ArrayList<UnitChangeParticle>();
         this.allocateSectors(players, allocateNeutralPlayer);
-        this.neutralPlayer = players.get(GameScreen.NEUTRAL_PLAYER_ID);
-        this.gameScreen = gameScreen;
     }
 
-    public Map(HashMap<Integer, Player> players, boolean allocateNeutralPlayer, HashMap<Integer, Sector> sectors, GameScreen gameScreen) {
-        this(players, allocateNeutralPlayer, gameScreen);
+    /**
+     *
+     * @param players mapping of player ids to the respective players, playing the game on this map
+     * @param sectors
+     */
+    public Map(HashMap<Integer, Player> players, HashMap<Integer, Sector> sectors) {
+        this(players);
         this.sectors = sectors;
-    }
-
-    public void setGameScreen(GameScreen gameScreen) {
-        this.gameScreen = gameScreen;
     }
 
     /**
@@ -57,7 +62,7 @@ public class Map {
      * @param stringData space separated integers e.g. '1 2 3 4 5'
      * @return the integers in the data in an array
      */
-    private int[] strToIntArray(String stringData) {
+    private static int[] strToIntArray(String stringData) {
         String[] strArray = stringData.split(" ");
         int[] intArray = new int[strArray.length];
         for (int i = 0; i < intArray.length; i++) {
@@ -103,7 +108,7 @@ public class Map {
         String texturePath = "mapData/" + sectorData[1];
         Pixmap sectorPixmap = new Pixmap(Gdx.files.internal("mapData/" + sectorData[1]));
         String displayName = sectorData[2];
-        int unitsInSector = 10 + random.nextInt(15);
+        int unitsInSector = 8 + random.nextInt(8);
         int postgradsInSector = 0;
         int reinforcementsProvided = Integer.parseInt(sectorData[4]);
         String college = sectorData[5];
@@ -115,20 +120,6 @@ public class Map {
 
         return new Sector(sectorId, ownerId, filename, texturePath, sectorPixmap, displayName, unitsInSector, postgradsInSector, reinforcementsProvided, college, neutral, adjacentSectors, sectorX, sectorY, decor, 0, 0);
     }
-
-    /**
-     * allocates the default neutral sectors to the neutral player
-     *
-     * @param players hashmap of players containing the Neutral Player at key value GameScreen.NEUTRAL_PLAYER_ID
-     */
-    private void allocateNeutralSectors(HashMap<Integer, Player> players) {
-        for (Sector sector : sectors.values()) {
-            if (sector.isNeutral() && !sector.isDecor()) {
-                sector.setOwner(players.get(GameScreen.NEUTRAL_PLAYER_ID));
-            }
-        }
-    }
-
 
     /**
      * allocates sectors in the map to the players in a semi-random fashion
@@ -179,38 +170,15 @@ public class Map {
     }
 
     /**
-     * processes a movement from one sector to another
-     * sets up drawing particle effects showing changes in amount of units in a sector
-     * sets up movement of units after conquering a sector
+     * allocates the default neutral sectors to the neutral player
      *
-     * @param attackingSectorId id of the sector the troops are moving from
-     * @param defendingSectorId id of the sector receiving troops
-     * @param attackersLost     amount of units lost on the sector sending sector
-     * @param defendersLost     amount of units gained on the sector receiving troops
-     * @return true if movement successful else false
-     **/
-    public Boolean moveTroops(int attackingSectorId, int defendingSectorId, int attackersLost, int defendersLost) {
-
-        addUnitsToSectorAnimated(attackingSectorId, -attackersLost, 0); // apply amount of attacking units lost
-        addUnitsToSectorAnimated(defendingSectorId, defendersLost, 0); // apply amount of defending units lost
-        return true;
-    }
-
-
-    /**
-     * adds the specified number of units to this sector and sets up drawing a particle effect showing the addition
-     *
-     * @param sectorId id of sector to add the units to
-     * @param undergrad  number of undergrads to add
-     * @param postgrad number of postgrads to add
+     * @param players hashmap of players containing the Neutral Player at key value GameScreen.NEUTRAL_PLAYER_ID
      */
-    public void addUnitsToSectorAnimated(int sectorId, int undergrad, int postgrad) {
-        this.sectors.get(sectorId).addUnits(undergrad, postgrad, neutralPlayer);
-        if (undergrad != 0){
-            this.particles.add(new UnitChangeParticle(undergrad, new Vector2(sectors.get(sectorId).getSectorCentreX() - 45, sectors.get(sectorId).getSectorCentreY())));
-        }
-        if (postgrad != 0){
-            this.particles.add(new UnitChangeParticle(postgrad, new Vector2(sectors.get(sectorId).getSectorCentreX() + 5, sectors.get(sectorId).getSectorCentreY())));
+    private void allocateNeutralSectors(HashMap<Integer, Player> players) {
+        for (Sector sector : sectors.values()) {
+            if (sector.isNeutral() && !sector.isDecor()) {
+                sector.setOwner(players.get(GameScreen.NEUTRAL_PLAYER_ID));
+            }
         }
     }
 
@@ -236,6 +204,10 @@ public class Map {
         return sectors.keySet();
     }
 
+    public HashMap<Integer, Sector> getSectors() {
+        return sectors;
+    }
+
     /**
      * returns the id of the sector that contains the specified point
      * ignores decor sectors
@@ -258,31 +230,6 @@ public class Map {
             }
         }
         return -1;
-    }
-
-    /**
-     * carries out the unit movement specified by unitsToMove array
-     * - unitsToMove[0] : number of units to move
-     * - unitsToMove[1] : source sector id
-     * - unitsToMove[2] : target sector id
-     * changes in units on sectors are shown on scren using the UnitChangeParticle
-     *
-     * @throws IllegalArgumentException if the sector are not both owned by the same player
-     * @throws IllegalArgumentException if the amount exceeds the (number of units - 1) on the source sector
-     * @throws IllegalArgumentException if the sectors are not connected
-     */
-    public void moveUnits(int sourceSectorId, int targetSecotId, int amount) throws IllegalArgumentException {
-        if (sectors.get(sourceSectorId).getOwnerId() != sectors.get(targetSecotId).getOwnerId()) {
-            throw new IllegalArgumentException("Source and target sectors must have the same owners");
-        }
-        if (sectors.get(sourceSectorId).getUnderGradsInSector() <= amount) {
-            throw new IllegalArgumentException("Must leave at least one unit on source sector and can't move more units than are on source sector");
-        }
-        if (!sectors.get(sourceSectorId).isAdjacentTo(sectors.get(targetSecotId))) {
-            throw new IllegalArgumentException("Sectors must be adjacent in order to move units");
-        }
-        addUnitsToSectorAnimated(sourceSectorId, -amount, 0); // remove units from source
-        addUnitsToSectorAnimated(targetSecotId, amount, 0); // add units to target
     }
 
     /**
@@ -333,7 +280,81 @@ public class Map {
             target.setOwner(neutralPlayer);
         } else if (target.getUnderGradsInSector() == 0 && target.getPostGradsInSector() == 0) {
             target.setOwner(attacker);
-            if (gameScreen.PVCSpawn()) gameScreen.openMiniGame();
+            successfulAttackOccurred = true;
+        }
+    }
+
+    public boolean checkIfSuccessfulAttackOccurred() {
+        if (successfulAttackOccurred) {
+            successfulAttackOccurred = false;
+            return true;
+        }
+        return false;
+    }
+
+    public void addSectorPunishmentEffect(int sectorId, PunishmentCardType punishmentCardType) {
+        Sector sector = this.getSectorById(sectorId);
+        switch (punishmentCardType) {
+            case COLLUSION_CARD:
+                this.addUnitsToSectorAnimated(sectorId, sector.getPostGradsInSector(), -sector.getPostGradsInSector());
+                break;
+            case POOPY_PATH_CARD:
+            case ASBESTOS_CARD:
+                sector.incrementStatusEffect(punishmentCardType);
+                break;
+        }
+    }
+
+    public void updateSectorStatusEffects(int currentPlayerId) {
+        for (Sector sector : sectors.values()) {
+            if (sector.getOwnerId() != currentPlayerId) return;
+
+            if (sector.getPoopCount() > 0) {
+                addUnitsToSectorAnimated(sector.getId(), -(int)Math.ceil(sector.getUnderGradsInSector() * 0.1), 0);
+            }
+            sector.decrementStatusEffects();
+        }
+    }
+
+    /**
+     * carries out the unit movement specified by unitsToMove array
+     * - unitsToMove[0] : number of units to move
+     * - unitsToMove[1] : source sector id
+     * - unitsToMove[2] : target sector id
+     * changes in units on sectors are shown on scren using the UnitChangeParticle
+     *
+     * @throws IllegalArgumentException if the sector are not both owned by the same player
+     * @throws IllegalArgumentException if the amount exceeds the (number of units - 1) on the source sector
+     * @throws IllegalArgumentException if the sectors are not connected
+     */
+    public void moveUnits(int sourceSectorId, int targetSecotId, int amount) throws IllegalArgumentException {
+        if (sectors.get(sourceSectorId).getOwnerId() != sectors.get(targetSecotId).getOwnerId()) {
+            throw new IllegalArgumentException("Source and target sectors must have the same owners");
+        }
+        if (sectors.get(sourceSectorId).getUnderGradsInSector() <= amount) {
+            throw new IllegalArgumentException("Must leave at least one unit on source sector and can't move more units than are on source sector");
+        }
+        if (!sectors.get(sourceSectorId).isAdjacentTo(sectors.get(targetSecotId))) {
+            throw new IllegalArgumentException("Sectors must be adjacent in order to move units");
+        }
+        addUnitsToSectorAnimated(sourceSectorId, -amount, 0); // remove units from source
+        addUnitsToSectorAnimated(targetSecotId, amount, 0); // add units to target
+    }
+
+    /**
+     * adds the specified number of units to this sector and sets up drawing a particle effect showing the addition
+     *
+     * @param sectorId id of sector to add the units to
+     * @param undergrad  number of undergrads to add
+     * @param postgrad number of postgrads to add
+     */
+    public void addUnitsToSectorAnimated(int sectorId, int undergrad, int postgrad) {
+        this.sectors.get(sectorId).addUnits(undergrad, postgrad, neutralPlayer);
+        if (undergrad != 0){
+            this.particles.add(new UnitChangeParticle(undergrad, new Vector2(sectors.get(sectorId).getSectorCentreX() - 45, sectors.get(sectorId).getSectorCentreY())));
+        }
+        if (postgrad != 0){
+            this.particles.add(new UnitChangeParticle(postgrad, new Vector2(sectors.get(sectorId).getSectorCentreX() + 5, sectors.get(sectorId).getSectorCentreY())));
         }
     }
 
@@ -360,33 +381,5 @@ public class Map {
             }
         }
         particles.removeAll(toDelete);
-    }
-
-    public HashMap<Integer, Sector> getSectors() {
-        return sectors;
-    }
-
-    public void addSectorPunishmentEffect(int sectorId, PunishmentCardType punishmentCardType) {
-        Sector sector = this.getSectorById(sectorId);
-        switch (punishmentCardType) {
-            case COLLUSION_CARD:
-                this.addUnitsToSectorAnimated(sectorId, sector.getPostGradsInSector(), -sector.getPostGradsInSector());
-                break;
-            case POOPY_PATH_CARD:
-            case ASBESTOS_CARD:
-                sector.incrementStatusEffect(punishmentCardType);
-                break;
-        }
-    }
-
-    public void updateSectorStatusEffects(int currentPlayerId) {
-        for (Sector sector : sectors.values()) {
-            if (sector.getOwnerId() != currentPlayerId) return;
-
-            if (sector.getPoopCount() > 0) {
-                addUnitsToSectorAnimated(sector.getId(), -(int)Math.ceil(sector.getUnderGradsInSector() * 0.1), 0);
-            }
-            sector.decrementStatusEffects();
-        }
     }
 }

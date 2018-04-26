@@ -140,7 +140,6 @@ public abstract class Phase extends Stage {
         playerNameStyle.font = WidgetFactory.getFontSmall();
         playerNameStyle.background = new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/Name-Box.png")));
 
-
         playerNameLabel = new Label("", playerNameStyle);
         reinforcementLabel = new Label("", style);
         turnTimerLabel = new Label("Timer: DISABLED", style);
@@ -184,10 +183,11 @@ public abstract class Phase extends Stage {
     void enterPhase(Player player) {
         this.currentPlayer = player;
 
+        Color fontColor = new Color(currentPlayer.getCollegeName().getCollegeColor());
+        fontColor.a = 1;
+        playerNameStyle.fontColor =  fontColor; // update colour of player name
 
-        playerNameStyle.fontColor = currentPlayer.getCollegeName().getCollegeColor(); // update colour of player name
-
-        playerNameLabel.setText(new StringBuilder((CharSequence) currentPlayer.getPlayerName())); // change the bottom bar label to the players name
+        playerNameLabel.setText(" " + new StringBuilder((CharSequence) currentPlayer.getPlayerName()) + " "); // change the bottom bar label to the players name
         collegeLogo.setDrawable(WidgetFactory.genCollegeLogoDrawable(player.getCollegeName()));
         updateTroopReinforcementLabel();
     }

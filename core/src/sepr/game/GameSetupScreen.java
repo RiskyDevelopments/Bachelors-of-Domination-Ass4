@@ -55,7 +55,6 @@ public class GameSetupScreen extends UiScreen {
                 return false;
             }
         });
-        this.Audio.loadMusic("sound/IntroMusic/Tron style music - Original track.mp3"); //load the introMusic
     }
 
     /**
@@ -323,7 +322,7 @@ public class GameSetupScreen extends UiScreen {
             Matcher m = p.matcher(playerNames[i].getText());
             boolean containsInvalidChars = m.find(); // set to true if name contains none alphanumeric characters
 
-            if (playerNames[i].getText().length() < 3){ // is player name more than three
+            if (playerNames[i].getText().length() < 3 || playerNames[i].getText().length() > 11){ // is player name more than three
                 throw new GameSetupException(GameSetupException.GameSetupExceptionType.INVALID_PLAYER_NAME);
             }
             else if (containsInvalidChars){

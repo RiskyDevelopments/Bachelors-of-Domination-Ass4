@@ -25,8 +25,6 @@ public class SaveLoadManager {
     private static int numberOfSaves = 0; // Current number of saves
     private static GameState loadedState; // The state that has just been loaded
 
-    private static Boolean loadedSave = false; // Whether a save has been loaded
-
     public SaveLoadManager(){ }
 
     /**
@@ -37,8 +35,6 @@ public class SaveLoadManager {
     public SaveLoadManager(final Main main, GameScreen gameScreen) {
         this.main = main;
         this.gameScreen = gameScreen;
-
-        loadedSave = false;
 
         String home = System.getProperty("user.home"); // Get the user's home directory
 
@@ -75,7 +71,6 @@ public class SaveLoadManager {
      * Load GameState JSON from file
      */
     public void LoadFromFile(){
-
         JSONParser parser = new JSONParser(); // Create JSON parser
 
         try {
@@ -112,9 +107,8 @@ public class SaveLoadManager {
      * @param sectors
      * @return A Map object
      */
-    public Map MapFromMapState(HashMap<Integer, Player> players, HashMap<Integer, Sector> sectors, GameScreen gameScreen){
-        Map map = new Map(players, false, sectors, gameScreen);
-
+    private Map MapFromMapState(HashMap<Integer, Player> players, HashMap<Integer, Sector> sectors){
+        Map map = new Map(players, sectors);
         return map;
     }
 
@@ -175,10 +169,9 @@ public class SaveLoadManager {
         HashMap<Integer, Player> players = PlayersFromPlayerState(loadedState.playerStates);
         HashMap<Integer, Sector> sectors = SectorsFromSectorState(loadedState.mapState.sectorStates, players, false);
 
-        Map loadedMap = MapFromMapState(players, sectors, gameScreen);
+        Map loadedMap = MapFromMapState(players, sectors);
 
         this.gameScreen = new GameScreen(this.main, loadedState.currentPhase, loadedMap, players, loadedState.turnTimerEnabled, loadedState.turnTimeElapsed, loadedState.turnOrder, loadedState.currentPlayerPointer);
-        loadedMap.setGameScreen(gameScreen);
 
         this.main.setGameScreenFromLoad(this.gameScreen);
     }
@@ -265,6 +258,9 @@ public class SaveLoadManager {
             playerState.playerName = value.getPlayerName(); // Store the Player's name
             playerState.troopsToAllocate = value.getTroopsToAllocate(); // Store the number of troops left to allocate
             playerState.playerType = value.getPlayerType(); // Store the Player's type
+            playerState.collusionCards = value.getCollusionCards(); // Store num of collusion cards player has
+            playerState.poopyPathCards = value.getPoopyPathCards(); // Store num of poopy path cards the player has
+            playerState.asbestosCards = value.getAsbestosCards(); // Store num of asbestos cards the player has
 
             gameState.playerStates[i] = playerState;
             i++;

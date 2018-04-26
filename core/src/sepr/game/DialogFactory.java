@@ -375,7 +375,7 @@ public class DialogFactory {
             }
         });
 
-        Dialog dialog = new Dialog("Select number of troops to move", DialogFactory.skin) {
+        Dialog dialog = new Dialog("Select number of troops to move                  ", DialogFactory.skin) {
             protected void result(Object object) {
                 if (object.equals("0")) { // cancel pressed
                     attackers[0] = 0; // set number of attacker to 0, i.e. no attack
