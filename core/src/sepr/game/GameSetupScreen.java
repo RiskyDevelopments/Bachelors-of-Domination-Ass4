@@ -4,11 +4,11 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import javafx.util.Pair;
 import sepr.game.utils.CollegeName;
 import sepr.game.utils.PlayerType;
@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  *  - Neutral player enabled
  *  - Turn timer enabled
  */
-public class GameSetupScreen extends View{
+public class GameSetupScreen extends UiScreen {
 
     private AudioManager Audio = AudioManager.getInstance();
     private final int MAX_NUMBER_OF_PLAYERS = 4; // maximum number of players that cna be in a game
@@ -39,34 +39,22 @@ public class GameSetupScreen extends View{
     private CheckBox neutralPlayerSwitch; // switch for enabling the neutral player
     private CheckBox turnTimerSwitch; // switch for enabling the turn timer
 
-    private Texture collegeTableBackground;
-
     /**
      *
      * @param main for changing to different screens
      */
     public GameSetupScreen (final Main main) {
         super(main);
-
-        this.stage = new Stage(){
+        this.stage.addListener(new InputListener() {
             @Override
-            public boolean keyUp(int keyCode) {
-                if (keyCode == Input.Keys.ESCAPE) { // change back to the menu screen if the player presses esc
+            public boolean keyUp(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.ESCAPE) { // change back to the menu screen if the player presses esc
                     main.setMenuScreen();
+                    return true;
                 }
-                return super.keyUp(keyCode);
+                return false;
             }
-        };
-        this.collegeTableBackground = new Texture("uiComponents/Game-Setup-Name-Box.png");
-
-        this.stage.setViewport(new ScreenViewport());
-
-        this.backgroundTable = setupBackground();
-        this.backgroundTable.setFillParent(true); // make ui table fill the entire screen
-        this.stage.addActor(backgroundTable);
-        this.backgroundTable.setDebug(false); // enable table drawing for ui debug
-
-
+        });
         this.Audio.loadMusic("sound/IntroMusic/Tron style music - Original track.mp3"); //load the introMusic
     }
 
@@ -277,7 +265,7 @@ public class GameSetupScreen extends View{
             logoTable.add(rightButton).height(60).width(35);
 
             Table temp = new Table();
-            temp.background(new TextureRegionDrawable(new TextureRegion(collegeTableBackground)));
+            temp.background(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/Game-Setup-Name-Box.png"))));
             temp.setDebug(false);
             temp.add(textTable).expand().left().padLeft(20);
             temp.add(logoTable).padRight(60);
@@ -325,7 +313,7 @@ public class GameSetupScreen extends View{
      * @throws GameSetupException if name conditions are not met
      */
     private void validatePlayerNames() throws GameSetupException{
-        Set<String> appeared = new HashSet();
+        Set<String> appeared = new HashSet<String>();
         for (int i = 0; i < playerNames.length; i++) {
             if (PlayerType.fromString(playerTypes[i].getText().toString()) == PlayerType.NONE) {
                 continue;

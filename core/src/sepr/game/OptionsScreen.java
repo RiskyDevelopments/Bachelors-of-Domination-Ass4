@@ -2,17 +2,16 @@ package sepr.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -25,7 +24,7 @@ import java.util.Set;
  *      Resolution Selector
  *      Fullscreen On/Off
  */
-public class OptionsScreen extends View {
+public class OptionsScreen extends UiScreen {
     // names for accessing different preferences in the preferences file
     public static final String PREFERENCES_NAME = "Options";
     public static final String MUSIC_VOL_PREF = "musicVol";
@@ -48,22 +47,12 @@ public class OptionsScreen extends View {
     public OptionsScreen(final Main main) {
         super(main);
 
-        this.stage = new Stage(){
+        this.stage.addListener(new InputListener() {
             @Override
-            public boolean keyUp(int keyCode) {
-                if (keyCode == Input.Keys.ESCAPE) { // change back to the menu screen if the player presses esc
-                    main.setMenuScreen();
-                }
-                return super.keyUp(keyCode);
+            public boolean keyUp(InputEvent event, int keycode) {
+                return super.keyUp(event, keycode);
             }
-        };
-
-        this.stage.setViewport(new ScreenViewport());
-        this.backgroundTable = setupBackground();
-
-        this.stage.addActor(backgroundTable);
-        this.backgroundTable.setFillParent(true);
-        this.backgroundTable.setDebug(false);
+        });
     }
 
     /**

@@ -52,7 +52,7 @@ public class PhaseAttack extends PhaseAttackMove{
         int sourceSectorOwner = sourceSector.getOwnerId();
         int targetSectorOwner = targetSector.getOwnerId();
 
-        gameScreen.getMap().completeAttack(gameScreen.getPlayerById(sourceSectorOwner), gameScreen.getPlayerById(GameScreen.NEUTRAL_PLAYER_ID), sourceSector, targetSector, numOfUnits[0]);
+        gameScreen.getMap().completeAttack(gameScreen.getPlayerById(sourceSectorOwner), sourceSector, targetSector, numOfUnits[0]);
 
         if (targetSector.getOwnerId() == sourceSectorOwner) { // attacker took over the target sector
             unitsToMove = new int[] {-1, sourceSector.getId(), targetSector.getId()};

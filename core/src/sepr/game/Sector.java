@@ -33,7 +33,8 @@ public class Sector implements ApplicationListener {
     private boolean decor; // is this sector for visual purposes only, i.e. lakes are decor
     private String fileName;
     private boolean allocated; // becomes true once the sector has been allocated
-    private Map map;
+
+    //private Map map;
 
     private static Texture troopCountOverlay = new Texture("icons/troopCountOverlay.png");
     private static Texture pooStatus = new Texture("icons/poopStatus.png");
@@ -54,14 +55,13 @@ public class Sector implements ApplicationListener {
      * @param reinforcementsProvided number of reinforcements the sector provides
      * @param college unique id of the college this sector belongs to
      * @param adjacentSectorIds ids of adjacent sectors
-     * @param sectorTexture sector texture from assets
      * @param sectorPixmap pixmap of sector texture
      * @param fileName sector filename
      * @param sectorCentreX xcoord of sector centre
      * @param sectorCentreY ycoord of sector centre
      * @param decor false if a sector is accessible to a player and true if sector is decorative
      */
-    public Sector(int id, int ownerId, String fileName, Texture sectorTexture, String texturePath, Pixmap sectorPixmap, String displayName, int underGradsInSector, int postGradsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, int asbestosCount, int poopCount, Map map) {
+    public Sector(int id, int ownerId, String fileName, String texturePath, Pixmap sectorPixmap, String displayName, int underGradsInSector, int postGradsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, int asbestosCount, int poopCount) {
         this.id = id;
         this.ownerId = ownerId;
         this.displayName = displayName;
@@ -81,11 +81,10 @@ public class Sector implements ApplicationListener {
         this.allocated = false;
         this.asbestosCount = asbestosCount;
         this.poopCount = poopCount;
-        this.map = map;
     }
 
-    public Sector(int id, int ownerId, String fileName, String texturePath, Pixmap sectorPixmap, String displayName, int underGradsInSector, int postGradsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, boolean allocated, Color color, int asbestosCount, int poopCount, Map map) {
-        this(id, ownerId, fileName, new Texture(texturePath), texturePath, sectorPixmap, displayName, underGradsInSector, postGradsInSector, reinforcementsProvided, college, neutral, adjacentSectorIds, sectorCentreX, sectorCentreY, decor, asbestosCount, poopCount, map);
+    public Sector(int id, int ownerId, String fileName, String texturePath, Pixmap sectorPixmap, String displayName, int underGradsInSector, int postGradsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, boolean allocated, Color color, int asbestosCount, int poopCount) {
+        this(id, ownerId, fileName, texturePath, sectorPixmap, displayName, underGradsInSector, postGradsInSector, reinforcementsProvided, college, neutral, adjacentSectorIds, sectorCentreX, sectorCentreY, decor, asbestosCount, poopCount);
         
         this.allocated = allocated;
         this.sectorCentreY = sectorCentreY;
@@ -95,7 +94,7 @@ public class Sector implements ApplicationListener {
         }
     }
 
-    public Sector(int id, int ownerId, String fileName, String texturePath, Pixmap sectorPixmap, String displayName, int underGradsInSector, int postGradsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, boolean allocated, Color color, boolean test, int asbestosCount, int poopCount, Map map) {
+    public Sector(int id, int ownerId, String fileName, String texturePath, Pixmap sectorPixmap, String displayName, int underGradsInSector, int postGradsInSector, int reinforcementsProvided, String college, boolean neutral, int[] adjacentSectorIds, int sectorCentreX, int sectorCentreY, boolean decor, boolean allocated, Color color, boolean test, int asbestosCount, int poopCount) {
         HeadlessApplicationConfiguration conf = new HeadlessApplicationConfiguration();
 
         new HeadlessApplication(this, conf);
@@ -119,7 +118,6 @@ public class Sector implements ApplicationListener {
         this.allocated = allocated;
         this.asbestosCount = asbestosCount;
         this.poopCount = poopCount;
-        this.map = map;
     }
 
     /**
@@ -338,34 +336,6 @@ public class Sector implements ApplicationListener {
         return texturePath;
     }
 
-    public void addPunishmentEffect(PunishmentCardType punishmentCardType) {
-        switch (punishmentCardType) {
-            case COLLUSION_CARD:
-                map.addUnitsToSectorAnimated(this.id, postGradsInSector, -postGradsInSector);
-                break;
-            case POOPY_PATH_CARD:
-                poopCount += 3;
-                break;
-            case ASBESTOS_CARD:
-                asbestosCount += 3;
-                break;
-        }
-    }
-
-    /**
-     * called at the end of a turn and applies any active status effect and decrements the count that they apply for
-     * @param currentPlayerId id of the player whos turn it currently is
-     */
-    public void updateStatusEffects(int currentPlayerId) {
-        if (this.ownerId != currentPlayerId) return;
-
-        if (poopCount > 0) poopCount--;
-        if (asbestosCount > 0) {
-            asbestosCount--;
-            map.addUnitsToSectorAnimated(this.id, -(int)Math.ceil(underGradsInSector * 0.1), 0);
-        }
-    }
-
     public int getAsbestosCount() {
         return asbestosCount;
     }
@@ -378,30 +348,48 @@ public class Sector implements ApplicationListener {
         batch.draw(this.getSectorTexture(), 0, 0);
     }
 
-    public void drawSectorUi(SpriteBatch batch) {if (!this.isDecor()) { // don't need to drawSectorImage the amount of units on a decor sector
+    public void drawSectorUi(SpriteBatch batch) {
+        if (!this.isDecor()) { // don't need to drawSectorImage the amount of units on a decor sector
+            float overlaySize = 40.0f;
+            batch.draw(troopCountOverlay, this.getSectorCentreX() - overlaySize - 5, this.getSectorCentreY() - overlaySize / 2, overlaySize, overlaySize);
+            layout.setText(font, this.getUnderGradsInSector() + "");
+            font.draw(batch, layout, this.getSectorCentreX() - overlaySize / 2 - layout.width / 2 - 5, this.getSectorCentreY() + layout.height / 2);
 
-        float overlaySize = 40.0f;
-        batch.draw(troopCountOverlay, this.getSectorCentreX() - overlaySize - 5, this.getSectorCentreY() - overlaySize / 2, overlaySize, overlaySize);
-        layout.setText(font, this.getUnderGradsInSector() + "");
-        font.draw(batch, layout, this.getSectorCentreX() - overlaySize / 2 - layout.width / 2 - 5, this.getSectorCentreY() + layout.height / 2);
+            batch.draw(postgradIcon, this.getSectorCentreX() + 5, this.getSectorCentreY() - overlaySize / 2, overlaySize, overlaySize);
+            layout.setText(font, this.getPostGradsInSector() + "");
+            font.draw(batch, layout, this.getSectorCentreX() + overlaySize / 2 - layout.width / 2 + 5, this.getSectorCentreY() + layout.height / 2);
 
-        batch.draw(postgradIcon, this.getSectorCentreX() + 5, this.getSectorCentreY() - overlaySize / 2, overlaySize, overlaySize);
-        layout.setText(font, this.getPostGradsInSector() + "");
-        font.draw(batch, layout, this.getSectorCentreX() + overlaySize / 2 - layout.width / 2 + 5, this.getSectorCentreY() + layout.height / 2);
+            if (this.getAsbestosCount() != 0) {
+                batch.draw(asbestosStatus, this.getSectorCentreX() - overlaySize / 2, this.getSectorCentreY() + 5, overlaySize, overlaySize);
+                layout.setText(font, this.getAsbestosCount() + "");
+                font.draw(batch, layout, this.getSectorCentreX() - layout.width / 2, this.getSectorCentreY() + layout.height + 18);
+            }
 
-        if (this.getAsbestosCount() != 0) {
-            batch.draw(asbestosStatus, this.getSectorCentreX() - overlaySize / 2, this.getSectorCentreY() + 5, overlaySize, overlaySize);
-            layout.setText(font, this.getAsbestosCount() + "");
-            font.draw(batch, layout, this.getSectorCentreX() - layout.width / 2, this.getSectorCentreY() + layout.height + 18);
-        }
-
-        if (this.getPoopCount() != 0) {
-            batch.draw(pooStatus, this.getSectorCentreX() - overlaySize / 2, this.getSectorCentreY() - 42, overlaySize, overlaySize);
-            layout.setText(font, this.getPoopCount() + "");
-            font.draw(batch, layout, this.getSectorCentreX() - layout.width / 2, this.getSectorCentreY() + layout.height - 34);
+            if (this.getPoopCount() != 0) {
+                batch.draw(pooStatus, this.getSectorCentreX() - overlaySize / 2, this.getSectorCentreY() - 42, overlaySize, overlaySize);
+                layout.setText(font, this.getPoopCount() + "");
+                font.draw(batch, layout, this.getSectorCentreX() - layout.width / 2, this.getSectorCentreY() + layout.height - 34);
+            }
         }
     }
 
+    public void incrementStatusEffect(PunishmentCardType punishmentCardType) {
+        switch (punishmentCardType) {
+            case POOPY_PATH_CARD:
+                this.poopCount += 3;
+                break;
+            case ASBESTOS_CARD:
+                this.asbestosCount += 3;
+                break;
+            default:
+                throw new IllegalArgumentException("Can only increment status effects for Poopy path card and Asbestos card");
+
+        }
+    }
+
+    public void decrementStatusEffects() {
+        if (this.poopCount > 0) this.poopCount--;
+        if (this.asbestosCount > 0) this.asbestosCount--;
     }
 
     @Override
