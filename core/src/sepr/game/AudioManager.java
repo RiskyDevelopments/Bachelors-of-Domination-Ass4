@@ -17,6 +17,12 @@ public class AudioManager extends AssetManager {
     private static String currentPlayingMusic; //list of playing music
     private static AudioManager instance = null; // set initial instance to be null
 
+    /**
+     * returns a single instance of the audio manager class
+     * if no instance exists then one is created and returned
+     *
+     * @return instance of AudioManager
+     */
     public static AudioManager getInstance() {
         if (instance == null) {
             instance = new AudioManager();
@@ -25,7 +31,9 @@ public class AudioManager extends AssetManager {
     }
 
     /**
-     * disposes of the music currently playing, if any is and loads the music file specified by the filepath into memory and plays it and sets to looping
+     * disposes of the music currently playing if any is
+     * loads the music file specified by the filepath parameter into memory and plays it on a loop
+     * plays at volume AudioManager.GLOBAL_MUSIC_VOLUME
      *
      * @param filePath the filepath of the location of the sound
      */
@@ -41,7 +49,7 @@ public class AudioManager extends AssetManager {
     }
 
     /**
-     * loads all the sound files that are used during gameplay so they can be played at anytime
+     * loads all the sound FX, not music, files that are used during gameplay so they can be played at anytime
      */
     public void loadSounds() {
         this.load("sound/Other/Electro button click.mp3", Sound.class);
@@ -79,16 +87,16 @@ public class AudioManager extends AssetManager {
     }
 
     /**
-     * remove a sound from memory according to its filepath
+     * the music currently playing, specified by currentPlayingMusic, is removed from memory
      */
-    public void disposeMusicCurrentMusic() {
+    private void disposeMusicCurrentMusic() {
         if (currentPlayingMusic != null) this.get(currentPlayingMusic, Music.class).dispose(); // remove the sound specified by filePath from memory to to increase performance
     }
 
     /**
-     * sets the music volume of currently running sounds to the GLOBAL_MUSIC_VOLUME
+     * sets the music volume of currently playing music
      */
     public void setMusicVolume() {
-        this.get(currentPlayingMusic, Music.class).setVolume(GLOBAL_MUSIC_VOLUME);
+        if (currentPlayingMusic != null) this.get(currentPlayingMusic, Music.class).setVolume(GLOBAL_MUSIC_VOLUME);
     }
 }

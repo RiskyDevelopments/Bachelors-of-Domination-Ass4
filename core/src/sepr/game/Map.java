@@ -235,12 +235,16 @@ public class Map {
     /**
      * Executes an attack
      *
-     * @param attacker Player attacking
-     * @param source Source sector
-     * @param target Target sector
+     * @param gameScreen
+     * @param source sector attack is coming from
+     * @param target sector that is being attacked
      * @param attackers Number of troops attacking
      */
-    public void completeAttack(Player attacker, Sector source, Sector target, int attackers) {
+    public void completeAttack(GameScreen gameScreen, Sector source, Sector target, int attackers) {
+        int originalSourceOwnerId = source.getOwnerId();
+        int originalTargetOwnerId = target.getOwnerId();
+        Player attacker = gameScreen.getPlayerById(originalSourceOwnerId);
+
         int attackersRemaining = attackers;
         int underGrads = target.getUnderGradsInSector();
         int postGrads = target.getPostGradsInSector();
@@ -282,6 +286,24 @@ public class Map {
             target.setOwner(attacker);
             successfulAttackOccurred = true;
         }
+
+        if (originalSourceOwnerId == target.getOwnerId()) { // attacker took over the target sector
+            DialogFactory.attackSuccessDialogBox(gameScreen,
+                    target.getReinforcementsProvided(),
+                    source.getUnderGradsInSector(),
+                    source.getId(),
+                    target.getId(),
+                    gameScreen.getPlayerById(originalTargetOwnerId).getPlayerName(),
+                    gameScreen.getPlayerById(originalSourceOwnerId).getPlayerName(),
+                    target.getDisplayName(),
+                    gameScreen.getCurrentPhase());
+        } else if (source.getOwnerId() == originalSourceOwnerId) {
+            // all attackers wiped out, but units remain on source sector
+            DialogFactory.basicDialogBox(gameScreen,"Unsuccessful!", "You failed to conquer the target", gameScreen.getCurrentPhase());
+        } else { // defender wiped out attacking units and attacker sector is now neutral
+            DialogFactory.sectorOwnerChangeDialog(gameScreen, gameScreen.getPlayerById(source.getOwnerId()).getPlayerName(), gameScreen.getPlayerById(GameScreen.NEUTRAL_PLAYER_ID).getPlayerName(), source.getDisplayName(), gameScreen.getCurrentPhase());
+        }
+        gameScreen.getCurrentPhase().updateTroopReinforcementLabel();
     }
 
     public boolean checkIfSuccessfulAttackOccurred() {

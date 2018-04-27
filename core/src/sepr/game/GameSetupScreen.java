@@ -29,8 +29,6 @@ import java.util.regex.Pattern;
  *  - Turn timer enabled
  */
 public class GameSetupScreen extends UiScreen {
-
-    private AudioManager Audio = AudioManager.getInstance();
     private final int MAX_NUMBER_OF_PLAYERS = 4; // maximum number of players that cna be in a game
 
     private Label[] playerTypes; // array of player types, index n -> player n's type

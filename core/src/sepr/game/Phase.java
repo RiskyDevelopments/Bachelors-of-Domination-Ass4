@@ -231,16 +231,12 @@ public abstract class Phase extends Stage {
 
     @Override
     public void draw() {
-        phaseAct();
-
         gameScreen.getGameplayBatch().begin();
         visualisePhase(gameScreen.getGameplayBatch());
         gameScreen.getGameplayBatch().end();
 
         super.draw();
     }
-
-    public abstract void phaseAct();
 
     /**
      * abstract method for writing phase specific rendering

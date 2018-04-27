@@ -13,31 +13,36 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 public abstract class UiScreen implements Screen {
     protected Main main;
     protected Stage stage;
-    private Table backgroundTable;// table for inserting ui widgets into
 
     public UiScreen(Main main) {
         this.main = main;
         this.stage = new Stage();
 
-        this.backgroundTable = setupBackground();
+        Table backgroundTable = setupBackground();
         this.stage.addActor(backgroundTable);
-        this.backgroundTable.setFillParent(true);
-        this.backgroundTable.setDebug(false);
+        backgroundTable.setFillParent(true);
+        backgroundTable.setDebug(false);
         this.stage.setViewport(new ScreenViewport());
     }
 
+    /**
+     * sets up the UI widgets for this screen
+     *
+     * @return table containing the UI widgets for this screen
+     */
     protected abstract Table setupUi();
 
+    /**
+     * sets the background image for the screen
+     *
+     * @return table with screen's background image
+     */
     protected Table setupBackground() {
         Table backgroundTable = new Table();
         backgroundTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture("uiComponents/menuBackground.png"))));
         backgroundTable.pad(0);
         backgroundTable.add(setupUi());
         return backgroundTable;
-    }
-
-    public Stage getStage() {
-        return stage;
     }
 
     @Override
