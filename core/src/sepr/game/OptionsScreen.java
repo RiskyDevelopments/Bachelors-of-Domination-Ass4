@@ -58,7 +58,7 @@ public class OptionsScreen extends UiScreen {
     /**
      * Method generates a string array of possible resolutions the game could be displayed at on this monitor
      * Used to get selectable elements in the Resolution selector widget
-     * Resolutions must be a minimum of 1000 x 1000 pixels
+     * Resolutions must be a minimum of 1300 x 700 pixels
      *
      * @return possible display resolutions in format ScreenWidth x ScreenHeight
      */
@@ -77,6 +77,10 @@ public class OptionsScreen extends UiScreen {
         return resStrings;
     }
 
+    /**
+     *
+     * @return table containing the UI widgets for the options screen
+     */
     private Table setupOptionsTable() {
         // setup widgets for selecting the options
         musicSlider = WidgetFactory.genStyledSlider();

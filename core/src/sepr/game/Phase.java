@@ -1,7 +1,6 @@
 package sepr.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import sepr.game.utils.CollegeName;
@@ -29,7 +27,6 @@ public abstract class Phase extends Stage {
     Player currentPlayer;
 
     private PunishmentCardType punishmentCardSelected = PunishmentCardType.NO_CARD;
-
 
     private Table table;
     private Label bottomBarRightPart;
@@ -105,6 +102,9 @@ public abstract class Phase extends Stage {
         updateTopBarText();
     }
 
+    /**
+     * updates the text on the top bar of the HUD to show the current phase or which punishment card is being used currently
+     */
     private void updateTopBarText() {
         String text = "";
 
@@ -128,6 +128,7 @@ public abstract class Phase extends Stage {
 
     /**
      * generates the UI widget to be displayed at the bottom left of the HUD
+     *
      * @return table containing the information to display in the HUD
      */
     private Table genGameHUDBottomBarLeftPart(){
@@ -164,7 +165,8 @@ public abstract class Phase extends Stage {
 
     /**
      * sets the bar at the bottom of the HUD to the details of the sector currently hovered over
-     * If no sector is being hovered then displays "Mouse over a sector to see further details"
+     * if no sector is being hovered then displays "Mouse over a sector to see further details"
+     *
      * @param sector the sector of details to be displayed
      */
     public void setBottomBarText(Sector sector) {
@@ -201,11 +203,28 @@ public abstract class Phase extends Stage {
         turnTimerLabel.setText(new StringBuilder("Turn Timer: " + timeRemaining));
     }
 
-    public PunishmentCardType getPunishmentCardSelected() {
+    /**
+     *
+     * @return the currently selected type of punishment card
+     */
+    private PunishmentCardType getPunishmentCardSelected() {
         return punishmentCardSelected;
     }
 
+    /**
+     *
+     * @throws IllegalArgumentException if punishmentCardSelected is not Collusion/Asbestos/PoopyPath card
+     * @param punishmentCardSelected punishment card that has been selected
+     */
     public void setPunishmentCardSelected(PunishmentCardType punishmentCardSelected) {
+        switch (punishmentCardSelected) {
+            case COLLUSION_CARD:
+            case ASBESTOS_CARD:
+            case POOPY_PATH_CARD:
+                break;
+            default:
+                throw new IllegalArgumentException("May only set selected punishment card to the Collusion/Asbestos/PoopyPath Card");
+        }
         this.punishmentCardSelected = punishmentCardSelected;
         updateTopBarText();
     }
@@ -224,6 +243,13 @@ public abstract class Phase extends Stage {
         this.currentPlayer = null;
     }
 
+    /**
+     * abstract method for writing phase specific rendering
+     *
+     * @param batch
+     */
+    protected abstract void visualisePhase(SpriteBatch batch);
+
     @Override
     public void act() {
         super.act();
@@ -237,12 +263,6 @@ public abstract class Phase extends Stage {
 
         super.draw();
     }
-
-    /**
-     * abstract method for writing phase specific rendering
-     * @param batch
-     */
-    protected abstract void visualisePhase(SpriteBatch batch);
 
     @Override
     public String toString() {

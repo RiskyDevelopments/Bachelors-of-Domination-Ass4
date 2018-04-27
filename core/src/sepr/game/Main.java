@@ -82,10 +82,10 @@ public class Main extends Game implements ApplicationListener {
 	 * sets the gamescreen to the passed one
 	 * to be used when loading a save game
 	 *
-	 * @param screen instance of gamescreen to be used for the game
+	 * @param gamescreen instance of gamescreen to be used for the game
 	 */
-	public void setGameScreenFromLoad(GameScreen screen){
-	    this.gameScreen = screen;
+	public void setGameScreenFromLoad(GameScreen gamescreen){
+	    this.gameScreen = gamescreen;
 	    this.setScreen(this.gameScreen);
 	    this.gameScreen.startGame();
     }

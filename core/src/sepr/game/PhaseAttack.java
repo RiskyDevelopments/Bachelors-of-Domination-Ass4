@@ -7,6 +7,11 @@ import sepr.game.utils.TurnPhaseType;
  */
 public class PhaseAttack extends PhaseAttackMove{
 
+    /**
+     * initialises an attack phase
+     *
+     * @param gameScreen gamescreen that this phase is setup in
+     */
     public PhaseAttack(GameScreen gameScreen) {
         super(gameScreen, TurnPhaseType.ATTACK);
     }

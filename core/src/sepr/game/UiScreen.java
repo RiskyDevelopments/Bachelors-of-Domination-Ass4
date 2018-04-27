@@ -14,6 +14,11 @@ public abstract class UiScreen implements Screen {
     protected Main main;
     protected Stage stage;
 
+    /**
+     * sets up a screen
+     *
+     * @param main instance of main that this screen is part of
+     */
     public UiScreen(Main main) {
         this.main = main;
         this.stage = new Stage();

@@ -94,7 +94,6 @@ public class MenuScreen extends UiScreen {
     /**
      * sets up the UI tables for the menu screen
      */
-
     protected Table setupUi() {
         Table uiComponentsTable =  new Table();
         uiComponentsTable.setDebug(false);

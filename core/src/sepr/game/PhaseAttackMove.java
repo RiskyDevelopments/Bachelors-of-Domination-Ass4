@@ -7,8 +7,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import sepr.game.utils.TurnPhaseType;
 
-import java.util.Random;
-
 public abstract class PhaseAttackMove extends Phase {
     private TextureRegion arrow; // TextureRegion for rendering attack visualisation
     private Sector sourceSector; // Stores the sector being used to attack in the attack phase (could store as ID and lookup object each time to save memory)
@@ -24,7 +22,7 @@ public abstract class PhaseAttackMove extends Phase {
      */
     public PhaseAttackMove(GameScreen gameScreen, TurnPhaseType turnPhaseType){
         super(gameScreen, turnPhaseType);
-        if (turnPhaseType != TurnPhaseType.ATTACK || turnPhaseType != TurnPhaseType.MOVEMENT) throw new IllegalArgumentException("PhaseAttackMove must have turnPhaseType ATTACK or MOVE");
+        if (turnPhaseType == TurnPhaseType.REINFORCEMENT) throw new IllegalArgumentException("PhaseAttackMove must have turnPhaseType ATTACK or MOVE");
         this.arrow = new TextureRegion(new Texture(Gdx.files.internal("uiComponents/arrow.png")));
         this.sourceSector = null;
 

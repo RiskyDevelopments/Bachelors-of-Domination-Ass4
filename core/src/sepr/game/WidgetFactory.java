@@ -23,7 +23,6 @@ public class WidgetFactory {
 
     private static Texture basicButtonTexture;
     private static Texture mapGraphicTexture;
-    private static Texture optionsGraphicTexture;
 
     private static Texture sliderBarTexture;
     private static Texture sliderKnobTexture;
@@ -77,7 +76,6 @@ public class WidgetFactory {
 
         basicButtonTexture = new Texture("uiComponents/Menu-Button-Full.png");
         mapGraphicTexture = new Texture("uiComponents/Main-Menu-Map.png");
-        optionsGraphicTexture = new Texture("uiComponents/RuncinatorGraphic.png");
 
         sliderBarTexture = new Texture("uiComponents/sliderBar.png");
         sliderKnobTexture = new Texture("uiComponents/sliderKnob.png");
@@ -152,6 +150,12 @@ public class WidgetFactory {
         return new TextButton(buttonText, style);
     }
 
+    /**
+     * generates an image button with the specified punishment card as the image
+     *
+     * @param punishmentCardType what type of card should be used to create the button
+     * @return image button with the with the specified punishment card as the image
+     */
     public static ImageButton genPunishmentCardButton(PunishmentCardType punishmentCardType) {
         ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
         style.up = genPunishmentCardDrawable(punishmentCardType);
@@ -161,6 +165,12 @@ public class WidgetFactory {
         return new ImageButton(style);
     }
 
+    /**
+     * gets a drawable of the specified punishment card
+     *
+     * @param punishmentCardType the punishment card type to create a drawable of
+     * @return drawable of the specified punishment card
+     */
     public static TextureRegionDrawable genPunishmentCardDrawable(PunishmentCardType punishmentCardType) {
         switch (punishmentCardType) {
             case COLLUSION_CARD:
@@ -254,14 +264,6 @@ public class WidgetFactory {
      */
     public static Image genMapGraphic() {
         return new Image(mapGraphicTexture);
-    }
-
-    /**
-     *
-     * @return an image widget of a soldier to be displayed in the options screen
-     */
-    public static Image genOptionsGraphic() {
-        return new Image(optionsGraphicTexture);
     }
 
     /**

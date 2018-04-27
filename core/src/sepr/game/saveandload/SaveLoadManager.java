@@ -148,12 +148,8 @@ public class SaveLoadManager {
                     color = player.getValue().getSectorColour();
                 }
             }
+            sectors.put(sector.hashMapPosition, new Sector(sector.id, sector.ownerId, sector.texturePath, map, sector.displayName, sector.undergradsInSector, sector.postgradsInSector, sector.reinforcementsProvided, sector.college, sector.neutral, sector.adjacentSectorIds, sector.sectorCentreX, sector.sectorCentreY, sector.decor, sector.allocated, color, sector.asbestosCount, sector.poopCount));
 
-            if (test) {
-                sectors.put(sector.hashMapPosition, new Sector(sector.id, sector.ownerId, sector.fileName, sector.texturePath, map, sector.displayName, sector.undergradsInSector, sector.postgradsInSector, sector.reinforcementsProvided, sector.college, sector.neutral, sector.adjacentSectorIds, sector.sectorCentreX, sector.sectorCentreY, sector.decor, sector.allocated, color, test, sector.asbestosCount, sector.poopCount));
-            }else{
-                sectors.put(sector.hashMapPosition, new Sector(sector.id, sector.ownerId, sector.fileName, sector.texturePath, map, sector.displayName, sector.undergradsInSector, sector.postgradsInSector, sector.reinforcementsProvided, sector.college, sector.neutral, sector.adjacentSectorIds, sector.sectorCentreX, sector.sectorCentreY, sector.decor, sector.allocated, color, sector.asbestosCount, sector.poopCount));
-            }
         }
         return sectors;
     }
@@ -229,7 +225,6 @@ public class SaveLoadManager {
             sectorState.sectorCentreX = value.getSectorCentreX(); // Store the Sector's location
             sectorState.sectorCentreY = value.getSectorCentreY();
             sectorState.decor = value.isDecor(); // Store whether the Sector is for decoration
-            sectorState.fileName = value.getFileName(); // Store the filename of the Sector file
             sectorState.allocated = value.isAllocated(); // Store whether the Sector has been allocated
             sectorState.poopCount = value.getPoopCount();
             sectorState.asbestosCount = value.getAsbestosCount();

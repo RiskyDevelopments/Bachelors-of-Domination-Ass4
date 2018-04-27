@@ -24,6 +24,11 @@ public class Map {
 
     private boolean successfulAttackOccurred = false;
 
+    /**
+     * sets up the map for the players that are part of this game
+     *
+     * @param players the players that are playing the game on this map
+     */
     private Map(HashMap<Integer, Player> players) {
         random = new Random();
 
@@ -104,21 +109,20 @@ public class Map {
     private Sector sectorDataToSector(String[] sectorData) {
         int sectorId = Integer.parseInt(sectorData[0]);
         int ownerId = -1;
-        String filename = "mapData/" + sectorData[1];
         String texturePath = "mapData/" + sectorData[1];
         Pixmap sectorPixmap = new Pixmap(Gdx.files.internal("mapData/" + sectorData[1]));
         String displayName = sectorData[2];
         int unitsInSector = 8 + random.nextInt(8);
         int postgradsInSector = 0;
-        int reinforcementsProvided = Integer.parseInt(sectorData[4]);
-        String college = sectorData[5];
-        boolean neutral = Boolean.parseBoolean(sectorData[6]);
-        int[] adjacentSectors = strToIntArray(sectorData[7]);
-        int sectorX = Integer.parseInt(sectorData[8]);
-        int sectorY = Integer.parseInt(sectorData[9]);
-        boolean decor = Boolean.parseBoolean(sectorData[10]);
+        int reinforcementsProvided = Integer.parseInt(sectorData[3]);
+        String college = sectorData[4];
+        boolean neutral = Boolean.parseBoolean(sectorData[5]);
+        int[] adjacentSectors = strToIntArray(sectorData[6]);
+        int sectorX = Integer.parseInt(sectorData[7]);
+        int sectorY = Integer.parseInt(sectorData[8]);
+        boolean decor = Boolean.parseBoolean(sectorData[9]);
 
-        return new Sector(sectorId, ownerId, filename, texturePath, sectorPixmap, displayName, unitsInSector, postgradsInSector, reinforcementsProvided, college, neutral, adjacentSectors, sectorX, sectorY, decor, 0, 0);
+        return new Sector(sectorId, ownerId, texturePath, sectorPixmap, displayName, unitsInSector, postgradsInSector, reinforcementsProvided, college, neutral, adjacentSectors, sectorX, sectorY, decor, 0, 0);
     }
 
     /**
@@ -204,6 +208,10 @@ public class Map {
         return sectors.keySet();
     }
 
+    /**
+     *
+     * @return hashmap of sector ids to their respective sector objects that are part of this map
+     */
     public HashMap<Integer, Sector> getSectors() {
         return sectors;
     }
@@ -306,6 +314,12 @@ public class Map {
         gameScreen.getCurrentPhase().updateTroopReinforcementLabel();
     }
 
+    /**
+     * returns if a successful attack has occurred
+     * if it has then return that it has and set successfulAttackOccurred to false
+     *
+     * @return true if a successful attack has occurred else return false
+     */
     public boolean checkIfSuccessfulAttackOccurred() {
         if (successfulAttackOccurred) {
             successfulAttackOccurred = false;
@@ -314,6 +328,12 @@ public class Map {
         return false;
     }
 
+    /**
+     * applies the effect of a guven punishment card to the specified sector
+     *
+     * @param sectorId id of sector to apply effect to
+     * @param punishmentCardType type of punishment card to apply
+     */
     public void addSectorPunishmentEffect(int sectorId, PunishmentCardType punishmentCardType) {
         Sector sector = this.getSectorById(sectorId);
         switch (punishmentCardType) {
@@ -327,6 +347,11 @@ public class Map {
         }
     }
 
+    /**
+     * apply sector status effects that occur periodically to the sectors owned by the given player
+     *
+     * @param currentPlayerId id of player to apply status effects to
+     */
     public void updateSectorStatusEffects(int currentPlayerId) {
         for (Sector sector : sectors.values()) {
             if (sector.getOwnerId() != currentPlayerId) return;
@@ -344,6 +369,10 @@ public class Map {
      * - unitsToMove[1] : source sector id
      * - unitsToMove[2] : target sector id
      * changes in units on sectors are shown on scren using the UnitChangeParticle
+     *
+     * @param sourceSectorId id of sector to move units from
+     * @param targetSecotId id of sector to move units to
+     * @param amount number of units to move from the source to the target sector
      *
      * @throws IllegalArgumentException if the sector are not both owned by the same player
      * @throws IllegalArgumentException if the amount exceeds the (number of units - 1) on the source sector

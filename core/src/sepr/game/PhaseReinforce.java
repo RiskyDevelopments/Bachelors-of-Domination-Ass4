@@ -4,17 +4,18 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import sepr.game.utils.TurnPhaseType;
 
-import java.util.Random;
-
 /**
  * handles input, updating and rendering for the reinforcement phase
  */
 public class PhaseReinforce extends Phase {
-    private Random random;
 
+    /**
+     * initialises a reinforcement phase
+     *
+     * @param gameScreen gamescreen that this phase is setup in
+     */
     public PhaseReinforce(GameScreen gameScreen) {
         super(gameScreen, TurnPhaseType.REINFORCEMENT);
-        random = new Random();
     }
 
     @Override

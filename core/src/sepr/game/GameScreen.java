@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import sepr.game.saveandload.GameState;
 import sepr.game.utils.PlayerType;
 import sepr.game.utils.TurnPhaseType;
 

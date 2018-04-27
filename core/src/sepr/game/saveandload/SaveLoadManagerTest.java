@@ -62,7 +62,6 @@ public class SaveLoadManagerTest implements ApplicationListener {
             sectorState.sectorCentreX = i;
             sectorState.sectorCentreY = i;
             sectorState.decor = false;
-            sectorState.fileName = "assets/uiComponents/menuBackground.png";
             sectorState.allocated = false;
 
             gameState.mapState.sectorStates[i] = sectorState;
@@ -162,7 +161,6 @@ public class SaveLoadManagerTest implements ApplicationListener {
             assertTrue("Sector Centre Y", value.getSectorCentreY() == index);
 
             assertTrue("Sector Is Decor", value.isDecor() == false);
-            assertTrue("Sector FileName", value.getFileName() == "assets/uiComponents/menuBackground.png");
             assertTrue("Sector Is Allocated", value.isAllocated() == false);
 
             index++;

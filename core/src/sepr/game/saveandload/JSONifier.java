@@ -79,7 +79,6 @@ public class JSONifier {
             gameState.mapState.sectorStates[i].sectorCentreX = (int)(long)(Long)sector.get("SectorCenterX"); // Get the Sector's X coordinate
             gameState.mapState.sectorStates[i].sectorCentreY = (int)(long)(Long)sector.get("SectorCenterY"); // Get the Sector's Y coordinate
             gameState.mapState.sectorStates[i].decor = (Boolean)sector.get("Decor"); // Get whether the Sector is decor
-            gameState.mapState.sectorStates[i].fileName = (String)sector.get("FileName"); // Get the file name of the Sector
             gameState.mapState.sectorStates[i].allocated = (Boolean)sector.get("Allocated"); // Get whether the sector has been allocated
 
             i++;
@@ -163,7 +162,6 @@ public class JSONifier {
             sectorState.put("SectorCenterX", sector.sectorCentreX); // Store sector center
             sectorState.put("SectorCenterY", sector.sectorCentreY);
             sectorState.put("Decor", sector.decor); // Store whether the sector is decor
-            sectorState.put("FileName", sector.fileName); // Store sector texture filename
             sectorState.put("Allocated", sector.allocated); // Store whether the sector has been allocated
 
             sectorStates.add(sectorState);
