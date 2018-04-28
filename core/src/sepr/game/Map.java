@@ -99,7 +99,7 @@ public class Map {
         String csvFile = "mapData/sectorProperties.csv";
         String line;
         try {
-            BufferedReader br = new BufferedReader(new FileReader(csvFile));
+            BufferedReader br = Gdx.files.internal(csvFile).reader(1000);
             while ((line = br.readLine()) != null) {
                 Sector temp = sectorDataToSector(line.split(","));
                 this.sectors.put(temp.getId(), temp);

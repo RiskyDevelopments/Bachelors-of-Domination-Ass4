@@ -1,5 +1,6 @@
 package sepr.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -133,8 +134,8 @@ public class WidgetFactory {
      * sets up the big and small fonts
      */
     private void setupFont() {
-        FileHandle alteDinBig = new FileHandle("font/Alte-DIN-Big.fnt");
-        FileHandle alteDinSmall = new FileHandle("font/Alte-DIN-Small.fnt");
+        FileHandle alteDinBig = Gdx.files.internal("font/Alte-DIN-Big.fnt");
+        FileHandle alteDinSmall = Gdx.files.internal("font/Alte-DIN-Small.fnt");
 
         fontBig = new BitmapFont(alteDinBig);
         fontBig.setUseIntegerPositions(false);
