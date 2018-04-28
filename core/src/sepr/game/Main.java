@@ -112,21 +112,10 @@ public class Main extends Game implements ApplicationListener {
     }
 
 	/**
-	 * checks to see if there is a save available to load
-	 *
-	 * @return true if there is a save available to load, else false
-	 */
-	public boolean hasLoadedSaves(){
-		this.saveLoadManager = new SaveLoadManager(this, gameScreen);
-		return this.saveLoadManager.savesToLoad;
-	}
-
-	/**
 	 * loads the save game from file
 	 */
-    public void loadGame(){
-	    this.saveLoadManager.LoadFromFile();
-		this.saveLoadManager.loadSaveGame();
+    public boolean loadGame(){
+		return this.saveLoadManager.loadSaveGame();
 	}
 
 	/**

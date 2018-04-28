@@ -13,8 +13,8 @@ import java.util.ArrayList;
  */
 public class JSONifier {
 
-    public GameState state; // The state of the game
-    public JSONObject saveState; // The JSON state of the game
+    private GameState state; // The state of the game
+    private JSONObject saveState; // The JSON state of the game
 
     /**
      * Set the state to represent as JSON
@@ -124,13 +124,12 @@ public class JSONifier {
 
     /**
      * Creates JSON representation of GameState
+     *
      * @return JSON representation of GameState
      */
     public JSONObject getJSONGameState(){
         JSONObject gameStateObject = new JSONObject(); // Create JSON Object to store state
         gameStateObject.put("CurrentPhase", this.state.currentPhase.toString()); // Store the current phase
-
-        JSONObject mapState = new JSONObject(); // Create JSON Object to store map state
 
         JSONArray sectorStates = new JSONArray(); // JSONArray of sector states
 
@@ -211,7 +210,7 @@ public class JSONifier {
      * @param phase string
      * @return Phase object
      */
-    public TurnPhaseType StringToPhase(String phase) {
+    private TurnPhaseType StringToPhase(String phase) {
         for (TurnPhaseType type : TurnPhaseType.values()){
             if (type.equalsName(phase)){
                 return type;
