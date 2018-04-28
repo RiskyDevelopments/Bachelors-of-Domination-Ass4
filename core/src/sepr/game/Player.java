@@ -4,6 +4,13 @@ import com.badlogic.gdx.graphics.Color;
 import sepr.game.utils.CollegeName;
 import sepr.game.utils.PlayerType;
 
+/*
+Modified in assessment 4
+ - removed storing sector colour as now stored as part of college name enum
+ - removed PVC ownership data as no longer applicable due to changes to PVC minigame
+ - added variables for storing the number of collusion/poopy path/asbestos cards the player holds
+ */
+
 /**
  * base class for storing Neutral and Human player data
  */

@@ -4,6 +4,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import sepr.game.utils.TurnPhaseType;
 
+/*
+Modified in assessment 4
+ - refactored to no longer pass allocation data through arrays due to poor readability
+ - changed to using AudioPlayer for playing audio instead of using instance of AudioManager
+*/
+
 /**
  * handles input, updating and rendering for the reinforcement phase
  */

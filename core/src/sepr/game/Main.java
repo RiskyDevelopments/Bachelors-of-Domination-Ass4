@@ -9,8 +9,13 @@ import sepr.game.saveandload.SaveLoadManager;
 
 import java.util.HashMap;
 
+/*
+Modified in assessment 4
+ - updated method names to follow standard naming conventions
+ */
+
 /**
- * executable http://www.riskydevelopments.co.uk/XXXXXXXXXXXXXXXXXX.zip
+ * executable http://www.riskydevelopments.co.uk/BoDv2/BoDv2.zip
  *
  * main game class used for controlling what screen is currently being displayed
  */

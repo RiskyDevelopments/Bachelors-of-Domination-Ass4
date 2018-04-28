@@ -11,6 +11,15 @@ import sepr.game.utils.PunishmentCardType;
 
 import java.util.List;
 
+/*
+Modified in assessment 4
+ - now uses custom skin so that all dialog boxes fit with the game's aesthetic
+ - added that dialogs now pause the turn timer, if enabled, whilst they are open
+ - modified attackSuccessDialogBox, allocateUnitsDialog, attackDialog and moveDialog to no longer use arrays to pass back input data and instead directly call methods to act on the input data - this was to improve code readability
+ - added selectPunishmentCardDialog to allow the player to select which punishment card they would like to use
+ - changed leaveMiniGameDialog to miniGameOverDialog and modified it so it supported the new rewards system, i.e. punishment card rewards not troops
+ */
+
 /**
  * class that produces reusable dialog windows for displaying information to the player and receiving input from them
  */
@@ -360,10 +369,11 @@ public class DialogFactory {
 
     /**
      * creates a dialog box for the player to select how many troops they want to move with
-     * if player cancels the attackers[0] = 0 to signify the attack has been cancelled
      *
+     * @param gameScreen for pausing/unpausing the game timer
+     * @param sourceSectorId id of sector that troops are being moved from
+     * @param targetSectorId id of sector troops are being moved to
      * @param maxAttackers max number of attackers the player chooses to move
-     * @param attackers 1 index array for setting number of troops the player has chosen to move with: [0] number of troops player has set to move with
      * @param stage to display the dialog on
      * @return the number of troops chosen to attack with or 0 if the attack is canceled
      */

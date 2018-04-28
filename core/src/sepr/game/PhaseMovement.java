@@ -2,6 +2,15 @@ package sepr.game;
 
 import sepr.game.utils.TurnPhaseType;
 
+/*
+Modified in assessment 4
+ - refactored movement system so more behaviour is moved to PhaseAttackMove to reduce code duplication
+ - implemented PhaseAttackMove methods for
+   - checking if a sector is a valid source for a move - isValidSource(Sector sourceSector)
+   - checking if a sector is a valid target for a move - isValidTarget(Sector targetSector)
+   - executing an move when a valid source and target have been found
+ - refactored passing move data through arrays as difficult to read and follow
+ */
 
 /**
  * handles input, updating and rendering for the movement phase

@@ -9,6 +9,18 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import sepr.game.utils.PunishmentCardType;
 
+/*
+Modified in assessment 4
+ - removed fileName variable as duplicate of texturePath
+ - removed isPVCTile variable as no longer applicable due to changes to the PVC minigame
+ - added textures and text drawing for rendering the status effect icons
+ - added variables for storing how long this sector is under status effects for - asbestosCount and poopCountVariable
+ - added methods for checking if this sector canAttack(), canBeAttacked() and canChangeUnits() for easier checking if this sector can attack; be attacked; be reinforced and move units to/from it
+ - added support for two unit types, undergrads and postgrads
+ - separated sector texture drawing and drawing sector HUD element, (e.g. unit count), so that UI elements cannot be rendered below sector textures
+ - added method for applying a status effect punishment card to this sector - incrementStatusEffect(PunishmentCardType puinishmentCardType)
+ */
+
 /**
  * class for specifying properties of a sector that is part of a map
  */

@@ -1,5 +1,10 @@
 package sepr.game.utils;
 
+/*
+Added in assessment 4
+ - added so that the different types of punishment cards could be referenced
+ */
+
 /**
  * Created by Dom's Surface Mark 2 on 17/03/2018.
  */

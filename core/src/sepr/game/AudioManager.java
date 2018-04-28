@@ -4,6 +4,11 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 
+/*
+Modified in assessment 4
+ - changed static vars and method names to follow standard naming conventions
+ - made switching between what music is playing simpler (improvements to loadMusic method)
+ */
 
 /**
  * Usage -- Audio.get('path to file', Sound.class).play(AudioManager.GLOBAL_FX_VOLUME) // this will play the sound

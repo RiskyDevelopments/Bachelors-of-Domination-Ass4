@@ -11,6 +11,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
+/*
+Modified in assessment 4
+ - refactored to inherit from new UiScreen class to reduce code duplication for setting up screen
+ - added displaying a dialog to the player if there is no save game to load
+ */
+
 /**
  * controls the UI for the main menu screen
  */

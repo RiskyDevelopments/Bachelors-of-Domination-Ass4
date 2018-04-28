@@ -19,6 +19,13 @@ import sepr.game.utils.CollegeName;
 import sepr.game.utils.PunishmentCardType;
 import sepr.game.utils.TurnPhaseType;
 
+/*
+Modified in assessment 4
+ - changed using instance of AudioManager to play sound FX to the new AudioPlayer
+ - added ability for player to have a punishment card selected and apply it to a sector - see touchUp(int screenX, int screenY, int pointer, int button) method
+ - changed to using AudioPlayer for playing audio instead of using instance of AudioManager
+ */
+
 /**
  * base class for handling phase specific input
  */
