@@ -23,10 +23,21 @@ public class DialogFactory {
     }
 
     /**
+     * used to uniformly style buttons
+     *
+     * @param dialog Dialog box to style
+     * @param width Width of each button
+     */
+    private static void basicStyle(Dialog dialog, int width){
+        dialog.getButtonTable().defaults().width(width);
+        dialog.getButtonTable().row().padBottom(10);
+    }
+
+    /**
      * creates a dialog in the given stage with an ok button and the given title and message
      * the dialog displays until the okay button is pressed then it quickly fades away
      *
-     * @param  gameScreen gamescreen to pause timer of dialog, if null then timer won't be paused
+     * @param gameScreen gamescreen to pause timer of dialog, if null then timer won't be paused
      * @param title String to be used at the top of the dialog box
      * @param message String to be used as the content of the dialog
      * @param stage to drawSectorImage the box onto
@@ -49,19 +60,10 @@ public class DialogFactory {
     }
 
     /**
-     * Used to uniformly style buttons
-     * @param dialog Dialog box to style
-     * @param width Width of each button
-     */
-    private static void basicStyle(Dialog dialog, int width){
-        dialog.getButtonTable().defaults().width(width);
-        dialog.getButtonTable().row().padBottom(10);
-    }
-
-    /**
      * creates a dialog box displaying which players turn it is next and how many troops they have to allocate
      * the dialog displays until the okay button is pressed then it quickly fades away
      *
+     * @param gameScreen gamescreen to pause timer of dialog, if null then timer won't be paused
      * @param nextPlayer String to be used to display the name of the next player
      * @param troopsToAllocate Integer to be used to display number of troops the player has to allocate
      * @param stage to drawSectorImage the box onto
@@ -117,9 +119,9 @@ public class DialogFactory {
     }
 
     /**
-     * Dialog box for the pause menu
+     * creates a dialog for the pause menu
      *
-     * @param gameScreen for changing the screen
+     * @param gameScreen for changing the screen and pausing/unpausing the game timer
      * @param stage the stage to drawSectorImage the box onto
      */
     public static void pauseGameDialogBox(final GameScreen gameScreen, final Stage stage) {
@@ -155,6 +157,7 @@ public class DialogFactory {
     /**
      * creates a dialog that says which player took control of a sector from which other player
      *
+     * @param gameScreen gamescreen to pause timer of dialog, if null then timer won't be paused
      * @param prevOwner name of the player who used to own the sector
      * @param newOwner name of the player who now controls the sector
      * @param sectorName name of the sector being taken
@@ -167,21 +170,22 @@ public class DialogFactory {
     /**
      * creates a dialog box with a slider and okay box allowing a player who has conquered a sector to select how many troops to move onto it
      *
+     * @param gameScreen gamescreen to pause timer of dialog, if null then timer won't be paused
      * @param bonusTroops amount of troops the player is awarded for conquering the tile
      * @param maxTroops the amount of troops on the attacking tile
-     * @param troopsMoved 3 index final array for setting value of slider to representing how many troops to move: [0] amount of units to move; [1] id of source sector; [2] id of target sector
+     * @param sourceSectorId id of sector attack was launched from
+     * @param targetSectorId id of sector that was attacked
      * @param prevOwner name of the player who used to own the sector
      * @param newOwner name of the player who now controls the sector
      * @param sectorName name of the sector being taken
      * @param stage The stage to drawSectorImage the box onto
      */
-    public static void attackSuccessDialogBox(final GameScreen gameScreen, Integer bonusTroops, Integer maxTroops, final int[] troopsMoved, String prevOwner, String newOwner, String sectorName, Stage stage) {
+    public static void attackSuccessDialogBox(final GameScreen gameScreen, Integer bonusTroops, Integer maxTroops, final int sourceSectorId, final int targetSectorId, String prevOwner, String newOwner, String sectorName, Stage stage) {
         if (maxTroops == 2) {
             DialogFactory.basicDialogBox(gameScreen, "Success! ", newOwner + " gained " + sectorName + " from " + prevOwner + "\nYou have earned " + bonusTroops + " bonus troops!\nOne troop will move to the new sector.", stage);
-            troopsMoved[0] = 1;
+            gameScreen.getMap().moveUnits(sourceSectorId, targetSectorId, 1);
         } else if (maxTroops < 2) {
             DialogFactory.basicDialogBox(gameScreen, "Success! ","NEUTRAL gained " + sectorName + " from " + prevOwner + "\nYou have earned " + bonusTroops + " bonus troops!\nThere are no troops to move to the new sector.", stage);
-            troopsMoved[0] = 0;
         } else {
 
             final Slider slider = new Slider(1, (maxTroops - 1), 1, false, DialogFactory.skin); // slider max value is (maxTroops - 1) as must leave at least one troop on attacking sector
@@ -198,7 +202,7 @@ public class DialogFactory {
             Dialog dialog = new Dialog("Success!                                                                                                  ", DialogFactory.skin) {
                 protected void result(Object object) {
                     // set number of troops to move to the value of the slider when the dialog is closed
-                    troopsMoved[0] = (int) slider.getValue();
+                    gameScreen.getMap().moveUnits(sourceSectorId, targetSectorId, (int)slider.getValue());
                     gameScreen.unpauseTimer();
                 }
             };
@@ -222,11 +226,12 @@ public class DialogFactory {
     /**
      * creates a dialog modal allowing the user to select how many units they want to allocate to a sector
      *
+     * @param gameScreen gamescreen to pause timer of dialog
      * @param allocationPoints maximum amount of troops that can be assigned
-     * @param allocation 3 index array storing : [0] number of undergraduate; [1] number of postgraduates; [2] id of sector to allocate to
+     * @param sectorId id of sector to allocate troops to
      * @param stage to drawSectorImage the box onto
      */
-    public static void allocateUnitsDialog(final GameScreen gameScreen, final Integer allocationPoints, final int[] allocation, Stage stage) {
+    public static void allocateUnitsDialog(final GameScreen gameScreen, final Integer allocationPoints, final int sectorId, Stage stage) {
         int undergradMax = allocationPoints;
         int postgradMax = (int)Math.floor((double)allocationPoints/2);
         final Slider undergradSlider = new Slider(0, undergradMax, 1, false, DialogFactory.skin);
@@ -261,12 +266,10 @@ public class DialogFactory {
         Dialog dialog = new Dialog("Select amount of troops to allocate", DialogFactory.skin) {
             protected void result(Object object) {
                 if (object.equals("0")) { // Cancel button pressed
-                    allocation[0] = -1;
-                    allocation[1] = -1;
-                    allocation[2] = -1; // set allocating sector id to -1 to indicate the allocation has been cancelled
+                    // allocation canceled
                 } else if (object.equals("1")) { // Ok button pressed
-                    allocation[0] = (int)undergradSlider.getValue(); // set the number of troops to allocate to the value of the slider
-                    allocation[1] = (int)postgradSlider.getValue();
+                    gameScreen.getMap().addUnitsToSectorAnimated(sectorId, (int)undergradSlider.getValue(), (int)postgradSlider.getValue());
+                    gameScreen.getCurrentPlayer().addTroopsToAllocate(-((int)undergradSlider.getValue() + ((int)postgradSlider.getValue()*2)));
                 }
 
                 gameScreen.unpauseTimer();
@@ -301,13 +304,15 @@ public class DialogFactory {
      * creates a dialog box for the player to select how many troops they want to attack with
      * if player cancels the attackers[0] = 0 to signify the attack has been cancelled
      *
+     * @param gameScreen gamescreen to pause timer of dialog
      * @param maxAttackers max number of attackers the player chooses to attack with
      * @param defenders how many units are defending
-     * @param attackers 1 index array for setting number of troops the player has chosen to attack with: [0] number of troops player has set to attack with
+     * @param sourceSector id of sector the attack is coming from
+     * @param targetSector id of sector being attacked
      * @param stage to display the dialog on
      * @return the number of troops chosen to attack with or 0 if the attack is canceled
      */
-    public static void attackDialog(final GameScreen gameScreen, int maxAttackers, int defenders, final int[] attackers, Stage stage) {
+    public static void attackDialog(final GameScreen gameScreen, int maxAttackers, int defenders, final Sector sourceSector, final Sector targetSector, Stage stage) {
         final Slider slider = new Slider(0, maxAttackers, 1, false, DialogFactory.skin);
         slider.setValue(maxAttackers);
         final Label sliderValue = new Label(maxAttackers + "", DialogFactory.skin); // label showing the value of the slider
@@ -320,11 +325,10 @@ public class DialogFactory {
 
         Dialog dialog = new Dialog("Select number of troops to attack with        ", DialogFactory.skin) {
             protected void result(Object object) {
-                if (object.equals("0")) { // cancel pressed
-                    attackers[0] = 0; // set number of attacker to 0, i.e. no attack
-                } else if (object.equals("1")){ // ok button pressed
-                    attackers[0] = (int)slider.getValue(); // set number of attackers to the value of the slider
+                if (object.equals("1")){ // ok button pressed
+                    gameScreen.getMap().completeAttack(gameScreen, sourceSector, targetSector, (int)slider.getValue());
                 }
+                ((PhaseAttackMove)gameScreen.getCurrentPhase()).resetSourceSectors();
 
                 gameScreen.unpauseTimer();
             }
@@ -363,7 +367,7 @@ public class DialogFactory {
      * @param stage to display the dialog on
      * @return the number of troops chosen to attack with or 0 if the attack is canceled
      */
-    public static void moveDialog(final GameScreen gameScreen, int maxAttackers, final int[] attackers, Stage stage) {
+    public static void moveDialog(final GameScreen gameScreen, final int sourceSectorId, final int targetSectorId, int maxAttackers, Stage stage) {
         maxAttackers --; // leave at least one troop on the tile
         final Slider slider = new Slider(0, maxAttackers, 1, false, DialogFactory.skin);
         slider.setValue(maxAttackers);
@@ -377,11 +381,11 @@ public class DialogFactory {
 
         Dialog dialog = new Dialog("Select number of troops to move                  ", DialogFactory.skin) {
             protected void result(Object object) {
-                if (object.equals("0")) { // cancel pressed
-                    attackers[0] = 0; // set number of attacker to 0, i.e. no attack
-                } else if (object.equals("1")){ // ok button pressed
-                    attackers[0] = (int)slider.getValue(); // set number of attackers to the value of the slider
+                if (object.equals("1")){ // ok button pressed
+                    gameScreen.getMap().moveUnits(sourceSectorId, targetSectorId, (int)slider.getValue());
                 }
+
+                ((PhaseAttackMove)gameScreen.getCurrentPhase()).resetSourceSectors();
                 gameScreen.unpauseTimer();
             }
         };

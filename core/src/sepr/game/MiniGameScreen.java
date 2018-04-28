@@ -36,6 +36,12 @@ public class MiniGameScreen extends UiScreen {
 
     private Pair<Integer, Integer> pairSelected; // location of pair currently selected, (-1,-1) if no pair currently selected
 
+    /**
+     * sets up the minigame screen
+     *
+     * @param main
+     * @param gameScreen the gamescreen for the game that this minigame will be launched from
+     */
     public MiniGameScreen(final Main main, final GameScreen gameScreen) {
         super(main);
         this.stage.addListener(new InputListener() {
@@ -121,6 +127,11 @@ public class MiniGameScreen extends UiScreen {
         return uiComponentsTable;
     }
 
+    /**
+     * sets up a the minigame UI containing 2 rows and 4 columns of punishment cards
+     *
+     * @return table containing the UI widgets for the minigame
+     */
     private Table setupGameTable() {
         /* Listener for the buttons, passes the value of the clicked button to the buttonClicked method */
         InputListener listener = new InputListener() {
@@ -212,6 +223,7 @@ public class MiniGameScreen extends UiScreen {
 
     /**
      * revelas the type of card at the specified location
+     *
      * @param coord location of card to be shown
      */
     private void revealCardType(Pair<Integer, Integer> coord) {
@@ -225,6 +237,7 @@ public class MiniGameScreen extends UiScreen {
 
     /**
      * sets the card image at the passed location to the hidden image
+     *
      * @param coord location of card to hide
      */
     private void hideCardType(Pair<Integer, Integer> coord) {
@@ -240,6 +253,7 @@ public class MiniGameScreen extends UiScreen {
     /**
      * adds the card type at the second location found to the rewards list
      * ends game if all 3 pairs have been found
+     *
      * @param secondPairLocation location of the second pair found
      */
     private void pairFound(Pair<Integer, Integer> secondPairLocation) {
@@ -250,20 +264,6 @@ public class MiniGameScreen extends UiScreen {
             // all pairs have been found so end game
             endGame(true);
         }
-    }
-
-    /**
-     *
-     * @param win true if the player should be allocated the rewards else false
-     */
-    public void endGame(boolean win) {
-        if (!win) rewards.clear(); // clear rewards if player did not win the minigame
-
-        if (rewards.contains(PunishmentCardType.COLLUSION_CARD)) player.addCollusionCards(1);
-        if (rewards.contains(PunishmentCardType.POOPY_PATH_CARD)) player.addPoopyPathCards(1);
-        if (rewards.contains(PunishmentCardType.ASBESTOS_CARD)) player.addAsbestosCards(1);
-
-        DialogFactory.miniGameOverDialog(main, stage, gameScreen, rewards);
     }
 
     /**
@@ -291,5 +291,19 @@ public class MiniGameScreen extends UiScreen {
                 endGame(false);
             }
         }
+    }
+
+    /**
+     *
+     * @param win true if the player should be allocated the rewards else false
+     */
+    private void endGame(boolean win) {
+        if (!win) rewards.clear(); // clear rewards if player did not win the minigame
+
+        if (rewards.contains(PunishmentCardType.COLLUSION_CARD)) player.addCollusionCards(1);
+        if (rewards.contains(PunishmentCardType.POOPY_PATH_CARD)) player.addPoopyPathCards(1);
+        if (rewards.contains(PunishmentCardType.ASBESTOS_CARD)) player.addAsbestosCards(1);
+
+        DialogFactory.miniGameOverDialog(main, stage, gameScreen, rewards);
     }
 }

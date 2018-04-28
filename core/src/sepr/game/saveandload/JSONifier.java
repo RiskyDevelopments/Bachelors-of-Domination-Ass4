@@ -13,8 +13,8 @@ import java.util.ArrayList;
  */
 public class JSONifier {
 
-    public GameState state; // The state of the game
-    public JSONObject saveState; // The JSON state of the game
+    private GameState state; // The state of the game
+    private JSONObject saveState; // The JSON state of the game
 
     /**
      * Set the state to represent as JSON
@@ -79,7 +79,6 @@ public class JSONifier {
             gameState.mapState.sectorStates[i].sectorCentreX = (int)(long)(Long)sector.get("SectorCenterX"); // Get the Sector's X coordinate
             gameState.mapState.sectorStates[i].sectorCentreY = (int)(long)(Long)sector.get("SectorCenterY"); // Get the Sector's Y coordinate
             gameState.mapState.sectorStates[i].decor = (Boolean)sector.get("Decor"); // Get whether the Sector is decor
-            gameState.mapState.sectorStates[i].fileName = (String)sector.get("FileName"); // Get the file name of the Sector
             gameState.mapState.sectorStates[i].allocated = (Boolean)sector.get("Allocated"); // Get whether the sector has been allocated
 
             i++;
@@ -125,13 +124,12 @@ public class JSONifier {
 
     /**
      * Creates JSON representation of GameState
+     *
      * @return JSON representation of GameState
      */
     public JSONObject getJSONGameState(){
         JSONObject gameStateObject = new JSONObject(); // Create JSON Object to store state
         gameStateObject.put("CurrentPhase", this.state.currentPhase.toString()); // Store the current phase
-
-        JSONObject mapState = new JSONObject(); // Create JSON Object to store map state
 
         JSONArray sectorStates = new JSONArray(); // JSONArray of sector states
 
@@ -163,7 +161,6 @@ public class JSONifier {
             sectorState.put("SectorCenterX", sector.sectorCentreX); // Store sector center
             sectorState.put("SectorCenterY", sector.sectorCentreY);
             sectorState.put("Decor", sector.decor); // Store whether the sector is decor
-            sectorState.put("FileName", sector.fileName); // Store sector texture filename
             sectorState.put("Allocated", sector.allocated); // Store whether the sector has been allocated
 
             sectorStates.add(sectorState);
@@ -213,7 +210,7 @@ public class JSONifier {
      * @param phase string
      * @return Phase object
      */
-    public TurnPhaseType StringToPhase(String phase) {
+    private TurnPhaseType StringToPhase(String phase) {
         for (TurnPhaseType type : TurnPhaseType.values()){
             if (type.equalsName(phase)){
                 return type;

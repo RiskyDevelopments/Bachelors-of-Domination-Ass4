@@ -72,9 +72,7 @@ public class MenuScreen extends UiScreen {
         loadGameBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(main.hasLoadedSaves()) {
-                    main.loadGame();
-                } else {
+                if (!main.loadGame()) {
                     DialogFactory.basicDialogBox(null, "No saved game found", "No save game was found. Please start a new game", stage);
                 }
             }
@@ -94,7 +92,6 @@ public class MenuScreen extends UiScreen {
     /**
      * sets up the UI tables for the menu screen
      */
-
     protected Table setupUi() {
         Table uiComponentsTable =  new Table();
         uiComponentsTable.setDebug(false);

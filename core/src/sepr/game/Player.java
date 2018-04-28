@@ -24,7 +24,11 @@ public class Player {
      * @param id player's unique identifier
      * @param collegeName display name for this player
      * @param playerType is this player a Human, AI or Neutral AI
+     * @param troopsToAllocate number of troops the player has to allocate at the start of their next turn
      * @param playerName player's name to be displayed
+     * @param collusionCards number of collusion cards this player has
+     * @param poopyPathCards number of poopy path cards this player has
+     * @param asbestosCards number of asbestos cards this player has
      */
     public Player(int id, CollegeName collegeName, int troopsToAllocate, PlayerType playerType, String playerName, int collusionCards, int poopyPathCards, int asbestosCards) {
         this.id = id;
@@ -38,7 +42,7 @@ public class Player {
     }
 
     /**
-     * creates
+     * creates an instance of a human controlled player
      *
      * @param id player's unique identifier
      * @param collegeName display name for this player
@@ -49,6 +53,8 @@ public class Player {
     }
 
     /**
+     * creates an instance of a neutral, computer controlled, player
+     *
      * @param id player's unique identifier
      */
     public static Player createNeutralPlayer(int id) {
@@ -97,6 +103,7 @@ public class Player {
 
     /**
      * fetches number of troops this player can allocate in their next turn
+     *
      * @return amount troops to allocate
      */
     public int getTroopsToAllocate() {
@@ -120,26 +127,50 @@ public class Player {
         this.troopsToAllocate += troopsToAllocate;
     }
 
+    /**
+     *
+     * @return number of collusion cards available to this player
+     */
     public int getCollusionCards() {
         return collusionCards;
     }
 
+    /**
+     *
+     * @return number of poopy path cards available to this player
+     */
     public int getPoopyPathCards() {
         return poopyPathCards;
     }
 
+    /**
+     *
+     * @return number of asbestos cards available to this player
+     */
     public int getAsbestosCards() {
         return asbestosCards;
     }
 
+    /**
+     *
+     * @param num amount to increment the number of collusion cards held by this player
+     */
     public void addCollusionCards(int num) {
         this.collusionCards += num;
     }
 
+    /**
+     *
+     * @param num amount to increment the number of poopy path cards held by this player
+     */
     public void addPoopyPathCards(int num) {
         this.poopyPathCards += num;
     }
 
+    /**
+     *
+     * @param num amount to increment the number of asbestos cards held by this player
+     */
     public void addAsbestosCards(int num) {
         this.asbestosCards += num;
     }

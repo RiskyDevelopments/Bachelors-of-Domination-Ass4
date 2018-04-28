@@ -15,20 +15,19 @@ import java.util.HashMap;
  * Class to manage saving and loading from files
  */
 public class SaveLoadManager {
-    public boolean savesToLoad = false; // Whether there are saves available to load from
-
     private Main main; // The main class
     private GameScreen gameScreen; // Game screen to read data from
 
     private static String SAVE_FILE_PATH = ""; // Path to the saves file
-    private static int currentSaveID = -1; // ID of the current save
-    private static int numberOfSaves = 0; // Current number of saves
     private static GameState loadedState; // The state that has just been loaded
 
-    public SaveLoadManager(){ }
+    public SaveLoadManager() {
+
+    }
 
     /**
      * Initializes the SaveLoadManager
+     *
      * @param main Main class
      * @param gameScreen GameScreen to save data from
      */
@@ -50,11 +49,8 @@ public class SaveLoadManager {
                 file.createNewFile();
 
                 JSONObject savesTemplate = new JSONObject();
-                savesTemplate.put("Saves", this.numberOfSaves);
-                savesTemplate.put("CurrentSaveID", this.currentSaveID);
-
                 try {
-                    FileWriter fileWriter = new FileWriter(this.SAVE_FILE_PATH);
+                    FileWriter fileWriter = new FileWriter(SAVE_FILE_PATH);
                     fileWriter.write(savesTemplate.toJSONString());
                     fileWriter.flush();
                 } catch (Exception e) {
@@ -64,33 +60,32 @@ public class SaveLoadManager {
                 e.printStackTrace();
             }
         }
-        LoadFromFile();
     }
 
     /**
      * Load GameState JSON from file
+     *
+     * @return true if game loaded, else false
      */
-    public void LoadFromFile(){
+    private boolean loadFromFile(){
         JSONParser parser = new JSONParser(); // Create JSON parser
 
         try {
             Object obj = parser.parse(new FileReader(SAVE_FILE_PATH)); // Read file
             JSONObject loadProperties = (JSONObject)obj;
 
-            this.numberOfSaves = Integer.parseInt(loadProperties.get("Saves").toString()); // Get number of saves
+            JSONObject gameStateJSON;
+            gameStateJSON = (JSONObject) loadProperties.get("GameState");
 
-            if(this.numberOfSaves > 0){ // If saves exist, read the first save into the loaded state
-                JSONObject gameStateJSON = (JSONObject)loadProperties.get("GameState");
+            JSONifier jifier = new JSONifier();
+            jifier.SetStateJSON(gameStateJSON);
 
-                JSONifier jifier = new JSONifier();
-                jifier.SetStateJSON(gameStateJSON);
-                GameState gameState = jifier.getStateFromJSON();
-
-                this.loadedState = gameState;
-                this.savesToLoad = true;
-            }else{
-                this.savesToLoad = false;
+            try {
+                loadedState = jifier.getStateFromJSON();
+            }catch (NullPointerException e) {
+                return false;
             }
+            return true;
         } catch (FileNotFoundException e){
             e.printStackTrace();
         } catch (IOException e){
@@ -98,27 +93,27 @@ public class SaveLoadManager {
         } catch (ParseException e){
             e.printStackTrace();
         }
+        return false;
     }
 
     /**
-     * Creates a Map from a given MapState
+     * creates a Map for a game from a collection of players and sectors
      *
-     * @param players
-     * @param sectors
+     * @param players playing the game on this map
+     * @param sectors that are part of this map
      * @return A Map object
      */
-    private Map MapFromMapState(HashMap<Integer, Player> players, HashMap<Integer, Sector> sectors){
-        Map map = new Map(players, sectors);
-        return map;
+    private Map mapFromMapState(HashMap<Integer, Player> players, HashMap<Integer, Sector> sectors){
+        return new Map(players, sectors);
     }
 
     /**
-     * Creates a Player from a given PlayerState
+     * creates a Player from a given PlayerState
      *
      * @param playerStates player state data that has been loaded from a save file
      * @return player object, dervied from the passed player state
      */
-    public HashMap<Integer, Player> PlayersFromPlayerState(GameState.PlayerState[] playerStates){
+    public HashMap<Integer, Player> playersFromPlayerState(GameState.PlayerState[] playerStates){
         HashMap<Integer, Player> players = new HashMap<Integer, Player>();
 
         for (GameState.PlayerState player : playerStates){
@@ -129,14 +124,13 @@ public class SaveLoadManager {
     }
 
     /**
-     * Converts sectorState data into a hashmap of sectors
+     * converts sectorState data into a hashmap of sectors
      *
      * @param sectorStates sectorState data that has been loaded from a saved file
      * @param players hashmap of player ids to their respective players
-     * @param test true if this method is being ran as part of a test
      * @return mapping of sector id to their respective sector
      */
-    public HashMap<Integer, Sector> SectorsFromSectorState(GameState.SectorState[] sectorStates, HashMap<Integer, Player> players, boolean test){
+    public HashMap<Integer, Sector> sectorsFromSectorState(GameState.SectorState[] sectorStates, HashMap<Integer, Player> players){
         HashMap<Integer, Sector> sectors = new HashMap<Integer, Sector>();
 
         for (GameState.SectorState sector : sectorStates) {
@@ -148,12 +142,8 @@ public class SaveLoadManager {
                     color = player.getValue().getSectorColour();
                 }
             }
+            sectors.put(sector.hashMapPosition, new Sector(sector.id, sector.ownerId, sector.texturePath, map, sector.displayName, sector.undergradsInSector, sector.postgradsInSector, sector.reinforcementsProvided, sector.college, sector.neutral, sector.adjacentSectorIds, sector.sectorCentreX, sector.sectorCentreY, sector.decor, sector.allocated, color, sector.asbestosCount, sector.poopCount));
 
-            if (test) {
-                sectors.put(sector.hashMapPosition, new Sector(sector.id, sector.ownerId, sector.fileName, sector.texturePath, map, sector.displayName, sector.undergradsInSector, sector.postgradsInSector, sector.reinforcementsProvided, sector.college, sector.neutral, sector.adjacentSectorIds, sector.sectorCentreX, sector.sectorCentreY, sector.decor, sector.allocated, color, test, sector.asbestosCount, sector.poopCount));
-            }else{
-                sectors.put(sector.hashMapPosition, new Sector(sector.id, sector.ownerId, sector.fileName, sector.texturePath, map, sector.displayName, sector.undergradsInSector, sector.postgradsInSector, sector.reinforcementsProvided, sector.college, sector.neutral, sector.adjacentSectorIds, sector.sectorCentreX, sector.sectorCentreY, sector.decor, sector.allocated, color, sector.asbestosCount, sector.poopCount));
-            }
         }
         return sectors;
     }
@@ -163,22 +153,25 @@ public class SaveLoadManager {
      *
      * @throws NullPointerException if loadedSate is null
      */
-    public void loadSaveGame(){
+    public boolean loadSaveGame(){
+        if (!loadFromFile()) return false;
         if (loadedState == null) throw new NullPointerException("Cannot load game if loadedState is null");
 
-        HashMap<Integer, Player> players = PlayersFromPlayerState(loadedState.playerStates);
-        HashMap<Integer, Sector> sectors = SectorsFromSectorState(loadedState.mapState.sectorStates, players, false);
+        HashMap<Integer, Player> players = playersFromPlayerState(loadedState.playerStates);
+        HashMap<Integer, Sector> sectors = sectorsFromSectorState(loadedState.mapState.sectorStates, players);
 
-        Map loadedMap = MapFromMapState(players, sectors);
+        Map loadedMap = mapFromMapState(players, sectors);
 
         this.gameScreen = new GameScreen(this.main, loadedState.currentPhase, loadedMap, players, loadedState.turnTimerEnabled, loadedState.turnTimeElapsed, loadedState.turnOrder, loadedState.currentPlayerPointer);
 
         this.main.setGameScreenFromLoad(this.gameScreen);
+        return true;
     }
 
     /**
-     * Saves to the saves.json file
-     * @param newSave
+     * saves to the saves.json file
+     *
+     * @param newSave save object to be written to file
      */
     private void saveToFile(JSONObject newSave){
         try {
@@ -191,7 +184,7 @@ public class SaveLoadManager {
     }
 
     /**
-     * Saves the current instance of the game in play to a file
+     * saves the current instance of the game in play to a file
      */
     public void saveCurrentGame(){
         GameState gameState = new GameState(); // GameState to store data in
@@ -229,7 +222,6 @@ public class SaveLoadManager {
             sectorState.sectorCentreX = value.getSectorCentreX(); // Store the Sector's location
             sectorState.sectorCentreY = value.getSectorCentreY();
             sectorState.decor = value.isDecor(); // Store whether the Sector is for decoration
-            sectorState.fileName = value.getFileName(); // Store the filename of the Sector file
             sectorState.allocated = value.isAllocated(); // Store whether the Sector has been allocated
             sectorState.poopCount = value.getPoopCount();
             sectorState.asbestosCount = value.getAsbestosCount();
@@ -269,8 +261,6 @@ public class SaveLoadManager {
         gameState.players = null;
 
         JSONObject newSave = new JSONObject(); // Create the save object
-        newSave.put("Saves", numberOfSaves);
-        newSave.put("CurrentSaveID", currentSaveID);
 
         JSONifier jifier = new JSONifier(); // Create a JSON representation of the state
         jifier.SetState(gameState);

@@ -28,8 +28,8 @@ import java.util.Random;
  */
 public class GameScreen extends UiScreen implements InputProcessor{
     public static final int NEUTRAL_PLAYER_ID = 4;
-    private static final float PVC_SPAWN_CHANCE = 1f;
-    private static final int MAX_TURN_TIME = 60;
+    private static final float PVC_SPAWN_CHANCE = 0.1f; // chance that the PVC minigame will start after each successful attack
+    private static final int MAX_TURN_TIME = 60; // seconds per turn each player has if turn timer is enabled
 
     private TurnPhaseType currentPhase = TurnPhaseType.REINFORCEMENT; // set initial phase to the reinforcement phase
     private HashMap<TurnPhaseType, Phase> phases; // hashmap for storing the three phases of the game
@@ -43,9 +43,8 @@ public class GameScreen extends UiScreen implements InputProcessor{
 
     // timer settings
     private boolean turnTimerEnabled;
-
     private boolean paused = false;
-    private float turnTimeElapsed = 0;
+    private float turnTimeElapsed = 0; // seconds since start of current players turn
 
     private List<Integer> turnOrder; // array of player ids in order of players' turns;
     private int currentPlayerPointer; // index of current player in turnOrder list
@@ -58,7 +57,7 @@ public class GameScreen extends UiScreen implements InputProcessor{
      * sets up rendering objects and key input handling
      * setupGame then start game must be called before a game is ready to be played
      *
-     * @param main used to change screen this.phases = phases;
+     * @param main used to change screen
      */
     public GameScreen(Main main) {
         super(main);
@@ -70,6 +69,17 @@ public class GameScreen extends UiScreen implements InputProcessor{
         this.mapBackground = new Texture("uiComponents/mapBackgroundBox.png");
     }
 
+    /**
+     *
+     * @param main used to change screen
+     * @param currentPhase phase the game should be in when it starts
+     * @param map the map that the game should be played on
+     * @param players the players that should be part of this game
+     * @param turnTimerEnabled is the turn timer enabled
+     * @param turnTimeElapsed how long has passed since the begining of the current player's turn
+     * @param turnOrder list of player ids still in the game in the order that the players turn's should occur
+     * @param currentPlayerPointer pointer to index of turnOrder of the current player
+     */
     public GameScreen(Main main, TurnPhaseType currentPhase, Map map, HashMap<Integer, Player> players, boolean turnTimerEnabled, float turnTimeElapsed, List<Integer> turnOrder, int currentPlayerPointer){
         this(main);
 
@@ -124,19 +134,6 @@ public class GameScreen extends UiScreen implements InputProcessor{
     }
 
     /**
-     * called once game is setup to enter the first phase of the game; centre the game camera and start the turn timer
-     *
-     * @throws RuntimeException if this is called before the game is setup, i.e. setupGame has not been called before this
-     */
-    public void startGame() {
-        if (!gameSetup) {
-            throw new RuntimeException("Cannot start game before it is setup");
-        }
-        this.phases.get(currentPhase).enterPhase(getCurrentPlayer());
-        resetCameraPosition();
-    }
-
-    /**
      * configure input so that input into the current phase's UI takes priority then unhandled input is handled by this class
      */
     private void updateInputProcessor() {
@@ -147,21 +144,16 @@ public class GameScreen extends UiScreen implements InputProcessor{
     }
 
     /**
-     * checks if game is over by checking how many players are in the turn order, if 1 then player has won, if 0 then the neutral player has won
+     * called once game is setup to enter the first phase of the game; centre the game camera and start the turn timer
      *
-     * @return true if game is over else false
+     * @throws RuntimeException if this is called before the game is setup, i.e. setupGame has not been called before this
      */
-    private boolean isGameOver() {
-        return turnOrder.size() <= 1; // game is over if only one player is in the turn order
-    }
-
-    /**
-     * gets in seconds the amount of time remaining of the current player's turn
-     *
-     * @return time remaining in turn in seconds
-     */
-    private float getTurnTimeRemaining(){
-        return MAX_TURN_TIME - turnTimeElapsed;
+    public void startGame() {
+        if (!gameSetup) {
+            throw new RuntimeException("Cannot start game before it is setup");
+        }
+        this.phases.get(currentPhase).enterPhase(getCurrentPlayer());
+        resetCameraPosition();
     }
 
     /**
@@ -176,6 +168,31 @@ public class GameScreen extends UiScreen implements InputProcessor{
      */
     public void unpauseTimer() {
         paused = false;
+    }
+
+    /**
+     * gets in seconds the amount of time remaining of the current player's turn
+     *
+     * @return time remaining in turn in seconds
+     */
+    private float getTurnTimeRemaining(){
+        return MAX_TURN_TIME - turnTimeElapsed;
+    }
+
+    /**
+     *
+     * @return seconds since the current player's turn began
+     */
+    public float getTurnTimeElapsed() {
+        return turnTimeElapsed;
+    }
+
+    /**
+     *
+     * @return true if the turn timer is enabled
+     */
+    public boolean isTurnTimerEnabled(){
+        return this.turnTimerEnabled;
     }
 
     /**
@@ -200,22 +217,61 @@ public class GameScreen extends UiScreen implements InputProcessor{
 
     /**
      *
-     * @return the sprite batch being used to render the game
+     * @return mapping of player ids to their respective player objects
      */
-    protected SpriteBatch getGameplayBatch() {
-        return this.gameplayBatch;
+    public HashMap<Integer, Player> getPlayers() {
+        return players;
     }
 
     /**
      *
-     * @return the map object for this game
+     * @return list containing ids of players still in the game, where the order of ids is the order of player turns
      */
-    public Map getMap() {
-        return map;
+    public List<Integer> getTurnOrder(){
+        return this.turnOrder;
     }
 
-    public float getTurnTimeElapsed() {
-        return turnTimeElapsed;
+    /**
+     *
+     * @return index of current player id in turnOrder list
+     */
+    public int getCurrentPlayerPointer(){
+        return this.currentPlayerPointer;
+    }
+
+    /**
+     * called when the player ends the MOVEMENT phase of their turn to advance the game to the next Player's turn
+     * increments the currentPlayerPointer and resets it to 0 if it now exceeds the number of players in the list
+     */
+    private void nextPlayer() {
+        currentPlayerPointer++;
+        if (currentPlayerPointer == turnOrder.size()) { // reached end of players, reset to 0 and increase turn number
+            currentPlayerPointer = 0;
+        }
+
+        resetCameraPosition(); // re-centres the camera for the next player
+
+        map.updateSectorStatusEffects(getCurrentPlayer().getId()); // apply status effects to tiles
+
+        if (this.turnTimerEnabled) { // if the turn timer is on reset it for the next player
+            this.turnTimeElapsed = 0;
+        }
+    }
+
+    /**
+     *
+     * @return type of the phase currently in play
+     */
+    public TurnPhaseType getCurrentPhaseType(){
+        return this.currentPhase;
+    }
+
+    /**
+     *
+     * @return phase object for the turn phase currently in play
+     */
+    public Phase getCurrentPhase() {
+        return phases.get(getCurrentPhaseType());
     }
 
     /**
@@ -242,25 +298,6 @@ public class GameScreen extends UiScreen implements InputProcessor{
         this.updateInputProcessor(); // phase changed so update input handling
         this.phases.get(currentPhase).enterPhase(getCurrentPlayer()); // setup the new phase for the current player
         this.removeEliminatedPlayers(); // removes all players who have no remaining sectors from the turn order
-    }
-
-    /**
-     * called when the player ends the MOVEMENT phase of their turn to advance the game to the next Player's turn
-     * increments the currentPlayerPointer and resets it to 0 if it now exceeds the number of players in the list
-     */
-    private void nextPlayer() {
-        currentPlayerPointer++;
-        if (currentPlayerPointer == turnOrder.size()) { // reached end of players, reset to 0 and increase turn number
-            currentPlayerPointer = 0;
-        }
-
-        resetCameraPosition(); // re-centres the camera for the next player
-
-        map.updateSectorStatusEffects(getCurrentPlayer().getId()); // apply status effects to tiles
-
-        if (this.turnTimerEnabled) { // if the turn timer is on reset it for the next player
-            this.turnTimeElapsed = 0;
-        }
     }
 
     /**
@@ -300,6 +337,15 @@ public class GameScreen extends UiScreen implements InputProcessor{
     }
 
     /**
+     * checks if game is over by checking how many players are in the turn order, if 1 then player has won, if 0 then the neutral player has won
+     *
+     * @return true if game is over else false
+     */
+    private boolean isGameOver() {
+        return turnOrder.size() <= 1; // game is over if only one player is in the turn order
+    }
+
+    /**
      * method called when one player owns all the sectors in the map
      *
      * @throws RuntimeException if there is more than one player in the turn order when gameOver is called
@@ -319,7 +365,10 @@ public class GameScreen extends UiScreen implements InputProcessor{
         }
     }
 
-    public void PVCSpawn() {
+    /**
+     * when called there's a chance that the minigame is triggered
+     */
+    private void PVCSpawn() {
         Random rand = new Random();
         Float randomValue = rand.nextFloat();
         if (randomValue <= PVC_SPAWN_CHANCE) {
@@ -346,6 +395,30 @@ public class GameScreen extends UiScreen implements InputProcessor{
         float x = gameplayCamera.unproject(new Vector3(screenX, screenY, 0)).x;
         float y = gameplayCamera.unproject(new Vector3(screenX, screenY, 0)).y;
         return new Vector2(x, y);
+    }
+
+    /**
+     *
+     * @return instance of main that his gamescreen is part of
+     */
+    public Main getMain(){
+        return this.main;
+    }
+
+    /**
+     *
+     * @return the map object for this game
+     */
+    public Map getMap() {
+        return map;
+    }
+
+    /**
+     *
+     * @return the sprite batch being used to render the game
+     */
+    protected SpriteBatch getGameplayBatch() {
+        return this.gameplayBatch;
     }
 
     /**
@@ -458,34 +531,6 @@ public class GameScreen extends UiScreen implements InputProcessor{
         this.gameplayCamera.update();
 
         resetCameraPosition();
-    }
-
-    public TurnPhaseType getCurrentPhaseType(){
-        return this.currentPhase;
-    }
-
-    public Phase getCurrentPhase() {
-        return phases.get(getCurrentPhaseType());
-    }
-
-    public HashMap<Integer, Player> getPlayers() {
-        return players;
-    }
-
-    public boolean isTurnTimerEnabled(){
-        return this.turnTimerEnabled;
-    }
-
-    public List<Integer> getTurnOrder(){
-        return this.turnOrder;
-    }
-
-    public int getCurrentPlayerPointer(){
-        return this.currentPlayerPointer;
-    }
-
-    public Main getMain(){
-        return this.main;
     }
 
 

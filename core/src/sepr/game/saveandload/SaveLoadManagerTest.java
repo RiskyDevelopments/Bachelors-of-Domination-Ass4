@@ -17,10 +17,8 @@ import java.util.HashMap;
 import static org.junit.Assert.assertTrue;
 
 public class SaveLoadManagerTest implements ApplicationListener {
-    public SaveLoadManager saveLoadManager;
-    public GameState gameState;
-
-    private static HeadlessApplicationConfiguration application;
+    private SaveLoadManager saveLoadManager;
+    private GameState gameState;
 
     public SaveLoadManagerTest() {
         HeadlessApplicationConfiguration conf = new HeadlessApplicationConfiguration();
@@ -62,7 +60,6 @@ public class SaveLoadManagerTest implements ApplicationListener {
             sectorState.sectorCentreX = i;
             sectorState.sectorCentreY = i;
             sectorState.decor = false;
-            sectorState.fileName = "assets/uiComponents/menuBackground.png";
             sectorState.allocated = false;
 
             gameState.mapState.sectorStates[i] = sectorState;
@@ -79,6 +76,9 @@ public class SaveLoadManagerTest implements ApplicationListener {
             playerState.playerName = Integer.toString(i);
             playerState.troopsToAllocate = i;
             playerState.playerType = PlayerType.HUMAN;
+            playerState.collusionCards = 1;
+            playerState.poopyPathCards = 2;
+            playerState.asbestosCards = 3;
 
             gameState.playerStates[i] = playerState;
         }
@@ -104,7 +104,7 @@ public class SaveLoadManagerTest implements ApplicationListener {
 
     @AfterClass
     public static void cleanUp() {
-        application = null;
+
     }
 
     @Test
@@ -113,22 +113,23 @@ public class SaveLoadManagerTest implements ApplicationListener {
 
     @Test
     public void playersFromPlayerState() {
-        HashMap<Integer, Player> playerHashMap = saveLoadManager.PlayersFromPlayerState(gameState.playerStates);
+        HashMap<Integer, Player> playerHashMap = saveLoadManager.playersFromPlayerState(gameState.playerStates);
 
         assertTrue("Player HashMap Size", playerHashMap.size() == 4);
 
         int index = 0;
 
         for (java.util.Map.Entry<Integer, Player> playerEntry : playerHashMap.entrySet()){
-            Integer key = playerEntry.getKey();
             Player value = playerEntry.getValue();
 
             assertTrue("Player ID", value.getId() == index);
             assertTrue("Player College", value.getCollegeName() == CollegeName.DERWENT);
             assertTrue("Player Name", value.getPlayerName().equalsIgnoreCase(Integer.toString(index)));
             assertTrue("Player Troops To Allocate", value.getTroopsToAllocate() == index);
-            assertTrue("Player Sector Colour", value.getSectorColour().equals(new Color(0, 0, 0, 0)));
             assertTrue("Player Type",value.getPlayerType() == PlayerType.HUMAN);
+            assertTrue("Player Collusion Cards",value.getCollusionCards() == 1);
+            assertTrue("Player Poopy Path Cards",value.getPoopyPathCards() == 2);
+            assertTrue("Player Asbestos Cards",value.getAsbestosCards() == 3);
 
             index++;
         }
@@ -137,12 +138,11 @@ public class SaveLoadManagerTest implements ApplicationListener {
     @Test
     public void sectorsFromSectorState() {
         HashMap<Integer, Player> playerHashMap = new HashMap<Integer, Player>();
-        HashMap<Integer, Sector> sectorHashMap = this.saveLoadManager.SectorsFromSectorState(this.gameState.mapState.sectorStates, playerHashMap, true);
+        HashMap<Integer, Sector> sectorHashMap = this.saveLoadManager.sectorsFromSectorState(this.gameState.mapState.sectorStates, playerHashMap);
         
         int index = 0;
 
         for (java.util.Map.Entry<Integer, Sector> sectorEntry : sectorHashMap.entrySet()){
-            Integer key = sectorEntry.getKey();
             Sector value = sectorEntry.getValue();
             
             assertTrue("Sector ID", value.getId() == index);
@@ -152,7 +152,7 @@ public class SaveLoadManagerTest implements ApplicationListener {
             assertTrue("Reinforcements Provided", value.getReinforcementsProvided() == index);
             assertTrue("Sector College", value.getCollege() == "DERWENT");
             assertTrue("Sector Texture Path", value.getTexturePath().equalsIgnoreCase("assets/uiComponents/menuBackground.png"));
-            assertTrue("Sector Is Neutral", value.isNeutral() == true);
+            assertTrue("Sector Is Neutral", value.isNeutral());
 
             for (int i = 0; i < value.getAdjacentSectorIds().length; i++){
                 assertTrue(value.getAdjacentSectorIds()[i] == i + 1);
@@ -161,24 +161,12 @@ public class SaveLoadManagerTest implements ApplicationListener {
             assertTrue("Sector Centre X", value.getSectorCentreX() == index);
             assertTrue("Sector Centre Y", value.getSectorCentreY() == index);
 
-            assertTrue("Sector Is Decor", value.isDecor() == false);
-            assertTrue("Sector FileName", value.getFileName() == "assets/uiComponents/menuBackground.png");
-            assertTrue("Sector Is Allocated", value.isAllocated() == false);
+            assertTrue("Sector Is Decor", !value.isDecor());
+            assertTrue("Sector Is Allocated", !value.isAllocated());
 
             index++;
         }
 
-    }
-
-    @Test
-    public void getCurrentSaveID() {
-        //assertTrue("Current Save ID", saveLoadManager == 0);
-    }
-
-    @Test
-    public void getNextSaveID() {
-
-        //assertTrue("Next Save ID", saveLoadManager.GetNextSaveID() == 1);
     }
 
     @Override

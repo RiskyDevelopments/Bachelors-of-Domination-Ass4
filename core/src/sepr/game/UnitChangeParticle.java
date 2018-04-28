@@ -15,7 +15,7 @@ public class UnitChangeParticle {
     private Vector2 centrePosition; // where the particle is to be initially drawn
     private long startTime; // time when particle created
     private BitmapFont font; // font for rendering the amount
-    private Texture overlay;
+    private static Texture overlay; // texture to be displayed behind the number of change in units
 
     /**
      *

@@ -65,10 +65,8 @@ public class GameState {
         public int sectorCentreX; // The centre x coordinate of this sector, relative to the sectorTexture
         public int sectorCentreY; // The centre y coordinate of this sector, relative to the sectorTexture
         public boolean decor; // Is this sector for visual purposes only, i.e. lakes are decor
-        public String fileName; // The filename of the sector
         public boolean allocated; // Becomes true once the sector has been allocated
-        public int collusionCount;
-        public int asbestosCount;
-        public int poopCount;
+        public int asbestosCount; // Num of turns this sector has the asbestos status effect for
+        public int poopCount; // Num of turns this sector has the poopy path status effect for
     }
 }
