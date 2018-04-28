@@ -8,6 +8,11 @@ import sepr.game.utils.TurnPhaseType;
 
 import java.util.ArrayList;
 
+/*
+Modified in assessment 4
+ - added support for saving new player/game/sector/map attributes
+ */
+
 /**
  * Class to convert the game state to and from a JSON representation
  */

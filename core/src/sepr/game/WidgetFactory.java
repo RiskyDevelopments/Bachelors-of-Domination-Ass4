@@ -16,6 +16,12 @@ import com.badlogic.gdx.utils.Align;
 import sepr.game.utils.CollegeName;
 import sepr.game.utils.PunishmentCardType;
 
+/*
+Modified in assessment 4
+ - added method for generating ImageButtons for the punishment cards - genPunishmentCardButton(PunishmentCardType punishmentCardType)
+ - added method for generating drawables for the punishment cards - genPunishmentCardDrawable(PunishmentCardType punishmentCardType)
+ */
+
 /**
  * class that generates widgets for using in the UI
  */
@@ -23,6 +29,7 @@ public class WidgetFactory {
 
     private static Texture basicButtonTexture;
     private static Texture mapGraphicTexture;
+    private static Texture optionsGraphicTexture;
 
     private static Texture sliderBarTexture;
     private static Texture sliderKnobTexture;
@@ -76,6 +83,7 @@ public class WidgetFactory {
 
         basicButtonTexture = new Texture("uiComponents/Menu-Button-Full.png");
         mapGraphicTexture = new Texture("uiComponents/Main-Menu-Map.png");
+        optionsGraphicTexture = new Texture("uiComponents/RuncinatorGraphic.png");
 
         sliderBarTexture = new Texture("uiComponents/sliderBar.png");
         sliderKnobTexture = new Texture("uiComponents/sliderKnob.png");
@@ -264,6 +272,14 @@ public class WidgetFactory {
      */
     public static Image genMapGraphic() {
         return new Image(mapGraphicTexture);
+    }
+
+    /**
+     *
+     * @return an image widget to be displayed on the options screen
+     */
+    public static Image genOptionsGraphic() {
+        return new Image(optionsGraphicTexture);
     }
 
     /**

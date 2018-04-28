@@ -11,6 +11,13 @@ import sepr.game.*;
 import java.io.*;
 import java.util.HashMap;
 
+/*
+Modified in assessment 4
+ - removed references to save ids and multiple saves as not implemented by previous team
+ - fixed not being able to load a game without restarting program if no prior save existed when a game is saved
+ - changed method names to follow naming conventions of the rest of the program
+ */
+
 /**
  * Class to manage saving and loading from files
  */

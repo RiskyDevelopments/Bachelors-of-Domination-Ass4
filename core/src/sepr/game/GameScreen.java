@@ -21,6 +21,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+/*
+Modified in assessment 4
+ - refactored to inherit from new UiScreen class to reduce code duplication for setting up screen
+ - changed to using AudioPlayer for playing audio instead of using instance of AudioManager
+ - created constants for storing: the chance of PVC minigame triggering and the max turn time for when the timer is enabled
+ - removed PVC class references as no longer required due to changes to the minigame triggering mechanic
+ - added method which may be called to give a chance of triggering the minigame - PVCSpawn()
+ - refactored the turn timer system so that it may be saved and loaded and simplified pausing the timer
+ - removed the ability to move and zoom in/out of the map as did not add anything to the game
+ - added automatic scaling of the game map for when the game is resized so it is always easy to see the game
+ */
+
 /**
  * main class for controlling the game
  * implements screen for swapping what is being displayed with other screens, i.e. menu screens

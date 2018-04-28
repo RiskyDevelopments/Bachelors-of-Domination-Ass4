@@ -4,6 +4,16 @@ import com.badlogic.gdx.audio.Sound;
 
 import java.util.Random;
 
+/*
+Added in assessment 4
+ - created to enable easy triggering of sound effects
+ - created to make it easier to set what music is playing and swapping between music now just requires triggering the method of the new track you want to play
+ - moved selecting what sound effect to play to here to reduce code duplication for when selecting sound from the same set of clips
+ */
+
+/**
+ * class for being able to trigger sound effects and set music to play
+ */
 public class AudioPlayer {
     private static AudioManager Audio = AudioManager.getInstance(); // Access to the AudioManager
     private static Random random = new Random();

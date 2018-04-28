@@ -10,6 +10,16 @@ import sepr.game.utils.TurnPhaseType;
 import java.util.HashMap;
 import java.util.List;
 
+/*
+Modified in assessment 4
+ - fixed how turn time remaining is stored so it can be reloaded successfully
+ - added punishment cards to the player state so they may be saved/loaded
+ - removed sector color from player state as no longer stored in player class
+ - added postgradUnitsInSector to sector state so they may be saved/loaded
+ - removed storing sector filePath variable as no longer stored in sector
+ - added asbestosCount and poopCount to sector state so sector status effects may be saved/loaded
+ */
+
 /**
  * Class to store data relating to the current state of the game in preparation for saving
  */

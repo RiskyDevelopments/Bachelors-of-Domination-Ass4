@@ -6,7 +6,7 @@ import sepr.game.Main;
 
 
 /**
- * executable http://www.riskydevelopments.co.uk/bod/BoD.zip
+ * executable http://www.riskydevelopments.co.uk/BoDv2/BoDv2.zip
  */
 public class DesktopLauncher {
 	public static void main (String[] arg) {

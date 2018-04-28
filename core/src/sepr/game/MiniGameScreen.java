@@ -20,6 +20,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+/*
+Modified in assessment 4
+ - refactored to inherit from new UiScreen class to reduce code duplication for setting up screen
+ - redesigned minigame to be played as matching punishment cards instead of numbers
+ - modified reward system to give players punishment cards as a reward not troops
+ */
+
 public class MiniGameScreen extends UiScreen {
 
     private static final int ROWS = 2;

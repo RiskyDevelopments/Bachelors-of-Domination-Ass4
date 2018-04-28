@@ -10,6 +10,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+/*
+Added in assessment 4
+ - added to reduce code duplication when setting up the MenuScreen, OptionsScreen, GameSetupScreen, GameScreen and MinigameScreen
+ */
+
 public abstract class UiScreen implements Screen {
     protected Main main;
     protected Stage stage;

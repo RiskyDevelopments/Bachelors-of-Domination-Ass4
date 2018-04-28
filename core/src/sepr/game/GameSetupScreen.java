@@ -19,6 +19,14 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/*
+Modified in assessment 4
+ - refactored to inherit from new UiScreen class to reduce code duplication for setting up screen
+ - moved CollegeName enum to its own file as it is not specific to this class
+ - moved getting the college color from the college name to be part of the CollegeName enum
+ - added a max length of player name to validatePlayerNames() method
+ */
+
 /**
  * screen for setting up the game
  * configurable properties

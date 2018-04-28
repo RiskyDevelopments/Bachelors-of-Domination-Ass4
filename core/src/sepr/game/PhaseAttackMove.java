@@ -7,6 +7,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import sepr.game.utils.TurnPhaseType;
 
+/*
+Modified in assessment 4
+ - all selecting source and target sector behaviour moved from PhaseAttack and PhaseMovement to reduce code duplication
+ - refactored passing data using arrays due to lack of readability
+ */
+
 public abstract class PhaseAttackMove extends Phase {
     private TextureRegion arrow; // TextureRegion for rendering attack visualisation
     private Sector sourceSector; // Stores the sector being used to attack in the attack phase (could store as ID and lookup object each time to save memory)

@@ -17,6 +17,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+/*
+Modified in assessment 4
+ - refactored to inherit from new UiScreen class to reduce code duplication for setting up screen
+ - removed colour blind mode UI components
+*/
+
 /**
  * Options managed by this class:
  *      Music Volume

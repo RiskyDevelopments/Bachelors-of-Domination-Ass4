@@ -2,6 +2,11 @@ package sepr.game.utils;
 
 import com.badlogic.gdx.graphics.Color;
 
+/*
+Added in assessment 4
+ - moved from the GameSetupScreen class as enum was not just used in that class
+ */
+
 /**
  * the colleges available to play as
  */

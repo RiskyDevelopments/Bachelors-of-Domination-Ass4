@@ -12,6 +12,17 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
+/*
+Modified in assessment 4
+ - removed loading number of troops from the mapData.csv file as this is always overwritten - change in sectorDataToSector(String[] sectorData) method
+ - removed PVC sector spawning from this class due to changes to how the minigame is triggered
+ - rewritten the conflict resolution algorithm to take into account postgrad units
+ - added support for applying a punishment card effect to a sector - the addSectorPunishmentEffect(int sectorId, PunishmentCardType punishmentCardType) method
+ - added support for applying punishment card effects that last multiple turns - updateSectorStatusEffects(int currentPlayerId) method
+ - refactored unit movement such that data is no longer passed around in mutable arrays, which was very difficult to follow. Now just uses parameters of methods to pass data
+ - moved sector drawing to be part of the sector class
+ */
+
 /**
  * stores the game map and the sectors within it
  */
