@@ -568,7 +568,7 @@ public class WidgetFactory {
      * @return a new instance of the small font
      */
     public static BitmapFont getFontSmall() {
-        FileHandle alteDinSmall = new FileHandle("font/Alte-DIN-Small.fnt");
+        FileHandle alteDinSmall = Gdx.files.internal("font/Alte-DIN-Small.fnt");
         return new BitmapFont(alteDinSmall);
     }
 }

@@ -220,7 +220,7 @@ public abstract class Phase extends Stage {
 
     /**
      *
-     * @throws IllegalArgumentException if punishmentCardSelected is not Collusion/Asbestos/PoopyPath card
+     * @throws IllegalArgumentException if punishmentCardSelected is not Collusion/Asbestos/PoopyPath/NoCard card
      * @param punishmentCardSelected punishment card that has been selected
      */
     public void setPunishmentCardSelected(PunishmentCardType punishmentCardSelected) {
@@ -228,9 +228,10 @@ public abstract class Phase extends Stage {
             case COLLUSION_CARD:
             case ASBESTOS_CARD:
             case POOPY_PATH_CARD:
+            case NO_CARD:
                 break;
             default:
-                throw new IllegalArgumentException("May only set selected punishment card to the Collusion/Asbestos/PoopyPath Card");
+                throw new IllegalArgumentException("May only set selected punishment card to the Collusion/Asbestos/PoopyPath/NoCard Card");
         }
         this.punishmentCardSelected = punishmentCardSelected;
         updateTopBarText();
