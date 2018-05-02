@@ -594,4 +594,5 @@ public class GameScreen extends UiScreen implements InputProcessor{
 
     @Override
     public boolean scrolled(int amount) { return false; }
+
 }
