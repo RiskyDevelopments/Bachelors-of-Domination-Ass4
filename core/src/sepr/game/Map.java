@@ -365,9 +365,8 @@ public class Map {
      */
     public void updateSectorStatusEffects(int currentPlayerId) {
         for (Sector sector : sectors.values()) {
-            if (sector.getOwnerId() != currentPlayerId) return;
-
-            if (sector.getPoopCount() > 0) {
+            if (sector.getOwnerId() != currentPlayerId) continue;
+            if (sector.getAsbestosCount() > 0) {
                 addUnitsToSectorAnimated(sector.getId(), -(int)Math.ceil(sector.getUnderGradsInSector() * 0.1), 0);
             }
             sector.decrementStatusEffects();

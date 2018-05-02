@@ -69,6 +69,12 @@ public class PhaseReinforce extends Phase {
             return true;
         }
 
+        if (!selected.canChangeUnits()) {
+            AudioPlayer.playInvalidMoveAudio();
+            DialogFactory.basicDialogBox(gameScreen, "Allocation Problem", "This sector cannot currently change the units on it", this);
+            return true;
+        }
+
         DialogFactory.allocateUnitsDialog(gameScreen, currentPlayer.getTroopsToAllocate(), sectorId, this);
         return true;
     }
