@@ -40,7 +40,7 @@ Modified in assessment 4
  */
 public class GameScreen extends UiScreen implements InputProcessor{
     public static final int NEUTRAL_PLAYER_ID = 4;
-    private static final float PVC_SPAWN_CHANCE = 1f; // chance that the PVC minigame will start after each successful attack
+    private static final float PVC_SPAWN_CHANCE = 0.1f; // chance that the PVC minigame will start after each successful attack
     private static final int MAX_TURN_TIME = 60; // seconds per turn each player has if turn timer is enabled
 
     private TurnPhaseType currentPhase = TurnPhaseType.REINFORCEMENT; // set initial phase to the reinforcement phase
