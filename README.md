@@ -1,5 +1,6 @@
 # Bachelors of Domination
 ## A strategy game by Risky Developments and passed onto CRGames
+Checkout out our team's [website](http://www.riskydevelopments.co.uk/)
 
 ![alt text](https://www.cs.york.ac.uk/people/bigphotos/colin.jpeg)
 
